@@ -1,0 +1,338 @@
+[
+  {
+    "id": "proj-001",
+    "title": "Kongsberg Maritime to supply full automation, DP and propulsion package for two Cadeler WTIVs",
+    "companies": [
+      "Kongsberg Maritime",
+      "Cadeler",
+      "COSCO Shipping (Qidong) Offshore"
+    ],
+    "vesselType": "Wind Turbine Installation Vessel (WTIV)",
+    "summary": "Kongsberg Maritime will supply a complete electrical, automation and propulsion package for two new T-class WTIVs being built for Cadeler at COSCO Shipping (Qidong) Offshore, including thrusters, dynamic positioning, integrated automation/vessel control and energy management. Delivery scheduled 2030-2031.",
+    "date": "2026-09-03",
+    "categories": [
+      "automation",
+      "navigation"
+    ],
+    "sourceUrl": "https://www.marinelink.com/news/kongsberg-maritime-supply-technology-542701",
+    "sourceName": "MarineLink",
+    "priority": 24.0
+  },
+  {
+    "id": "proj-002",
+    "title": "Kongsberg Maritime to provide integrated navigation, DP and automation suite for new Solstad/SBM Offshore construction vessel",
+    "companies": [
+      "Kongsberg Maritime",
+      "Solstad Offshore",
+      "SBM Offshore"
+    ],
+    "vesselType": "Deepwater construction/installation vessel",
+    "summary": "Kongsberg Maritime will equip a new multi-purpose deepwater installation vessel for Solstad Offshore and SBM Offshore with dynamic positioning, navigation/bridge systems, vessel automation, and a full power/propulsion package. Built in China, delivery H1 2029.",
+    "date": "2026-08-25",
+    "categories": [
+      "automation",
+      "navigation"
+    ],
+    "sourceUrl": "https://www.marinelink.com/news/kongsberg-maritime-provide-technology-542432",
+    "sourceName": "MarineLink",
+    "priority": 24.0
+  },
+  {
+    "id": "proj-013",
+    "title": "ClassNK releases Edition 2.0 of fire-fighting guidelines for container carriers",
+    "companies": [
+      "ClassNK (Nippon Kaiji Kyokai)"
+    ],
+    "vesselType": "Container carrier",
+    "summary": "ClassNK issued Edition 2.0 of its fire-fighting guidelines for container carriers, updating enhanced firefighting provisions beyond SOLAS minimums, including fire hydrants on lashing bridges and revised video-surveillance specs for cargo-area fire monitoring.",
+    "date": "2026-07-30",
+    "categories": [
+      "safety"
+    ],
+    "sourceUrl": "https://cyprusshippingnews.com/2026/07/30/classnk-releases-edition-2-0-of-the-guidelines-for-additional-fire-fighting-measures-for-container-carrier/",
+    "sourceName": "Cyprus Shipping News",
+    "priority": 19.2
+  },
+  {
+    "id": "proj-009",
+    "title": "HD Hyundai Heavy Industries wins South Korea's first overseas icebreaker order",
+    "companies": [
+      "HD Hyundai Heavy Industries"
+    ],
+    "vesselType": "Icebreaker",
+    "summary": "HD Hyundai Heavy Industries secured a contract to build an icebreaker for an overseas customer — the first such order won by a South Korean yard, pushing HHI into specialized ice-class vessel construction.",
+    "date": "2026-04-26",
+    "categories": [
+      "hull",
+      "navigation"
+    ],
+    "sourceUrl": "https://www.prnewswire.com/news-releases/hd-hyundai-heavy-industries-wins-south-koreas-first-overseas-icebreaker-order-302753724.html",
+    "sourceName": "PR Newswire",
+    "priority": 18.6
+  },
+  {
+    "id": "proj-018",
+    "title": "VARD secures its largest order ever — deep-sea research vessel for Inkfish",
+    "companies": [
+      "Vard Group"
+    ],
+    "vesselType": "Deep-sea research vessel",
+    "summary": "Vard signed a ~€700m contract with ocean research organization Inkfish to build a 162m next-generation deep-sea research vessel — Norway's highest-value shipbuilding order and Vard's largest single-vessel contract to date.",
+    "date": "2026-06-15",
+    "categories": [
+      "hull",
+      "navigation"
+    ],
+    "sourceUrl": "https://www.vard.com/press-releases/vard-secures-its-largest-order-ever-signs-contract-with-inkfish-for-the-worlds-most-capable-deep-sea-research-vessel",
+    "sourceName": "VARD",
+    "priority": 18.6
+  },
+  {
+    "id": "proj-008",
+    "title": "Kongsberg Maritime to design and equip four future-fuel-ready tankers for Transpetro",
+    "companies": [
+      "Kongsberg Maritime",
+      "Transpetro (Petrobras subsidiary)",
+      "Ecovix"
+    ],
+    "vesselType": "Handysize product tanker (15,600 dwt)",
+    "summary": "Kongsberg Maritime signed a ~NOK 300m contract to design and equip four methanol/ethanol-ready handysize tankers for Transpetro, including its K-Bridge/K-Chief integrated automation and navigation (alarm-monitoring) system plus propulsion and tank-gauging systems.",
+    "date": "2026-02-05",
+    "categories": [
+      "safety",
+      "automation"
+    ],
+    "sourceUrl": "https://splash247.com/kongsberg-to-design-and-equip-four-future-fuel-ready-tankers-for-transpetro/",
+    "sourceName": "Splash247",
+    "priority": 18.0
+  },
+  {
+    "id": "proj-014",
+    "title": "OS Energy to equip new offshore wind service vessels with Sonardyne's SPRINT-Nav DP system",
+    "companies": [
+      "OS Energy",
+      "Sonardyne",
+      "Esbjerg Shipyard"
+    ],
+    "vesselType": "Offshore Survey/Service Vessel (OSSV)",
+    "summary": "OS Energy is fitting Sonardyne's SPRINT-Nav dynamic-positioning reference system (inertial navigation + Doppler velocity log) on a newbuild series of offshore wind service vessels for GNSS-compromised, shallow-water operations. Three confirmed (+3 options), built at Esbjerg Shipyard, Denmark.",
+    "date": "2025-10-02",
+    "categories": [
+      "navigation",
+      "automation"
+    ],
+    "sourceUrl": "https://www.marinelink.com/news/os-energy-equip-new-vessels-sonardynes-530681",
+    "sourceName": "MarineLink",
+    "priority": 18.0
+  },
+  {
+    "id": "proj-019",
+    "title": "Fincantieri and Viking sign contracts for two new ocean ships",
+    "companies": [
+      "Fincantieri"
+    ],
+    "vesselType": "Cruise ship",
+    "summary": "Fincantieri signed new contracts with Viking for two additional ocean-class cruise ships, extending their newbuild relationship as part of Fincantieri's 2026-2030 business plan.",
+    "date": "2026-06-01",
+    "categories": [
+      "hull",
+      "safety"
+    ],
+    "sourceUrl": "https://www.fincantieri.com/en/newsroom/press-releases/2026/Fincantieri-and-Viking-sign-contracts-for-two-new-ocean-ships",
+    "sourceName": "Fincantieri",
+    "priority": 17.2
+  },
+  {
+    "id": "proj-011",
+    "title": "Praxis Automation selected to supply Integrated Platform Management System for Colombian Navy's PES frigate",
+    "companies": [
+      "Praxis Automation Technology",
+      "Damen Naval",
+      "Alewijnse"
+    ],
+    "vesselType": "Naval frigate (PES class)",
+    "summary": "Praxis Automation secured a contract, via Damen Naval and Alewijnse, to supply its Integrated Platform Management System (IPMS) for Colombia's new PES frigate — centralizing monitoring/control of propulsion, power, auxiliary systems and damage control.",
+    "date": "2025-07-01",
+    "categories": [
+      "safety",
+      "automation"
+    ],
+    "sourceUrl": "https://www.praxis-automation.eu/index.php/news/praxis-automation-technology-selected-to-supply-integrated-platform-management-system-for-colombian-navys-pes-frigate",
+    "sourceName": "Praxis Automation Technology",
+    "priority": 16.0
+  },
+  {
+    "id": "proj-015",
+    "title": "Kongsberg Maritime wins equipment contract for new DOF offshore support vessel",
+    "companies": [
+      "Kongsberg Maritime",
+      "DOF",
+      "CRIST Shipyard"
+    ],
+    "vesselType": "Offshore Support Vessel (OSV)",
+    "summary": "Kongsberg Maritime will supply a K-Pos dynamic positioning system, navigation systems, automation/control systems, and a DC hybrid battery-electric power package for a new 110m OSV for DOF, built at CRIST shipyard, Gdynia.",
+    "date": "2025-04-03",
+    "categories": [
+      "automation",
+      "navigation"
+    ],
+    "sourceUrl": "https://www.worldoil.com/news/2025/4/3/kongsberg-secures-equipment-contract-for-new-offshore-support-vessel/",
+    "sourceName": "World Oil",
+    "priority": 16.0
+  },
+  {
+    "id": "proj-017",
+    "title": "Praxis Automation awarded major contract to equip entire Rawabi Vallianz Offshore fleet with DP-2 systems",
+    "companies": [
+      "Praxis Automation Technology",
+      "Rawabi Vallianz Offshore Services (RVOS)"
+    ],
+    "vesselType": "Offshore Support Vessel fleet (59 vessels)",
+    "summary": "Praxis Automation was awarded a multi-year contract to equip 59 OSVs operated by Rawabi Vallianz Offshore Services with DP-2 dynamic positioning systems — retrofitting 39 existing vessels and fitting 20 newbuilds — plus customized automation for fleet digitization.",
+    "date": "2023-09-29",
+    "categories": [
+      "automation",
+      "navigation"
+    ],
+    "sourceUrl": "https://www.marinelink.com/news/praxis-automation-equip-rvos-offshore-508395",
+    "sourceName": "MarineLink",
+    "priority": 16.0
+  },
+  {
+    "id": "proj-003",
+    "title": "Samsung Heavy wins $1.2 billion order for six vessels",
+    "companies": [
+      "Samsung Heavy Industries"
+    ],
+    "vesselType": "LNG carrier / tanker",
+    "summary": "Samsung Heavy Industries won a $1.2 billion order covering six new LNG carriers and tankers, continuing a strong run of 2026 newbuild wins.",
+    "date": "2026-09-14",
+    "categories": [
+      "hull",
+      "cargo"
+    ],
+    "sourceUrl": "https://en.sedaily.com/finance/2026/09/14/samsung-heavy-wins-12-billion-order-for-six-vessels",
+    "sourceName": "Seoul Economic Daily",
+    "priority": 14.2
+  },
+  {
+    "id": "proj-004",
+    "title": "ADNOC L&S exercises options for two more LNG carriers at Jiangnan Shipyard",
+    "companies": [
+      "ADNOC Logistics & Services",
+      "Jiangnan Shipyard"
+    ],
+    "vesselType": "LNG carrier",
+    "summary": "ADNOC L&S exercised options for two additional 175,000 cbm LNG carriers at Jiangnan Shipyard, bringing its total order there to six vessels (~$444m combined). Delivery 2029; vessels need full cargo containment and handling control systems.",
+    "date": "2026-08-27",
+    "categories": [
+      "cargo"
+    ],
+    "sourceUrl": "https://www.seatrade-maritime.com/tankers/adnoc-l-s-adds-lng-carrier-pair-at-jiangnan-shipyard",
+    "sourceName": "Seatrade Maritime",
+    "priority": 14.2
+  },
+  {
+    "id": "proj-012",
+    "title": "Consilium Safety Group acquires Turkish fire & gas detection firm Ares Marine",
+    "companies": [
+      "Consilium Safety Group",
+      "Ares Marine"
+    ],
+    "vesselType": "General newbuild/retrofit (Turkish shipbuilding sector)",
+    "summary": "Consilium Safety Group acquired Ares Marine (Tuzla Bay, Istanbul), serving 70+ shipyards, to expand its capacity to supply/install/maintain fire and gas detection systems across Turkey's shipbuilding industry.",
+    "date": "2025-07-08",
+    "categories": [
+      "safety"
+    ],
+    "sourceUrl": "https://firebuyer.com/consilium-boosts-fire-gas-detection-in-turkey-with-ares-marine-deal/",
+    "sourceName": "Fire Buyer International",
+    "priority": 13.2
+  },
+  {
+    "id": "proj-005",
+    "title": "Seapeak orders three dual-fuel LNG carriers from Samsung Heavy",
+    "companies": [
+      "Seapeak",
+      "Samsung Heavy Industries"
+    ],
+    "vesselType": "LNG carrier (X-DF dual-fuel)",
+    "summary": "Seapeak ordered three 174,000 cbm LNG carriers from Samsung Heavy Industries (~$756m) with X-DF dual-fuel engines, backed by 10-year charters. Delivery H1 2029.",
+    "date": "2026-05-18",
+    "categories": [
+      "cargo",
+      "propulsion"
+    ],
+    "sourceUrl": "https://splash247.com/seapeak-grows-lng-orderbook-with-756m-samsung-heavy-trio/",
+    "sourceName": "Splash247",
+    "priority": 11.6
+  },
+  {
+    "id": "proj-010",
+    "title": "OOCL places first LNG dual-fuel container vessel order",
+    "companies": [
+      "Orient Overseas Container Line (OOCL)",
+      "Hudong-Zhonghua Shipbuilding"
+    ],
+    "vesselType": "LNG dual-fuel container ship (13,600 TEU)",
+    "summary": "OOCL placed its first LNG-fuelled newbuild order, contracting Hudong-Zhonghua Shipbuilding to build 12 vessels with LNG dual-fuel main engines.",
+    "date": "2026-04-30",
+    "categories": [
+      "propulsion"
+    ],
+    "sourceUrl": "https://www.engine.online/news/oocl-orders-12-lng-dual-fuel-container-vessels-7adf",
+    "sourceName": "Engine (Engine Online)",
+    "priority": 11.6
+  },
+  {
+    "id": "proj-006",
+    "title": "Knutsen Group adds another LNG carrier at Hanwha Ocean",
+    "companies": [
+      "Knutsen Group",
+      "Hanwha Ocean"
+    ],
+    "vesselType": "LNG carrier",
+    "summary": "Knutsen Group placed a $250.3m LNG carrier order with Hanwha Ocean, extending an orderbook of 13 LNG carriers under construction; six chartered to QatarEnergy for 15 years from 2026.",
+    "date": "2026-05-12",
+    "categories": [
+      "cargo"
+    ],
+    "sourceUrl": "https://splash247.com/knutsen-stacks-lng-orderbook-higher-with-hanwha-ocean-deal/",
+    "sourceName": "Splash247",
+    "priority": 10.2
+  },
+  {
+    "id": "proj-007",
+    "title": "Hanwha Ocean wins $980m order for 5 LNG and crude carriers",
+    "companies": [
+      "Hanwha Ocean"
+    ],
+    "vesselType": "LNG carrier / crude oil tanker",
+    "summary": "Hanwha Ocean secured a $980m order for five vessels (LNG carriers and crude carriers), part of a 2025-2026 run that has topped $10bn in new contracts.",
+    "date": "2026-03-25",
+    "categories": [
+      "hull",
+      "cargo"
+    ],
+    "sourceUrl": "https://en.sedaily.com/finance/2026/03/25/hanwha-ocean-wins-980m-order-for-5-lng-and-crude-carriers",
+    "sourceName": "Seoul Economic Daily",
+    "priority": 10.2
+  },
+  {
+    "id": "proj-016",
+    "title": "Baleària takes delivery of third LNG dual-fuel ferry, Mercedes Pinto",
+    "companies": [
+      "Baleària",
+      "Astilleros Armon Gijón"
+    ],
+    "vesselType": "LNG dual-fuel Ro-Pax ferry",
+    "summary": "Baleària received the Mercedes Pinto, a 123m Ro-Pax ferry built by Astilleros Armon Gijón — third in a series — with dual-fuel engines able to run on bio-LNG or LNG/hydrogen blends.",
+    "date": "2025-09-23",
+    "categories": [
+      "propulsion"
+    ],
+    "sourceUrl": "https://www.lngindustry.com/small-scale-lng/23092025/baleria-receives-third-dual-fuel-ferry/",
+    "sourceName": "LNG Industry",
+    "priority": 9.6
+  }
+]
