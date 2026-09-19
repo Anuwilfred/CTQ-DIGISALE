@@ -3,7 +3,7 @@
 // with no signal. Bump CACHE_NAME whenever app files change so old
 // installs pick up the new version instead of serving a stale copy.
 
-const CACHE_NAME = 'ctorq-shell-v7';
+const CACHE_NAME = 'ctorq-shell-v8';
 const APP_SHELL = [
   './',
   './index.html',
@@ -12,6 +12,7 @@ const APP_SHELL = [
   './icon-512.png',
   './apple-touch-icon.png',
   './data/companies.json',
+  './data/active_projects.json',
 ];
 
 self.addEventListener('install', (event) => {
@@ -47,7 +48,7 @@ self.addEventListener('fetch', (event) => {
   // Data file: network-first, so a fresh companies.json (new leads, new
   // notes committed upstream) shows up without needing a hard refresh.
   // Falls back to the cached copy when offline.
-  if (req.url.endsWith('/data/companies.json') || req.url.endsWith('/data/rss_signals.json')) {
+  if (req.url.endsWith('/data/companies.json') || req.url.endsWith('/data/rss_signals.json') || req.url.endsWith('/data/active_projects.json')) {
     event.respondWith(
       fetch(req).then((res) => {
         if (res.ok) {

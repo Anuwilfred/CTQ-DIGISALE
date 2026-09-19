@@ -269,6 +269,32 @@
     .signal-card .s-contacts{width:100%; border-left:none; border-top:1px solid var(--hairline); padding-left:0; padding-top:12px}
   }
 
+  /* ---------- active projects (real, sourced, priority-ranked opportunities) ---------- */
+  .projects{flex:1; overflow-y:auto; padding:22px clamp(16px,3vw,32px)}
+  .projects-intro{font-size:13px; color:var(--text-muted); margin:0 0 18px; max-width:680px; line-height:1.5}
+  .project-list{display:flex; flex-direction:column; gap:14px; max-width:920px}
+  .project-card{
+    background:var(--glass-strong); border:1px solid var(--glass-border); border-radius:16px; padding:16px 20px;
+    box-shadow:0 6px 20px rgba(0,0,0,.08); -webkit-backdrop-filter:blur(18px); backdrop-filter:blur(18px);
+  }
+  .project-card .p-top{display:flex; align-items:flex-start; justify-content:space-between; gap:12px}
+  .project-card .p-title{font-size:14px; font-weight:650; margin:0; line-height:1.4}
+  .project-card .p-title a{color:var(--text); text-decoration:none}
+  .project-card .p-title a:hover{color:var(--accent); text-decoration:underline}
+  .priority-pill{
+    flex:none; font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.03em;
+    padding:3px 8px; border-radius:999px; white-space:nowrap;
+  }
+  .priority-pill.p-high{color:var(--critical); background:color-mix(in srgb, var(--critical) 14%, transparent)}
+  .priority-pill.p-med{color:var(--warning); background:color-mix(in srgb, var(--warning) 14%, transparent)}
+  .priority-pill.p-low{color:var(--text-muted); background:var(--tint-cool)}
+  .project-card .p-companies{font-size:12.5px; font-weight:600; margin:5px 0 0}
+  .project-card .p-companies .co-link{color:var(--accent); background:none; border:none; padding:0; font:inherit; cursor:pointer; text-decoration:underline}
+  .project-card .p-vessel{font-size:11.5px; color:var(--text-muted); margin:2px 0 0}
+  .project-card .p-summary{font-size:12.5px; color:var(--text-muted); line-height:1.5; margin:8px 0 0}
+  .project-card .p-meta{font-size:11.5px; color:var(--text-muted); margin-top:10px; display:flex; gap:8px; flex-wrap:wrap; align-items:center}
+  .project-card .p-cats{display:flex; gap:6px; flex-wrap:wrap; margin-top:10px}
+
   /* ---------- services (job-category tiles, Windows-tile style) ---------- */
   .services{flex:1; overflow-y:auto; padding:22px clamp(16px,3vw,32px); display:flex; flex-direction:column; align-items:center}
   .services-intro{font-size:13px; color:var(--text-muted); margin:0 0 22px; text-align:center}
@@ -401,6 +427,7 @@
     </div>
     <div class="tabs" role="tablist" aria-label="View">
       <button class="tab-btn" id="tabPipeline" role="tab" aria-selected="true">Pipeline</button>
+      <button class="tab-btn" id="tabProjects" role="tab" aria-selected="false">Active projects</button>
       <button class="tab-btn" id="tabSignals" role="tab" aria-selected="false">New signals<span class="signal-badge" id="signalBadge" hidden></span></button>
       <button class="tab-btn" id="tabServices" role="tab" aria-selected="false">Services</button>
       <button class="tab-btn" id="tabAnalytics" role="tab" aria-selected="false">Analytics</button>
@@ -422,6 +449,8 @@
       </div>
     </section>
 
+    <section class="projects" id="viewProjects" hidden></section>
+
     <section class="signals" id="viewSignals" hidden></section>
 
     <section class="services" id="viewServices" hidden></section>
@@ -441,6 +470,7 @@ var STAGE_LABELS = {found:'Found', drafted:'AI drafted', approved:'You approved'
 var DATA = [];                       // populated by loadData(), from data/companies.json
 var DATA_META = {schemaVersion:null, generated:null};
 var SIGNALS = [];                    // populated by loadSignals(), from data/rss_signals.json — raw, unreviewed automation output
+var PROJECTS = [];                   // populated by loadProjects(), from data/active_projects.json — real, sourced, priority-ranked opportunities
 
 /* =================== job/service categories (Services tab) =================== */
 // Researched against real shipbuilding/marine-systems industry primers, so the
@@ -508,6 +538,82 @@ function loadSignals(){
     .then(function(r){ if (!r.ok) throw new Error('bad status ' + r.status); return r.json(); })
     .catch(function(){ return []; })
     .then(function(payload){ SIGNALS = Array.isArray(payload) ? payload : []; });
+}
+
+function loadProjects(){
+  return fetch('./data/active_projects.json', {cache:'no-store'})
+    .then(function(r){ if (!r.ok) throw new Error('bad status ' + r.status); return r.json(); })
+    .catch(function(){ return []; })
+    .then(function(payload){ PROJECTS = Array.isArray(payload) ? payload : []; });
+}
+
+// Loose match so a project's company name (from a news article) can link to
+// the same company in the Pipeline directory, even with minor name variants.
+function findCompanyByName(name){
+  if (!name) return null;
+  var target = name.toLowerCase();
+  var all = allCompanies();
+  var exact = all.find(function(co){ return co.name.toLowerCase() === target; });
+  if (exact) return exact;
+  return all.find(function(co){
+    var n = co.name.toLowerCase();
+    return n.indexOf(target) !== -1 || target.indexOf(n) !== -1;
+  }) || null;
+}
+
+function priorityInfo(p){
+  if (p >= 18) return {cls:'p-high', label:'High priority'};
+  if (p >= 12) return {cls:'p-med', label:'Medium priority'};
+  return {cls:'p-low', label:'Lower priority'};
+}
+
+function buildProjects(){
+  var root = document.getElementById('viewProjects');
+  root.innerHTML =
+    '<p class="projects-intro">Real, sourced vessel projects and contracts — ranked by how closely they match ' +
+    'C·TORQ\'s systems (automation, navigation, safety, LNG) and how recent they are.</p>';
+
+  if (!PROJECTS.length){
+    root.insertAdjacentHTML('beforeend', '<div class="empty-state">No active projects yet.</div>');
+    return;
+  }
+
+  var list = document.createElement('div');
+  list.className = 'project-list';
+  PROJECTS.slice().sort(function(a,b){ return (b.priority||0) - (a.priority||0); }).forEach(function(p){
+    var pri = priorityInfo(p.priority || 0);
+    var card = document.createElement('div');
+    card.className = 'project-card';
+    var companiesHtml = (p.companies||[]).map(function(name){
+      var match = findCompanyByName(name);
+      if (match){
+        return '<button type="button" class="co-link" data-country="'+match.countryId+'" data-company="'+match.id+'">'+name+'</button>';
+      }
+      return '<span>'+name+'</span>';
+    }).join(', ');
+    var catsHtml = (p.categories||[]).map(function(id){ return '<span class="cat-chip">'+categoryLabel(id)+'</span>'; }).join('');
+    card.innerHTML =
+      '<div class="p-top">' +
+        '<h3 class="p-title"><a href="'+p.sourceUrl+'" target="_blank" rel="noopener">'+p.title+'</a></h3>' +
+        '<span class="priority-pill '+pri.cls+'">'+pri.label+'</span>' +
+      '</div>' +
+      '<p class="p-companies">'+companiesHtml+'</p>' +
+      '<p class="p-vessel">'+p.vesselType+'</p>' +
+      '<p class="p-summary">'+p.summary+'</p>' +
+      '<div class="p-cats">'+catsHtml+'</div>' +
+      '<div class="p-meta"><span>'+fmtDateTime(p.date)+'</span><span>·</span><span>'+p.sourceName+'</span></div>';
+    list.appendChild(card);
+  });
+  root.appendChild(list);
+
+  root.querySelectorAll('.co-link').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      selectedCountry = btn.getAttribute('data-country');
+      selectedCompany = btn.getAttribute('data-company');
+      switchTab('pipeline');
+      renderCountries(); renderList(); renderDetail();
+    });
+  });
 }
 
 function fmtDateTime(d){
@@ -690,7 +796,7 @@ function exportData(){
 /* =================== helpers =================== */
 function allCompanies(){
   var out = [];
-  DATA.forEach(function(c){ c.regions.forEach(function(r){ r.companies.forEach(function(co){ out.push(Object.assign({country:c.name, region:r.name}, co)); }); }); });
+  DATA.forEach(function(c){ c.regions.forEach(function(r){ r.companies.forEach(function(co){ out.push(Object.assign({country:c.name, countryId:c.id, region:r.name}, co)); }); }); });
   return out;
 }
 // allCompanies() returns fresh merged {..., country, region} copies, which is fine
@@ -827,16 +933,19 @@ function renderDetail(){
 }
 
 document.getElementById('tabPipeline').addEventListener('click', function(){ switchTab('pipeline'); });
+document.getElementById('tabProjects').addEventListener('click', function(){ switchTab('projects'); });
 document.getElementById('tabSignals').addEventListener('click', function(){ switchTab('signals'); });
 document.getElementById('tabServices').addEventListener('click', function(){ switchTab('services'); });
 document.getElementById('tabAnalytics').addEventListener('click', function(){ switchTab('analytics'); });
 document.getElementById('exportBtn').addEventListener('click', exportData);
 function switchTab(which){
   document.getElementById('tabPipeline').setAttribute('aria-selected', String(which === 'pipeline'));
+  document.getElementById('tabProjects').setAttribute('aria-selected', String(which === 'projects'));
   document.getElementById('tabSignals').setAttribute('aria-selected', String(which === 'signals'));
   document.getElementById('tabServices').setAttribute('aria-selected', String(which === 'services'));
   document.getElementById('tabAnalytics').setAttribute('aria-selected', String(which === 'analytics'));
   document.getElementById('viewPipeline').hidden = which !== 'pipeline';
+  document.getElementById('viewProjects').hidden = which !== 'projects';
   document.getElementById('viewSignals').hidden = which !== 'signals';
   document.getElementById('viewServices').hidden = which !== 'services';
   document.getElementById('viewAnalytics').hidden = which !== 'analytics';
@@ -1212,9 +1321,11 @@ function buildAnalytics(){
 loadData().then(function(){
   renderCountries(); renderList(); renderDetail();
   buildAnalytics();
+  buildProjects(); // rebuild so project cards can link to companies once DATA is loaded
 });
 
 loadSignals().then(buildSignals);
+loadProjects().then(buildProjects);
 
 })();
 </script>
