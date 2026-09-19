@@ -6,7 +6,7 @@
 <title>C·TORQ Sales Command</title>
 <meta name="description" content="C-TORQ's AI sales agent dashboard: lead pipeline, client journey, and analytics.">
 
-<link rel="manifest" href="/manifest.json">
+<link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#007AFF" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0A84FF" media="(prefers-color-scheme: dark)">
 
@@ -869,7 +869,7 @@ loadData().then(function(){
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', function () {
-      navigator.serviceWorker.register('/service-worker.js').catch(function (err) {
+      navigator.serviceWorker.register('service-worker.js').catch(function (err) {
         console.warn('Service worker registration failed:', err);
       });
     });
