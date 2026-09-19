@@ -1,0 +1,53 @@
+name: AI research (daily, automatic)
+
+# Runs the AI-powered research watchlist once a day so Active Projects
+# stays fresh WITHOUT anyone needing to click "Search live" in the app.
+# The watchlist is a fixed, bounded list (see scripts/ai_research_daily.py)
+# so this always makes the same small, predictable number of Anthropic API
+# calls per day — it never scales up with app traffic, which keeps the AI
+# usage rate and cost fixed regardless of how many people use the app.
+#
+# Requires two repo secrets, set once Supabase is wired up (see SETUP.md):
+#   RESEARCH_URL       — e.g. https://xxxxxxxx.supabase.co/functions/v1/research
+#   RESEARCH_ANON_KEY  — the Supabase project's anon public key
+# Until those secrets exist, this job runs and exits quietly without
+# calling anything (same graceful no-op as the app's Research desk shows
+# "not connected yet").
+
+on:
+  schedule:
+    - cron: '30 6 * * *'   # 30 minutes after the existing RSS lead-sourcing job
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  ai-research:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run daily AI research watchlist
+        env:
+          RESEARCH_URL: ${{ secrets.RESEARCH_URL }}
+          RESEARCH_ANON_KEY: ${{ secrets.RESEARCH_ANON_KEY }}
+        run: python scripts/ai_research_daily.py
+
+      - name: Commit updated projects if changed
+        run: |
+          git config user.name "ctorq-bot"
+          git config user.email "actions@github.com"
+          git add data/active_projects.json
+          if git diff --cached --quiet; then
+            echo "No new AI-researched projects — nothing to commit."
+          else
+            git commit -m "Add AI-researched projects [automated daily run]"
+            git push
+          fi
