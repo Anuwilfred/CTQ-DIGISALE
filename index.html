@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>C·TORQ Sales Command</title>
+<meta name="description" content="C-TORQ's AI sales agent dashboard: lead pipeline, client journey, and analytics.">
+
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#007AFF" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0A84FF" media="(prefers-color-scheme: dark)">
+
+<link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="C·TORQ">
+<meta name="mobile-web-app-capable" content="yes">
+<style>
+  :root{
+    color-scheme: light;
+    --page-1:#eef2f8; --page-2:#e2e9f5;
+    --blob-a:#8ab4ff; --blob-b:#c9a6ff; --blob-c:#ffd0dd; --blob-d:#9de3ff;
+    --glass:rgba(255,255,255,.55); --glass-strong:rgba(255,255,255,.74); --glass-soft:rgba(255,255,255,.34);
+    --glass-border:rgba(255,255,255,.65); --glass-shadow:0 10px 34px rgba(31,38,66,.14), inset 0 1px 0 rgba(255,255,255,.5);
+    --hairline:rgba(60,60,67,.13);
+    --text:#1d1d1f; --text-muted:#6e6e73;
+    --tint-cool:rgba(0,0,0,.03);
+
+    --accent:#007AFF; --accent-ink:#ffffff;
+    --accent-2:#30B0C7; --accent-2-ink:#ffffff;
+    --good:#248A3D; --critical:#D70015; --warning:#B25000;
+
+    --viz-text:#1d1d1f; --viz-text-2:#6e6e73; --viz-muted:#8e8e93;
+    --viz-grid:rgba(60,60,67,.14); --viz-baseline:rgba(60,60,67,.3);
+    --slot-blue:#2a78d6; --slot-orange:#eb6834; --slot-aqua:#1baf7a; --slot-yellow:#c98500;
+    --ring-track:rgba(60,60,67,.14);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      color-scheme: dark;
+      --page-1:#0a0a10; --page-2:#131320;
+      --blob-a:#2f4f9e; --blob-b:#6136a3; --blob-c:#8a2f5c; --blob-d:#1c7a92;
+      --glass:rgba(32,32,38,.5); --glass-strong:rgba(40,40,46,.68); --glass-soft:rgba(255,255,255,.05);
+      --glass-border:rgba(255,255,255,.12); --glass-shadow:0 10px 34px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.06);
+      --hairline:rgba(255,255,255,.12);
+      --text:#f5f5f7; --text-muted:#98989d;
+      --tint-cool:rgba(255,255,255,.04);
+
+      --accent:#0A84FF; --accent-ink:#ffffff;
+      --accent-2:#64D2FF; --accent-2-ink:#00232b;
+      --good:#32D74B; --critical:#FF453A; --warning:#FF9F0A;
+
+      --viz-text:#f5f5f7; --viz-text-2:#98989d; --viz-muted:#8e8e93;
+      --viz-grid:rgba(255,255,255,.1); --viz-baseline:rgba(255,255,255,.26);
+      --slot-blue:#3987e5; --slot-orange:#d95926; --slot-aqua:#199e70; --slot-yellow:#c98500;
+      --ring-track:rgba(255,255,255,.1);
+    }
+  }
+  :root[data-theme="dark"]{
+    color-scheme: dark;
+    --page-1:#0a0a10; --page-2:#131320;
+    --blob-a:#2f4f9e; --blob-b:#6136a3; --blob-c:#8a2f5c; --blob-d:#1c7a92;
+    --glass:rgba(32,32,38,.5); --glass-strong:rgba(40,40,46,.68); --glass-soft:rgba(255,255,255,.05);
+    --glass-border:rgba(255,255,255,.12); --glass-shadow:0 10px 34px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.06);
+    --hairline:rgba(255,255,255,.12);
+    --text:#f5f5f7; --text-muted:#98989d;
+    --tint-cool:rgba(255,255,255,.04);
+    --accent:#0A84FF; --accent-ink:#ffffff;
+    --accent-2:#64D2FF; --accent-2-ink:#00232b;
+    --good:#32D74B; --critical:#FF453A; --warning:#FF9F0A;
+    --viz-text:#f5f5f7; --viz-text-2:#98989d; --viz-muted:#8e8e93;
+    --viz-grid:rgba(255,255,255,.1); --viz-baseline:rgba(255,255,255,.26);
+    --slot-blue:#3987e5; --slot-orange:#d95926; --slot-aqua:#199e70; --slot-yellow:#c98500;
+    --ring-track:rgba(255,255,255,.1);
+  }
+
+  html,body{height:100%}
+  *{box-sizing:border-box}
+  body{
+    margin:0; color:var(--text);
+    font-family:-apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", system-ui, "Segoe UI", Roboto, sans-serif;
+    background:linear-gradient(180deg, var(--page-1), var(--page-2));
+    display:flex; flex-direction:column; position:relative; overflow:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  body::before{
+    content:''; position:fixed; inset:-12%; z-index:0; pointer-events:none;
+    background:
+      radial-gradient(36% 30% at 14% 10%, var(--blob-a) 0%, transparent 72%),
+      radial-gradient(32% 28% at 88% 14%, var(--blob-b) 0%, transparent 72%),
+      radial-gradient(38% 32% at 80% 90%, var(--blob-c) 0%, transparent 72%),
+      radial-gradient(34% 28% at 10% 88%, var(--blob-d) 0%, transparent 72%);
+    filter:blur(70px) saturate(150%);
+    opacity:.6;
+  }
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,monospace}
+  button, input{font-family:inherit}
+  :focus-visible{outline:2px solid var(--accent); outline-offset:2px; border-radius:6px}
+  ::-webkit-scrollbar{width:9px; height:9px}
+  ::-webkit-scrollbar-thumb{background:var(--hairline); border-radius:6px}
+
+  .glass{
+    background:var(--glass);
+    -webkit-backdrop-filter:blur(24px) saturate(180%);
+    backdrop-filter:blur(24px) saturate(180%);
+    border:1px solid var(--glass-border);
+  }
+
+  /* ---------- shell: one floating glass window ---------- */
+  .shell{
+    position:relative; z-index:1; flex:1; min-height:0;
+    margin:calc(16px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right)) calc(16px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left));
+    display:flex; flex-direction:column; border-radius:20px; overflow:hidden;
+    background:var(--glass); -webkit-backdrop-filter:blur(34px) saturate(180%); backdrop-filter:blur(34px) saturate(180%);
+    border:1px solid var(--glass-border); box-shadow:var(--glass-shadow);
+  }
+  .topbar{
+    display:flex; align-items:center; gap:14px; padding:11px clamp(14px,3vw,22px);
+    border-bottom:1px solid var(--hairline); flex:none;
+  }
+  .traffic{display:flex; gap:8px; margin-right:8px; flex:none}
+  .traffic span{width:12px; height:12px; border-radius:50%; display:inline-block; box-shadow:inset 0 0 0 .5px rgba(0,0,0,.15)}
+  .traffic .t-red{background:#FF5F57} .traffic .t-yellow{background:#FEBC2E} .traffic .t-green{background:#28C840}
+  .brand{display:flex; align-items:baseline; gap:8px}
+  .brand-mark{font-weight:700; font-size:15px; letter-spacing:.01em}
+  .brand-role{font-size:12.5px; color:var(--text-muted)}
+  .tabs{display:flex; gap:2px; margin-left:auto; background:var(--tint-cool); padding:3px; border-radius:10px; border:1px solid var(--hairline)}
+  .tab-btn{
+    border:none; background:transparent; color:var(--text-muted); padding:6px 14px; border-radius:8px;
+    font-size:13px; font-weight:590; cursor:pointer; transition:background .15s ease, color .15s ease;
+  }
+  .tab-btn[aria-selected="true"]{background:var(--glass-strong); color:var(--text); box-shadow:0 1px 4px rgba(0,0,0,.12), inset 0 0 0 1px var(--glass-border)}
+  .export-btn{
+    border:1px solid var(--glass-border); background:var(--tint-cool); color:var(--text-muted);
+    padding:6px 12px; border-radius:8px; font-size:12.5px; font-weight:590; cursor:pointer; flex:none;
+  }
+  .export-btn:hover{background:var(--glass-strong); color:var(--text)}
+  .note-form{display:flex; gap:8px; margin:10px 0 24px}
+  .note-input{
+    flex:1; border:1px solid var(--glass-border); background:var(--glass-soft); color:var(--text);
+    border-radius:10px; padding:8px 12px; font-size:13px; -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px);
+  }
+  .note-input::placeholder{color:var(--text-muted)}
+  .note-submit{
+    border:none; background:var(--accent); color:var(--accent-ink); padding:8px 14px; border-radius:10px;
+    font-size:12.5px; font-weight:600; cursor:pointer; flex:none;
+  }
+
+  .main{flex:1; min-height:0; display:flex; overflow:hidden;}
+  [hidden]{display:none!important}
+
+  /* ---------- pipeline: finder-style columns ---------- */
+  .pipeline{flex:1; min-height:0; display:flex; overflow:hidden;}
+  .col{border-right:1px solid var(--hairline); overflow-y:auto; min-width:0;}
+  .col-countries{width:222px; flex:none; background:var(--tint-cool); padding:10px}
+  .col-list{width:288px; flex:none; padding:10px}
+  .col-detail{flex:1; padding:22px; overflow-y:auto}
+
+  .col-heading{font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--text-muted); padding:8px 10px 6px; font-weight:600}
+  .row-btn{
+    width:100%; display:flex; align-items:center; justify-content:space-between; gap:8px;
+    border:none; background:transparent; text-align:left; padding:8px 10px; border-radius:9px;
+    font-size:13.5px; color:var(--text); cursor:pointer; margin-bottom:1px; transition:background .12s ease;
+  }
+  .row-btn:hover{background:var(--tint-cool)}
+  .row-btn[aria-selected="true"]{background:linear-gradient(180deg, var(--accent), color-mix(in srgb, var(--accent) 82%, black)); color:var(--accent-ink); box-shadow:0 2px 8px color-mix(in srgb, var(--accent) 45%, transparent)}
+  .row-btn[aria-selected="true"] .count{background:rgba(255,255,255,.3); color:inherit}
+  .count{
+    font-family:ui-monospace,"SF Mono",Menlo,monospace; font-size:11px; background:var(--tint-cool); color:var(--text-muted);
+    padding:1px 7px; border-radius:999px; flex:none;
+  }
+  .region-heading{padding:14px 10px 4px; font-size:11.5px; font-weight:700; color:var(--text-muted)}
+  .region-heading:first-child{padding-top:2px}
+  .company-row{padding:9px 10px; flex-direction:column; align-items:stretch; gap:6px}
+  .company-row .name{font-size:13.5px; font-weight:590; display:block}
+  .company-row .meta{font-size:11.5px; color:var(--text-muted); display:block; margin-top:2px}
+  .company-row[aria-selected="true"] .meta{color:rgba(255,255,255,.8)}
+  .company-row .stage-pill{align-self:flex-start}
+
+  .stage-pill{
+    display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:600; padding:3px 9px;
+    border-radius:999px; white-space:nowrap; border:1px solid transparent;
+  }
+  .stage-pill .dot{width:6px; height:6px; border-radius:50%}
+  .stage-pill.st-active{background:var(--tint-cool); color:var(--text-muted); border-color:var(--hairline)}
+  .stage-pill.st-active .dot{background:var(--text-muted)}
+  .stage-pill.st-won{background:color-mix(in srgb, var(--good) 16%, transparent); color:var(--good)}
+  .stage-pill.st-won .dot{background:var(--good)}
+  .stage-pill.st-rejected{background:color-mix(in srgb, var(--critical) 14%, transparent); color:var(--critical)}
+  .stage-pill.st-rejected .dot{background:var(--critical)}
+
+  .empty-state{color:var(--text-muted); font-size:13.5px; padding:40px 10px; text-align:center}
+
+  /* ---------- company detail ---------- */
+  .detail-header{display:flex; justify-content:space-between; align-items:flex-start; gap:16px; flex-wrap:wrap; margin-bottom:18px}
+  .detail-title{font-size:20px; font-weight:700; margin:0 0 4px}
+  .detail-sub{font-size:13px; color:var(--text-muted); margin:0}
+  .fact-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:14px; margin-bottom:22px}
+  .fact{background:var(--glass-soft); border:1px solid var(--glass-border); border-radius:14px; padding:12px 14px; -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px)}
+  .fact-label{font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--text-muted); margin-bottom:4px; font-weight:600}
+  .fact-value{font-size:13.5px}
+  .fact-value a{color:var(--accent)}
+  .source-tag{font-size:10.5px; color:var(--text-muted); margin-top:3px; display:block}
+
+  .section-title{font-size:13px; font-weight:700; margin:0 0 10px; display:flex; align-items:center; gap:8px}
+
+  .brainmap{
+    display:flex; gap:0; align-items:center; overflow-x:auto; padding:6px 2px 18px;
+    margin-bottom:8px;
+  }
+  .brain-tile{
+    flex:none; display:flex; flex-direction:column; align-items:center; gap:6px; width:96px; position:relative;
+  }
+  .brain-node{
+    width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    border:1px solid var(--glass-border); background:var(--glass-soft); color:var(--text-muted); font-size:13px; font-weight:700;
+    -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px);
+  }
+  .brain-tile.done .brain-node{border-color:transparent; background:var(--accent-2); color:var(--accent-2-ink); box-shadow:0 0 0 4px color-mix(in srgb, var(--accent-2) 20%, transparent)}
+  .brain-tile.current .brain-node{border-color:transparent; background:var(--accent); color:var(--accent-ink); box-shadow:0 0 0 5px color-mix(in srgb, var(--accent) 25%, transparent)}
+  .brain-tile.won .brain-node{border-color:transparent; background:var(--good); color:#fff; box-shadow:0 0 0 4px color-mix(in srgb, var(--good) 22%, transparent)}
+  .brain-tile.rejected .brain-node{border-color:transparent; background:var(--critical); color:#fff; box-shadow:0 0 0 4px color-mix(in srgb, var(--critical) 22%, transparent)}
+  .brain-tile .label{font-size:11px; text-align:center; color:var(--text-muted); line-height:1.25}
+  .brain-tile.done .label, .brain-tile.current .label{color:var(--text); font-weight:600}
+  .brain-connector{flex:1; height:2px; background:var(--hairline); min-width:14px; margin-bottom:24px}
+  .brain-connector.done{background:var(--accent-2)}
+
+  .activity{list-style:none; margin:0 0 24px; padding:0; display:flex; flex-direction:column; gap:10px}
+  .activity li{background:var(--glass-soft); border:1px solid var(--glass-border); border-radius:12px; padding:10px 13px; font-size:13px; -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px)}
+  .activity .a-meta{font-size:11px; color:var(--text-muted); margin-bottom:3px}
+
+  /* ---------- analytics ---------- */
+  .analytics{flex:1; overflow-y:auto; padding:22px clamp(16px,3vw,32px)}
+
+  .rings-row{display:flex; flex-wrap:wrap; gap:16px; margin-bottom:16px}
+  .ring-card{
+    flex:1; min-width:168px; background:var(--glass-strong); border:1px solid var(--glass-border);
+    border-radius:16px; padding:14px 16px; display:flex; align-items:center; gap:14px;
+    box-shadow:0 6px 20px rgba(0,0,0,.08); -webkit-backdrop-filter:blur(18px); backdrop-filter:blur(18px);
+  }
+  .ring-card .ring-copy{min-width:0}
+  .ring-card .ring-label{font-size:11.5px; color:var(--text-muted); font-weight:600; margin-bottom:2px}
+  .ring-card .ring-sub{font-size:11px; color:var(--text-muted)}
+
+  .kpi-row{display:grid; grid-template-columns:repeat(auto-fit,minmax(148px,1fr)); gap:12px; margin-bottom:16px}
+  .kpi{background:var(--glass-strong); border:1px solid var(--glass-border); border-radius:16px; padding:14px 16px; box-shadow:0 6px 20px rgba(0,0,0,.08); -webkit-backdrop-filter:blur(18px); backdrop-filter:blur(18px)}
+  .kpi-label{font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--text-muted); margin-bottom:6px; font-weight:600}
+  .kpi-value{font-size:24px; font-weight:700; font-variant-numeric:proportional-nums}
+  .kpi-delta{font-size:11.5px; margin-top:3px; color:var(--text-muted)}
+
+  .chart-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(360px,1fr)); gap:16px; margin-bottom:16px}
+  .chart-card{background:var(--glass-strong); border:1px solid var(--glass-border); border-radius:18px; padding:16px 18px; box-shadow:0 6px 20px rgba(0,0,0,.08); -webkit-backdrop-filter:blur(18px); backdrop-filter:blur(18px)}
+  .chart-card.wide{grid-column:1/-1}
+  .chart-card.center{display:flex; flex-direction:column; align-items:center; text-align:center}
+  .chart-card h3{margin:0 0 2px; font-size:13.5px; font-weight:700}
+  .chart-sub{margin:0 0 12px; font-size:11.5px; color:var(--text-muted)}
+  .legend{display:flex; flex-wrap:wrap; gap:12px; margin-top:10px; font-size:11.5px; color:var(--text-muted); justify-content:center}
+  .legend-item{display:flex; align-items:center; gap:6px}
+  .legend-swatch{width:9px; height:9px; border-radius:2px; flex:none}
+
+  .table-wrap{overflow-x:auto}
+  table.data{width:100%; border-collapse:collapse; font-size:12.5px}
+  table.data th{text-align:left; font-size:10.5px; text-transform:uppercase; letter-spacing:.04em; color:var(--text-muted); padding:6px 10px; border-bottom:1px solid var(--hairline); font-weight:700}
+  table.data td{padding:8px 10px; border-bottom:1px solid var(--hairline); white-space:nowrap}
+  table.data tr:last-child td{border-bottom:none}
+
+  .tip{
+    position:fixed; pointer-events:none; background:var(--glass-strong); color:var(--text); font-size:11.5px;
+    padding:5px 9px; border-radius:8px; z-index:50; transform:translate(-50%,-115%); white-space:nowrap;
+    font-family:ui-monospace,"SF Mono",Menlo,monospace; border:1px solid var(--glass-border);
+    -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px); box-shadow:0 6px 16px rgba(0,0,0,.18);
+  }
+
+  @media (max-width:900px){
+    .col-countries{width:164px}
+    .col-list{width:224px}
+  }
+  @media (max-width:680px){
+    .shell{margin:0; border-radius:0}
+    .pipeline{flex-direction:column; overflow-y:auto}
+    .col{border-right:none; border-bottom:1px solid var(--hairline); width:100%!important; max-height:220px}
+    .col-detail{max-height:none}
+  }
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <header class="topbar">
+    <span class="traffic"><span class="t-red"></span><span class="t-yellow"></span><span class="t-green"></span></span>
+    <div class="brand">
+      <span class="brand-mark">C·TORQ</span>
+      <span class="brand-role">Sales Command</span>
+    </div>
+    <div class="tabs" role="tablist" aria-label="View">
+      <button class="tab-btn" id="tabPipeline" role="tab" aria-selected="true">Pipeline</button>
+      <button class="tab-btn" id="tabAnalytics" role="tab" aria-selected="false">Analytics</button>
+    </div>
+    <button class="export-btn" id="exportBtn" type="button" title="Download the current data, including any notes added this session, as data/companies.json">Export data</button>
+  </header>
+
+  <div class="main">
+    <section class="pipeline" id="viewPipeline">
+      <nav class="col col-countries" aria-label="Countries">
+        <div class="col-heading">Countries</div>
+        <div id="countryList"></div>
+      </nav>
+      <nav class="col col-list" aria-label="Companies">
+        <div id="listPane"></div>
+      </nav>
+      <div class="col col-detail" id="detailPane">
+        <div class="empty-state">Select a country, then a company, to see its details and journey.</div>
+      </div>
+    </section>
+
+    <section class="analytics" id="viewAnalytics" hidden></section>
+  </div>
+</div>
+
+<script>
+(function(){
+'use strict';
+
+/* =================== data (country -> region -> company) =================== */
+var STAGES = ['found','drafted','approved','sent','replied','meeting','won'];
+var STAGE_LABELS = {found:'Found', drafted:'AI drafted', approved:'You approved', sent:'Sent', replied:'Client replied', meeting:'Meeting booked', won:'Job won', rejected:'Rejected'};
+
+var DATA = [];                       // populated by loadData(), from data/companies.json
+var DATA_META = {schemaVersion:null, generated:null};
+
+// Embedded fallback so the app still renders something if data/companies.json
+// can't be fetched (e.g. opened directly as a file:// page). When served
+// normally (Vercel, or any http server), the fetch in loadData() always wins
+// and this constant is never used.
+var FALLBACK_DATA = {"schemaVersion":1,"generated":"2026-09-19","note":"Interim git-tracked data store. Structure: country -> region -> company. Each company carries contacts, progress (stage/lastContact/nextAction/history), local (country-specific registry/currency/timezone facts), and instructions (notes/approvals entered through the app). Once Supabase is wired up, this file is superseded by the `companies` table but kept in the same shape for a clean migration.","countries":[{"id":"no","name":"Norway","regions":[{"name":"Møre og Romsdal","country":"no","companies":[{"id":"no-fjordal-marine-yard","name":"Fjordal Marine Yard","address":"Storgata 14, 6003 Ålesund, Norway","website":"fjordalmarine.no","segment":"Shipbuilder — offshore support vessels","source":"OpenCorporates","contacts":[{"name":"Ingrid Haugen","role":"Procurement Lead","email":"i.haugen@fjordalmarine.no","phone":"+47 700 12 340"}],"stage":"won","lastContact":"2026-09-02","nextAction":"Kickoff call scheduled","feedback":5,"meetingFormat":"online","history":[{"type":"email","date":"2026-08-04","text":"Introduced C·TORQ propulsion line for OSV refits."},{"type":"reply","date":"2026-08-06","text":"Send specs for the 2400-series unit."},{"type":"meeting","date":"2026-08-19","text":"Online demo with engineering team."},{"type":"deal","date":"2026-09-02","text":"Signed for 2 vessels, refit programme."}],"local":{"currency":"NOK","timezone":"Europe/Oslo","language":"Norwegian (nb)","registrationNumber":null,"registryNote":"Not yet compliantly sourced from Brønnøysund Register Centre — see architecture doc's OpenCorporates guidance."},"instructions":[]},{"id":"no-nordkyst-verft-as","name":"Nordkyst Verft AS","address":"Kaigata 2, 6270 Brattvåg, Norway","website":"nordkystverft.no","segment":"Shipyard — fishing vessels","source":"Company website","contacts":[{"name":"Per Solberg","role":"Yard Manager","email":"per@nordkystverft.no","phone":"+47 700 55 812"}],"stage":"meeting","lastContact":"2026-09-10","nextAction":"Follow up after site visit","meetingFormat":"offline","history":[{"type":"email","date":"2026-08-20","text":"First outreach on torque units for trawler refits."},{"type":"reply","date":"2026-08-25","text":"Asked for an in-person yard visit."},{"type":"meeting","date":"2026-09-10","text":"Yard visit booked for next month."}],"local":{"currency":"NOK","timezone":"Europe/Oslo","language":"Norwegian (nb)","registrationNumber":null,"registryNote":"Not yet compliantly sourced from Brønnøysund Register Centre — see architecture doc's OpenCorporates guidance."},"instructions":[]}]},{"name":"Vestland","country":"no","companies":[{"id":"no-bergen-subsea-fabrication","name":"Bergen Subsea Fabrication","address":"Damsgårdsveien 90, 5058 Bergen, Norway","website":"bergensubsea.no","segment":"Fabricator — subsea structures","source":"Trade association directory","contacts":[{"name":"Kari Nystrøm","role":"Head of Sourcing","email":"k.nystrom@bergensubsea.no","phone":"+47 700 33 210"}],"stage":"replied","lastContact":"2026-09-08","nextAction":"Propose a meeting slot","history":[{"type":"email","date":"2026-09-01","text":"Outreach on torque tooling for subsea assembly."},{"type":"reply","date":"2026-09-08","text":"Interesting — what's the lead time?"}],"local":{"currency":"NOK","timezone":"Europe/Oslo","language":"Norwegian (nb)","registrationNumber":null,"registryNote":"Not yet compliantly sourced from Brønnøysund Register Centre — see architecture doc's OpenCorporates guidance."},"instructions":[]},{"id":"no-vestland-skipsservice","name":"Vestland Skipsservice","address":"Sjøgata 8, 5411 Stord, Norway","website":"vestlandskip.no","segment":"Vessel operator — ferries","source":"IMO GISIS","contacts":[{"name":"Ole Fjeld","role":"Technical Director","email":"ole.fjeld@vestlandskip.no","phone":"+47 700 44 921"}],"stage":"sent","lastContact":"2026-09-14","nextAction":"Awaiting reply","history":[{"type":"email","date":"2026-09-14","text":"Sent intro email on ferry engine torque maintenance kits."}],"local":{"currency":"NOK","timezone":"Europe/Oslo","language":"Norwegian (nb)","registrationNumber":null,"registryNote":"Not yet compliantly sourced from Brønnøysund Register Centre — see architecture doc's OpenCorporates guidance."},"instructions":[]}]}]},{"id":"kr","name":"South Korea","regions":[{"name":"Ulsan","country":"kr","companies":[{"id":"kr-hanul-heavy-marine","name":"Hanul Heavy Marine","address":"204 Yeompo-ro, Ulsan, South Korea","website":"hanulmarine.kr","segment":"Shipbuilder — bulk carriers","source":"OpenCorporates","contacts":[{"name":"Jiho Park","role":"Procurement Director","email":"jpark@hanulmarine.kr","phone":"+82 52 700 1122"}],"stage":"won","lastContact":"2026-08-28","nextAction":"Second unit order under discussion","feedback":4,"meetingFormat":"online","history":[{"type":"email","date":"2026-07-10","text":"Outreach on torque unit line for bulk carrier newbuilds."},{"type":"reply","date":"2026-07-14","text":"Can we set up a call?"},{"type":"meeting","date":"2026-07-22","text":"Online meeting with engineering."},{"type":"deal","date":"2026-08-28","text":"Signed for 4-vessel newbuild programme."}],"local":{"currency":"KRW","timezone":"Asia/Seoul","language":"Korean (ko)","registrationNumber":null,"registryNote":"Not yet compliantly sourced from Korea's Financial Supervisory Service (DART) — see architecture doc's OpenCorporates guidance."},"instructions":[]},{"id":"kr-donghae-shipbuilding-co-","name":"Donghae Shipbuilding Co.","address":"55 Mipo-ro, Ulsan, South Korea","website":"donghaesb.kr","segment":"Shipbuilder — container vessels","source":"Company website","contacts":[{"name":"Seo-yeon Choi","role":"Sourcing Manager","email":"choi@donghaesb.kr","phone":"+82 52 700 4471"}],"stage":"rejected","rejectedAfter":3,"lastContact":"2026-08-30","nextAction":"Closed — revisit next fiscal year","history":[{"type":"email","date":"2026-08-05","text":"Outreach on torque tooling for container vessel line."},{"type":"reply","date":"2026-08-12","text":"We've already committed our supplier budget this year."}],"local":{"currency":"KRW","timezone":"Asia/Seoul","language":"Korean (ko)","registrationNumber":null,"registryNote":"Not yet compliantly sourced from Korea's Financial Supervisory Service (DART) — see architecture doc's OpenCorporates guidance."},"instructions":[]}]},{"name":"Busan","country":"kr","companies":[{"id":"kr-busan-marine-equipment-ltd-","name":"Busan Marine Equipment Ltd.","address":"88 Haeundae-ro, Busan, South Korea","website":"busanmarine.kr","segment":"Equipment integrator","source":"Trade show exhibitor list","contacts":[{"name":"Min-jun Lee","role":"Engineering Lead","email":"mjlee@busanmarine.kr","phone":"+82 51 700 8834"}],"stage":"approved","lastContact":"2026-09-15","nextAction":"Send approved draft","history":[{"type":"email","date":"2026-09-15","text":"Draft approved, queued to send."}],"local":{"currency":"KRW","timezone":"Asia/Seoul","language":"Korean (ko)","registrationNumber":null,"registryNote":"Not yet compliantly sourced from Korea's Financial Supervisory Service (DART) — see architecture doc's OpenCorporates guidance."},"instructions":[]}]}]},{"id":"ae","name":"United Arab Emirates","regions":[{"name":"Abu Dhabi","country":"ae","companies":[{"id":"ae-al-reef-vessel-services","name":"Al Reef Vessel Services","address":"Mussafah Industrial Area, Abu Dhabi, UAE","website":"alreefvessel.ae","segment":"Vessel operator — offshore supply","source":"OpenCorporates","contacts":[{"name":"Fatima Al Suwaidi","role":"Fleet Manager","email":"f.alsuwaidi@alreefvessel.ae","phone":"+971 2 700 1290"}],"stage":"meeting","lastContact":"2026-09-12","nextAction":"Offline meeting at their office","meetingFormat":"offline","history":[{"type":"email","date":"2026-08-22","text":"Outreach on OSV engine torque maintenance kits."},{"type":"reply","date":"2026-08-29","text":"Can someone visit our Abu Dhabi office?"},{"type":"meeting","date":"2026-09-12","text":"Offline meeting confirmed."}],"local":{"currency":"AED","timezone":"Asia/Dubai","language":"Arabic (ar) / English","registrationNumber":null,"registryNote":"Not yet compliantly sourced from UAE Ministry of Economy / Emirate-level DED — see architecture doc's OpenCorporates guidance."},"instructions":[]}]},{"name":"Dubai","country":"ae","companies":[{"id":"ae-gulf-star-shipbuilding","name":"Gulf Star Shipbuilding","address":"Dubai Maritime City, Dubai, UAE","website":"gulfstarship.ae","segment":"Shipyard — patrol & workboats","source":"Company website","contacts":[{"name":"Omar Khalid","role":"Procurement","email":"o.khalid@gulfstarship.ae","phone":"+971 4 700 5521"}],"stage":"drafted","lastContact":"2026-09-16","nextAction":"Awaiting your approval","history":[{"type":"email","date":"2026-09-16","text":"AI draft ready for review."}],"local":{"currency":"AED","timezone":"Asia/Dubai","language":"Arabic (ar) / English","registrationNumber":null,"registryNote":"Not yet compliantly sourced from UAE Ministry of Economy / Emirate-level DED — see architecture doc's OpenCorporates guidance."},"instructions":[]},{"id":"ae-emirates-coastal-craft","name":"Emirates Coastal Craft","address":"Jebel Ali Free Zone, Dubai, UAE","website":"emiratescoastal.ae","segment":"Vessel operator — coastal patrol","source":"IMO GISIS","contacts":[{"name":"Sara Nasser","role":"Technical Manager","email":"s.nasser@emiratescoastal.ae","phone":"+971 4 700 7743"}],"stage":"rejected","rejectedAfter":4,"lastContact":"2026-09-01","nextAction":"Closed — not a fit currently","history":[{"type":"email","date":"2026-08-18","text":"Outreach on coastal craft torque kits."},{"type":"reply","date":"2026-08-24","text":"We standardised on another supplier last quarter."}],"local":{"currency":"AED","timezone":"Asia/Dubai","language":"Arabic (ar) / English","registrationNumber":null,"registryNote":"Not yet compliantly sourced from UAE Ministry of Economy / Emirate-level DED — see architecture doc's OpenCorporates guidance."},"instructions":[]}]}]},{"id":"sg","name":"Singapore","regions":[{"name":"Jurong","country":"sg","companies":[{"id":"sg-jurong-marine-fabricators","name":"Jurong Marine Fabricators","address":"32 Shipyard Road, Jurong, Singapore","website":"jurongmarine.sg","segment":"Fabricator — rig support","source":"Trade association directory","contacts":[{"name":"Wei Ling Tan","role":"Sourcing Lead","email":"wltan@jurongmarine.sg","phone":"+65 700 2210"}],"stage":"found","lastContact":"2026-09-17","nextAction":"AI drafting first email","history":[{"type":"found","date":"2026-09-17","text":"Added from OpenCorporates lookup."}],"local":{"currency":"SGD","timezone":"Asia/Singapore","language":"English (en)","registrationNumber":null,"registryNote":"Not yet compliantly sourced from ACRA (Accounting and Corporate Regulatory Authority) — see architecture doc's OpenCorporates guidance."},"instructions":[]},{"id":"sg-straits-offshore-pte-ltd","name":"Straits Offshore Pte Ltd","address":"19 Benoi Road, Jurong, Singapore","website":"straitsoffshore.sg","segment":"Vessel operator — anchor handling","source":"Equasis","contacts":[{"name":"Daniel Koh","role":"Technical Superintendent","email":"dkoh@straitsoffshore.sg","phone":"+65 700 6650"}],"stage":"sent","lastContact":"2026-09-13","nextAction":"Awaiting reply","history":[{"type":"email","date":"2026-09-13","text":"Sent intro on anchor-handling winch torque units."}],"local":{"currency":"SGD","timezone":"Asia/Singapore","language":"English (en)","registrationNumber":null,"registryNote":"Not yet compliantly sourced from ACRA (Accounting and Corporate Regulatory Authority) — see architecture doc's OpenCorporates guidance."},"instructions":[]}]}]}]};
+
+function loadData(){
+  return fetch('./data/companies.json', {cache:'no-store'})
+    .then(function(r){ if (!r.ok) throw new Error('bad status ' + r.status); return r.json(); })
+    .catch(function(){ return FALLBACK_DATA; })
+    .then(function(payload){
+      DATA = payload.countries || [];
+      DATA_META.schemaVersion = payload.schemaVersion;
+      DATA_META.generated = payload.generated;
+    });
+}
+
+function addInstruction(co, text){
+  var entry = {date: new Date().toISOString().slice(0,10), text: text, by: 'you'};
+  co.instructions = co.instructions || [];
+  co.instructions.push(entry);
+  co.history = co.history || [];
+  co.history.push({type:'note', date: entry.date, text: text});
+}
+
+function exportData(){
+  var payload = {schemaVersion: DATA_META.schemaVersion || 1, generated: new Date().toISOString().slice(0,10), countries: DATA};
+  var blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url; a.download = 'companies.json';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+/* =================== helpers =================== */
+function allCompanies(){
+  var out = [];
+  DATA.forEach(function(c){ c.regions.forEach(function(r){ r.companies.forEach(function(co){ out.push(Object.assign({country:c.name, region:r.name}, co)); }); }); });
+  return out;
+}
+function countryCount(c){ return c.regions.reduce(function(n,r){ return n + r.companies.length; }, 0); }
+function fmtDate(d){ return new Date(d+'T00:00:00').toLocaleDateString('en-GB', {day:'numeric', month:'short'}); }
+
+/* =================== pipeline (finder columns) =================== */
+var countryListEl = document.getElementById('countryList');
+var listPaneEl = document.getElementById('listPane');
+var detailPaneEl = document.getElementById('detailPane');
+var selectedCountry = null, selectedCompany = null;
+
+function renderCountries(){
+  countryListEl.innerHTML = '';
+  DATA.forEach(function(c){
+    var btn = document.createElement('button');
+    btn.className = 'row-btn';
+    btn.setAttribute('aria-selected', String(c.id === selectedCountry));
+    btn.innerHTML = '<span>'+c.name+'</span><span class="count">'+countryCount(c)+'</span>';
+    btn.addEventListener('click', function(){ selectedCountry = c.id; selectedCompany = null; renderCountries(); renderList(); renderDetail(); });
+    countryListEl.appendChild(btn);
+  });
+}
+
+function renderList(){
+  listPaneEl.innerHTML = '';
+  var c = DATA.find(function(d){ return d.id === selectedCountry; });
+  if (!c){ listPaneEl.innerHTML = '<div class="empty-state">Pick a country to see its regions and companies.</div>'; return; }
+  c.regions.forEach(function(r){
+    if (!r.companies.length) return;
+    var h = document.createElement('div');
+    h.className = 'region-heading';
+    h.textContent = r.name + ' · ' + r.companies.length;
+    listPaneEl.appendChild(h);
+    r.companies.forEach(function(co){
+      var btn = document.createElement('button');
+      btn.className = 'row-btn company-row';
+      btn.setAttribute('aria-selected', String(selectedCompany === co.id));
+      var stageCls = co.stage === 'won' ? 'st-won' : (co.stage === 'rejected' ? 'st-rejected' : 'st-active');
+      btn.innerHTML = '<span><span class="name">'+co.name+'</span><span class="meta">'+co.segment+'</span></span>' +
+        '<span class="stage-pill '+stageCls+'"><span class="dot"></span>'+STAGE_LABELS[co.stage]+'</span>';
+      btn.addEventListener('click', function(){ selectedCompany = co.id; renderList(); renderDetail(); });
+      listPaneEl.appendChild(btn);
+    });
+  });
+}
+
+function brainMapHTML(co){
+  var stopAt = co.stage === 'rejected' ? co.rejectedAfter : (co.stage === 'won' ? STAGES.length : STAGES.indexOf(co.stage) + 1);
+  var html = '<div class="brainmap">';
+  STAGES.forEach(function(stage, i){
+    var cls = i < stopAt ? 'done' : (i === stopAt && co.stage !== 'rejected' && co.stage !== 'won' ? 'current' : '');
+    if (stage === 'won' && co.stage === 'won') cls = 'won';
+    if (i > stopAt) cls = '';
+    html += '<div class="brain-tile '+cls+'"><div class="brain-node">'+(cls === 'done' || cls === 'won' ? '✓' : (i+1))+'</div><div class="label">'+STAGE_LABELS[stage]+'</div></div>';
+    if (i < STAGES.length - 1) html += '<div class="brain-connector '+(i < stopAt - 1 ? 'done' : '')+'"></div>';
+  });
+  html += '</div>';
+  if (co.stage === 'rejected'){
+    html = html.replace(/<\/div>\s*$/, '') + '<div class="brain-tile rejected"><div class="brain-node">✕</div><div class="label">Rejected</div></div></div>';
+  }
+  return html;
+}
+
+function renderDetail(){
+  var co = allCompanies().find(function(x){ return x.id === selectedCompany; });
+  if (!co){ detailPaneEl.innerHTML = '<div class="empty-state">Select a company to see its details and journey.</div>'; return; }
+  var contactsHtml = co.contacts.map(function(p){
+    return '<div style="margin-bottom:8px"><strong>'+p.name+'</strong> — '+p.role+'<br><a href="mailto:'+p.email+'" style="color:var(--accent)">'+p.email+'</a> · '+p.phone+'</div>';
+  }).join('') || '<span style="color:var(--text-muted)">No contact found yet</span>';
+
+  var historyHtml = co.history.slice().reverse().map(function(h){
+    return '<li><div class="a-meta">'+fmtDate(h.date)+' · '+h.type+'</div>'+h.text+'</li>';
+  }).join('');
+
+  var local = co.local || {};
+  var localValue = local.registrationNumber
+    ? ('Reg. no. ' + local.registrationNumber)
+    : (local.registryNote || 'Registration number not yet compliantly sourced');
+  var localSub = [local.currency, local.timezone, local.language].filter(Boolean).join(' · ');
+
+  detailPaneEl.innerHTML =
+    '<div class="detail-header">' +
+      '<div><h2 class="detail-title">'+co.name+'</h2><p class="detail-sub">'+co.segment+' · '+co.region+', '+co.country+'</p></div>' +
+    '</div>' +
+    '<div class="fact-grid">' +
+      '<div class="fact"><div class="fact-label">Address</div><div class="fact-value">'+co.address+'<span class="source-tag">source: '+co.source+'</span></div></div>' +
+      '<div class="fact"><div class="fact-label">Website</div><div class="fact-value"><a href="#" style="color:var(--accent)">'+co.website+'</a></div></div>' +
+      '<div class="fact"><div class="fact-label">Contacts</div><div class="fact-value">'+contactsHtml+'</div></div>' +
+      '<div class="fact"><div class="fact-label">Next action</div><div class="fact-value">'+co.nextAction+'<span class="source-tag">last contact '+fmtDate(co.lastContact)+'</span></div></div>' +
+      '<div class="fact"><div class="fact-label">Local data</div><div class="fact-value">'+localValue+'<span class="source-tag">'+localSub+'</span></div></div>' +
+    '</div>' +
+    '<h3 class="section-title">Client journey</h3>' +
+    brainMapHTML(co) +
+    '<h3 class="section-title">Activity</h3>' +
+    '<ul class="activity">'+historyHtml+'</ul>' +
+    '<form class="note-form" id="noteForm">' +
+      '<input class="note-input" id="noteInput" type="text" placeholder="Add an instruction or note for this company (e.g. hold outreach until Q4)" maxlength="280">' +
+      '<button class="note-submit" type="submit">Add note</button>' +
+    '</form>';
+
+  var noteForm = document.getElementById('noteForm');
+  if (noteForm){
+    noteForm.addEventListener('submit', function(evt){
+      evt.preventDefault();
+      var input = document.getElementById('noteInput');
+      var text = input.value.trim();
+      if (!text) return;
+      addInstruction(co, text);
+      renderDetail();
+    });
+  }
+}
+
+document.getElementById('tabPipeline').addEventListener('click', function(){ switchTab('pipeline'); });
+document.getElementById('tabAnalytics').addEventListener('click', function(){ switchTab('analytics'); });
+document.getElementById('exportBtn').addEventListener('click', exportData);
+function switchTab(which){
+  var isPipeline = which === 'pipeline';
+  document.getElementById('tabPipeline').setAttribute('aria-selected', String(isPipeline));
+  document.getElementById('tabAnalytics').setAttribute('aria-selected', String(!isPipeline));
+  document.getElementById('viewPipeline').hidden = !isPipeline;
+  document.getElementById('viewAnalytics').hidden = isPipeline;
+}
+
+// initial render happens once loadData() resolves, at the bottom of this file
+
+/* =================== analytics =================== */
+var tipEl = document.createElement('div');
+tipEl.className = 'tip'; tipEl.hidden = true;
+document.body.appendChild(tipEl);
+function showTip(evt, text){ tipEl.hidden = false; tipEl.textContent = text; tipEl.style.left = evt.clientX + 'px'; tipEl.style.top = evt.clientY + 'px'; }
+function hideTip(){ tipEl.hidden = true; }
+
+function svg(tag, attrs){
+  var el = document.createElementNS('http://www.w3.org/2000/svg', tag);
+  for (var k in attrs) el.setAttribute(k, attrs[k]);
+  return el;
+}
+
+function ringGauge(opts){
+  // opts: size, value(0-100), color, thickness, label(center)
+  var size = opts.size, sw = opts.thickness || 10;
+  var r = (size - sw) / 2, c = size / 2;
+  var circumference = 2 * Math.PI * r;
+  var v = Math.max(0, Math.min(100, opts.value));
+  var dash = circumference * v / 100;
+  var s = svg('svg', {viewBox:'0 0 '+size+' '+size, width:size, height:size});
+  s.appendChild(svg('circle', {cx:c, cy:c, r:r, fill:'none', stroke:'var(--ring-track)', 'stroke-width':sw}));
+  if (dash > 0){
+    s.appendChild(svg('circle', {cx:c, cy:c, r:r, fill:'none', stroke:opts.color, 'stroke-width':sw,
+      'stroke-linecap':'round', 'stroke-dasharray': dash.toFixed(1)+' '+(circumference-dash).toFixed(1),
+      transform:'rotate(-90 '+c+' '+c+')'}));
+  }
+  var txt = svg('text', {x:c, y:c+1, 'text-anchor':'middle', 'dominant-baseline':'middle', fill:'var(--viz-text)', 'font-size': Math.round(size*0.24), 'font-weight':700});
+  txt.textContent = Math.round(v)+'%';
+  s.appendChild(txt);
+  return s;
+}
+
+function segmentedRing(opts){
+  // opts: size, thickness, segments:[{label,value,color}], centerLabel, centerSub
+  var size = opts.size, sw = opts.thickness || 18;
+  var r = (size - sw) / 2, c = size / 2;
+  var circumference = 2 * Math.PI * r;
+  var total = opts.segments.reduce(function(sum, seg){ return sum + seg.value; }, 0) || 1;
+  var gapLen = circumference * (2.5 / 360);
+  var s = svg('svg', {viewBox:'0 0 '+size+' '+size, width:size, height:size});
+  s.appendChild(svg('circle', {cx:c, cy:c, r:r, fill:'none', stroke:'var(--ring-track)', 'stroke-width':sw}));
+  var offset = 0;
+  opts.segments.forEach(function(seg){
+    var frac = seg.value / total;
+    var len = Math.max(circumference * frac - gapLen, 0);
+    var circle = svg('circle', {cx:c, cy:c, r:r, fill:'none', stroke:seg.color, 'stroke-width':sw,
+      'stroke-linecap':'round',
+      'stroke-dasharray': len.toFixed(1)+' '+(circumference-len).toFixed(1),
+      'stroke-dashoffset': (-offset).toFixed(1),
+      transform:'rotate(-90 '+c+' '+c+')'});
+    circle.addEventListener('mousemove', function(e){ showTip(e, seg.label+': '+seg.value+' ('+Math.round(100*frac)+'%)'); });
+    circle.addEventListener('mouseleave', hideTip);
+    s.appendChild(circle);
+    offset += circumference * frac;
+  });
+  var t1 = svg('text', {x:c, y:c-6, 'text-anchor':'middle', fill:'var(--viz-text)', 'font-size': Math.round(size*0.17), 'font-weight':700});
+  t1.textContent = opts.centerLabel != null ? opts.centerLabel : String(total);
+  s.appendChild(t1);
+  if (opts.centerSub){
+    var t2 = svg('text', {x:c, y:c+15, 'text-anchor':'middle', fill:'var(--viz-text-2)', 'font-size': Math.round(size*0.09)});
+    t2.textContent = opts.centerSub;
+    s.appendChild(t2);
+  }
+  return s;
+}
+
+function barChart(opts){
+  // opts: width,height,data:[{label,value}],color,valueFmt
+  var W = opts.width, H = opts.height, pad = {t:10,r:14,b:28,l:opts.horizontal ? 130 : 34};
+  var s = svg('svg', {viewBox:'0 0 '+W+' '+H, width:'100%', height:H, role:'img'});
+  var max = Math.max.apply(null, opts.data.map(function(d){ return d.value; })) * 1.15 || 1;
+  if (opts.horizontal){
+    var bh = (H - pad.t - pad.b) / opts.data.length;
+    opts.data.forEach(function(d, i){
+      var y = pad.t + i*bh;
+      var w = (W - pad.l - pad.r) * (d.value / max);
+      s.appendChild(svg('line', {x1:pad.l, x2:W-pad.r, y1:y+bh-6, y2:y+bh-6, stroke:'var(--viz-grid)', 'stroke-width':1}));
+      var rect = svg('rect', {x:pad.l, y:y+4, width:Math.max(w,2), height:bh-16, rx:3, fill:d.color || opts.color});
+      rect.addEventListener('mousemove', function(e){ showTip(e, d.label+': '+(opts.valueFmt?opts.valueFmt(d.value):d.value)); });
+      rect.addEventListener('mouseleave', hideTip);
+      s.appendChild(rect);
+      var lbl = svg('text', {x:pad.l-8, y:y+bh/2, 'text-anchor':'end','dominant-baseline':'middle', fill:'var(--viz-text-2)','font-size':11});
+      lbl.textContent = d.label; s.appendChild(lbl);
+      var val = svg('text', {x:pad.l+Math.max(w,2)+6, y:y+bh/2, 'dominant-baseline':'middle', fill:'var(--viz-text)','font-size':11,'font-weight':700});
+      val.textContent = opts.valueFmt ? opts.valueFmt(d.value) : d.value; s.appendChild(val);
+    });
+  } else {
+    var bw = (W - pad.l - pad.r) / opts.data.length;
+    [0,0.5,1].forEach(function(f){
+      var y = pad.t + (H-pad.t-pad.b)*(1-f);
+      s.appendChild(svg('line', {x1:pad.l, x2:W-pad.r, y1:y, y2:y, stroke:'var(--viz-grid)', 'stroke-width':1}));
+    });
+    opts.data.forEach(function(d, i){
+      var x = pad.l + i*bw;
+      var h = (H - pad.t - pad.b) * (d.value / max);
+      var rect = svg('rect', {x:x+bw*0.18, y:H-pad.b-h, width:bw*0.64, height:Math.max(h,1), rx:3, fill:d.color || opts.color});
+      rect.addEventListener('mousemove', function(e){ showTip(e, d.label+': '+(opts.valueFmt?opts.valueFmt(d.value):d.value)); });
+      rect.addEventListener('mouseleave', hideTip);
+      s.appendChild(rect);
+      var lbl = svg('text', {x:x+bw/2, y:H-pad.b+16, 'text-anchor':'middle', fill:'var(--viz-text-2)','font-size':10.5});
+      lbl.textContent = d.label; s.appendChild(lbl);
+    });
+    s.appendChild(svg('line', {x1:pad.l, x2:pad.l, y1:pad.t, y2:H-pad.b, stroke:'var(--viz-baseline)', 'stroke-width':1}));
+  }
+  return s;
+}
+
+function groupedBarChart(opts){
+  // opts: width,height,groups:[label], series:[{name,color,values:[...]}]
+  var W = opts.width, H = opts.height, pad = {t:10,r:14,b:28,l:34};
+  var s = svg('svg', {viewBox:'0 0 '+W+' '+H, width:'100%', height:H});
+  var max = 0;
+  opts.series.forEach(function(sr){ sr.values.forEach(function(v){ max = Math.max(max, v); }); });
+  max *= 1.2; if (!max) max = 1;
+  [0,0.5,1].forEach(function(f){
+    var y = pad.t + (H-pad.t-pad.b)*(1-f);
+    s.appendChild(svg('line', {x1:pad.l, x2:W-pad.r, y1:y, y2:y, stroke:'var(--viz-grid)', 'stroke-width':1}));
+  });
+  var gw = (W - pad.l - pad.r) / opts.groups.length;
+  var n = opts.series.length;
+  opts.groups.forEach(function(g, gi){
+    var gx = pad.l + gi*gw;
+    opts.series.forEach(function(sr, si){
+      var bw = (gw*0.7) / n;
+      var x = gx + gw*0.15 + si*bw;
+      var v = sr.values[gi];
+      var h = (H-pad.t-pad.b) * (v/max);
+      var rect = svg('rect', {x:x, y:H-pad.b-h, width:bw*0.82, height:Math.max(h,1), rx:2, fill:sr.color});
+      rect.addEventListener('mousemove', function(e){ showTip(e, sr.name+' · '+g+': '+v); });
+      rect.addEventListener('mouseleave', hideTip);
+      s.appendChild(rect);
+    });
+    var lbl = svg('text', {x:gx+gw/2, y:H-pad.b+16, 'text-anchor':'middle', fill:'var(--viz-text-2)','font-size':10.5});
+    lbl.textContent = g; s.appendChild(lbl);
+  });
+  s.appendChild(svg('line', {x1:pad.l, x2:pad.l, y1:pad.t, y2:H-pad.b, stroke:'var(--viz-baseline)', 'stroke-width':1}));
+  return s;
+}
+
+function lineChart(opts){
+  var W = opts.width, H = opts.height, pad = {t:14,r:16,b:28,l:38};
+  var s = svg('svg', {viewBox:'0 0 '+W+' '+H, width:'100%', height:H});
+  var max = Math.max.apply(null, opts.data.map(function(d){ return d.value; })) * 1.15 || 1;
+  var min = 0;
+  [0,0.5,1].forEach(function(f){
+    var y = pad.t + (H-pad.t-pad.b)*(1-f);
+    s.appendChild(svg('line', {x1:pad.l, x2:W-pad.r, y1:y, y2:y, stroke:'var(--viz-grid)', 'stroke-width':1}));
+    var lbl = svg('text', {x:pad.l-6, y:y, 'text-anchor':'end','dominant-baseline':'middle', fill:'var(--viz-muted)','font-size':10});
+    lbl.textContent = Math.round((min+(max-min)*f)) + '%'; s.appendChild(lbl);
+  });
+  var stepX = (W - pad.l - pad.r) / (opts.data.length - 1);
+  var pts = opts.data.map(function(d, i){ return [pad.l + i*stepX, H - pad.b - (H-pad.t-pad.b)*(d.value/max)]; });
+  var d = pts.map(function(p, i){ return (i===0?'M':'L') + p[0].toFixed(1) + ' ' + p[1].toFixed(1); }).join(' ');
+  s.appendChild(svg('path', {d:d, fill:'none', stroke:opts.color, 'stroke-width':2.5, 'stroke-linejoin':'round','stroke-linecap':'round'}));
+  pts.forEach(function(p, i){
+    var c = svg('circle', {cx:p[0], cy:p[1], r:4, fill:opts.color});
+    c.addEventListener('mousemove', function(e){ showTip(e, opts.data[i].label+': '+opts.data[i].value+'%'); });
+    c.addEventListener('mouseleave', hideTip);
+    s.appendChild(c);
+    var lbl = svg('text', {x:p[0], y:H-pad.b+16, 'text-anchor':'middle', fill:'var(--viz-text-2)','font-size':10.5});
+    lbl.textContent = opts.data[i].label; s.appendChild(lbl);
+  });
+  return s;
+}
+
+function stackedBarChart(opts){
+  // groups:[label], series:[{name,color,values}]
+  var W = opts.width, H = opts.height, pad = {t:10,r:14,b:28,l:30};
+  var s = svg('svg', {viewBox:'0 0 '+W+' '+H, width:'100%', height:H});
+  var totals = opts.groups.map(function(_, gi){ return opts.series.reduce(function(sum, sr){ return sum + sr.values[gi]; }, 0); });
+  var max = Math.max.apply(null, totals) * 1.15 || 1;
+  [0,0.5,1].forEach(function(f){
+    var y = pad.t + (H-pad.t-pad.b)*(1-f);
+    s.appendChild(svg('line', {x1:pad.l, x2:W-pad.r, y1:y, y2:y, stroke:'var(--viz-grid)', 'stroke-width':1}));
+  });
+  var gw = (W - pad.l - pad.r) / opts.groups.length;
+  opts.groups.forEach(function(g, gi){
+    var x = pad.l + gi*gw + gw*0.2;
+    var bw = gw*0.6;
+    var yCursor = H - pad.b;
+    opts.series.forEach(function(sr){
+      var v = sr.values[gi];
+      var h = (H-pad.t-pad.b) * (v/max);
+      if (h > 0){
+        var rect = svg('rect', {x:x, y:yCursor-h, width:bw, height:Math.max(h-1.5,0), rx:2, fill:sr.color});
+        rect.addEventListener('mousemove', function(e){ showTip(e, sr.name+' · '+g+': '+v); });
+        rect.addEventListener('mouseleave', hideTip);
+        s.appendChild(rect);
+      }
+      yCursor -= h;
+    });
+    var lbl = svg('text', {x:x+bw/2, y:H-pad.b+16, 'text-anchor':'middle', fill:'var(--viz-text-2)','font-size':10.5});
+    lbl.textContent = g; s.appendChild(lbl);
+  });
+  s.appendChild(svg('line', {x1:pad.l, x2:pad.l, y1:pad.t, y2:H-pad.b, stroke:'var(--viz-baseline)', 'stroke-width':1}));
+  return s;
+}
+
+function legendHTML(items){
+  return '<div class="legend">' + items.map(function(it){
+    return '<span class="legend-item"><span class="legend-swatch" style="background:'+it.color+'"></span>'+it.name+'</span>';
+  }).join('') + '</div>';
+}
+
+function buildAnalytics(){
+  var companies = allCompanies();
+  var totalLeads = companies.length;
+  var withFullContact = companies.filter(function(c){ return c.contacts.length && c.contacts[0].email && c.contacts[0].phone; }).length;
+  var emailsSent = companies.reduce(function(n,c){ return n + c.history.filter(function(h){ return h.type==='email'; }).length; }, 0);
+  var replies = companies.filter(function(c){ return c.history.some(function(h){ return h.type==='reply'; }); }).length;
+  var meetings = companies.filter(function(c){ return c.history.some(function(h){ return h.type==='meeting'; }); }).length;
+  var won = companies.filter(function(c){ return c.stage==='won'; }).length;
+  var rejected = companies.filter(function(c){ return c.stage==='rejected'; }).length;
+  var found = companies.filter(function(c){ return c.stage==='found'; }).length;
+  var inProgress = totalLeads - won - rejected - found;
+  var active = companies.filter(function(c){ return c.stage!=='won' && c.stage!=='rejected'; }).length;
+  var fullContactPct = Math.round(100*withFullContact/totalLeads);
+  var replyRatePct = Math.round(100*replies/emailsSent);
+  var winRatePct = Math.round(100*won/totalLeads);
+
+  var root = document.getElementById('viewAnalytics');
+  root.innerHTML = '';
+
+  /* ---- Activity-ring style meters ---- */
+  var ringDefs = [
+    {label:'Full contact details', sub: withFullContact+' of '+totalLeads+' leads', value: fullContactPct, color:'var(--accent)'},
+    {label:'Reply rate', sub: replies+' of '+emailsSent+' emails', value: replyRatePct, color:'var(--accent-2)'},
+    {label:'Win rate', sub: won+' of '+totalLeads+' pursued', value: winRatePct, color:'var(--good)'}
+  ];
+  var ringsRow = document.createElement('div'); ringsRow.className = 'rings-row';
+  ringDefs.forEach(function(rd){
+    var card = document.createElement('div'); card.className = 'ring-card';
+    var g = ringGauge({size:64, thickness:8, value:rd.value, color:rd.color});
+    card.appendChild(g);
+    var copy = document.createElement('div'); copy.className = 'ring-copy';
+    copy.innerHTML = '<div class="ring-label">'+rd.label+'</div><div class="ring-sub">'+rd.sub+'</div>';
+    card.appendChild(copy);
+    ringsRow.appendChild(card);
+  });
+  root.appendChild(ringsRow);
+
+  var kpis = [
+    {label:'Leads found', value: totalLeads},
+    {label:'Emails sent', value: emailsSent},
+    {label:'Meetings booked', value: meetings},
+    {label:'Jobs won', value: won},
+    {label:'Active clients', value: active}
+  ];
+  var kpiRow = document.createElement('div'); kpiRow.className = 'kpi-row';
+  kpis.forEach(function(k){
+    var d = document.createElement('div'); d.className = 'kpi';
+    d.innerHTML = '<div class="kpi-label">'+k.label+'</div><div class="kpi-value">'+k.value+'</div>';
+    kpiRow.appendChild(d);
+  });
+  root.appendChild(kpiRow);
+
+  var grid = document.createElement('div'); grid.className = 'chart-grid';
+  root.appendChild(grid);
+
+  // 0. pipeline breakdown — segmented ring (part-to-whole, 4 segments)
+  var breakdown = [
+    {label:'Found', value:found, color:'var(--slot-blue)'},
+    {label:'In progress', value:inProgress, color:'var(--slot-yellow)'},
+    {label:'Won', value:won, color:'var(--good)'},
+    {label:'Rejected', value:rejected, color:'var(--critical)'}
+  ].filter(function(seg){ return seg.value > 0; });
+  var c0 = document.createElement('div'); c0.className = 'chart-card center';
+  c0.innerHTML = '<h3>Pipeline breakdown</h3><p class="chart-sub">Every lead found, by current outcome</p>';
+  var svg0 = segmentedRing({size:180, thickness:20, segments:breakdown, centerLabel:String(totalLeads), centerSub:'total leads'});
+  c0.appendChild(svg0);
+  c0.insertAdjacentHTML('beforeend', legendHTML(breakdown.map(function(seg){ return {name:seg.label+' · '+seg.value, color:seg.color}; })));
+  grid.appendChild(c0);
+
+  // 1. leads found by source, stacked (fake monthly split across 3 months for demo)
+  var sources = ['OpenCorporates','Company website','Trade association directory','IMO GISIS','Equasis','Trade show exhibitor list'];
+  var srcColors = ['var(--slot-blue)','var(--slot-orange)','var(--slot-aqua)','var(--slot-yellow)','var(--accent)','var(--accent-2)'];
+  var months = ['Jul','Aug','Sep'];
+  var bySourceMonth = sources.map(function(src, i){
+    var counts = months.map(function(){ return 0; });
+    companies.forEach(function(c){
+      if (c.source !== src) return;
+      var m = new Date(c.lastContact+'T00:00:00').getMonth();
+      var idx = m===6?0:(m===7?1:2);
+      counts[idx]++;
+    });
+    return {name:src, color:srcColors[i], values:counts};
+  }).filter(function(s){ return s.values.some(function(v){return v>0;}); });
+
+  var c1 = document.createElement('div'); c1.className = 'chart-card';
+  c1.innerHTML = '<h3>Leads found by source</h3><p class="chart-sub">Monthly, by discovery source</p>';
+  var svg1 = stackedBarChart({width:420, height:190, groups:months, series:bySourceMonth});
+  c1.appendChild(svg1);
+  c1.insertAdjacentHTML('beforeend', legendHTML(bySourceMonth));
+  grid.appendChild(c1);
+
+  // 2. jobs won by country
+  var byCountry = DATA.map(function(c){ return {label:c.name, value:c.regions.reduce(function(n,r){ return n + r.companies.filter(function(x){return x.stage==='won';}).length; },0)}; })
+    .sort(function(a,b){ return b.value-a.value; });
+  var c2 = document.createElement('div'); c2.className = 'chart-card';
+  c2.innerHTML = '<h3>Jobs won by country</h3><p class="chart-sub">Signed agreements to date</p>';
+  var svg2 = barChart({width:420, height:190, horizontal:true, data:byCountry, color:'var(--accent)'});
+  c2.appendChild(svg2);
+  grid.appendChild(c2);
+
+  // 3. win-rate trend (demo trend ending at current actual rate)
+  var currentRate = winRatePct;
+  var trend = [
+    {label:'May', value: Math.max(currentRate-14,4)},
+    {label:'Jun', value: Math.max(currentRate-9,6)},
+    {label:'Jul', value: Math.max(currentRate-5,8)},
+    {label:'Aug', value: Math.max(currentRate-2,10)},
+    {label:'Sep', value: currentRate}
+  ];
+  var c3 = document.createElement('div'); c3.className = 'chart-card';
+  c3.innerHTML = '<h3>Win-rate trend</h3><p class="chart-sub">Won ÷ total pursued, monthly</p>';
+  var svg3 = lineChart({width:420, height:190, data:trend, color:'var(--accent-2)'});
+  c3.appendChild(svg3);
+  grid.appendChild(c3);
+
+  // 4. meetings online vs offline by month
+  var meetingCos = companies.filter(function(c){ return c.meetingFormat; });
+  var mMonths = ['Jul','Aug','Sep'];
+  function meetingCounts(fmt){
+    return mMonths.map(function(_, idx){
+      return meetingCos.filter(function(c){
+        if (c.meetingFormat !== fmt) return false;
+        var m = new Date(c.lastContact+'T00:00:00').getMonth();
+        var mi = m===6?0:(m===7?1:2);
+        return mi === idx;
+      }).length;
+    });
+  }
+  var c4 = document.createElement('div'); c4.className = 'chart-card';
+  c4.innerHTML = '<h3>Meetings: online vs offline</h3><p class="chart-sub">By month held</p>';
+  var svg4 = groupedBarChart({width:420, height:190, groups:mMonths, series:[
+    {name:'Online', color:'var(--accent-2)', values:meetingCounts('online')},
+    {name:'Offline', color:'var(--accent)', values:meetingCounts('offline')}
+  ]});
+  c4.appendChild(svg4);
+  c4.insertAdjacentHTML('beforeend', legendHTML([{name:'Online',color:'var(--accent-2)'},{name:'Offline',color:'var(--accent)'}]));
+  grid.appendChild(c4);
+
+  // 5. feedback histogram
+  var feedbackCounts = [1,2,3,4,5].map(function(score){ return {label:String(score), value: companies.filter(function(c){ return c.feedback===score; }).length}; });
+  var c5 = document.createElement('div'); c5.className = 'chart-card';
+  c5.innerHTML = '<h3>Feedback scores</h3><p class="chart-sub">From finished jobs, 1–5</p>';
+  var svg5 = barChart({width:420, height:190, data:feedbackCounts, color:'var(--slot-aqua)'});
+  c5.appendChild(svg5);
+  grid.appendChild(c5);
+
+  // 6. active clients table
+  var c6 = document.createElement('div'); c6.className = 'chart-card wide';
+  c6.innerHTML = '<h3>Active clients</h3><p class="chart-sub">Every company still in motion</p>';
+  var tw = document.createElement('div'); tw.className = 'table-wrap';
+  var rows = companies.filter(function(c){ return c.stage!=='won' && c.stage!=='rejected'; })
+    .map(function(c){
+      return '<tr><td>'+c.name+'</td><td>'+c.country+'</td><td>'+STAGE_LABELS[c.stage]+'</td><td>'+fmtDate(c.lastContact)+'</td><td>'+c.nextAction+'</td></tr>';
+    }).join('');
+  tw.innerHTML = '<table class="data"><thead><tr><th>Company</th><th>Country</th><th>Stage</th><th>Last contact</th><th>Next action</th></tr></thead><tbody>'+rows+'</tbody></table>';
+  c6.appendChild(tw);
+  grid.appendChild(c6);
+}
+
+loadData().then(function(){
+  renderCountries(); renderList(); renderDetail();
+  buildAnalytics();
+});
+
+})();
+</script>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('/service-worker.js').catch(function (err) {
+        console.warn('Service worker registration failed:', err);
+      });
+    });
+  }
+</script>
+</body>
+</html>

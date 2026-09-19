@@ -1,0 +1,54 @@
+{
+  "generated": "2026-09-19",
+  "note": "Real, current newbuilding-agreement signals, pulled today from public maritime-press reporting -- not fabricated demo data. Each entry cites its source so it can be independently checked. This is what the 'new-build agreement tracking' feature in the architecture doc looks like once it's fed real data.",
+  "signals": [
+    {
+      "date_reported": "2026-09-16",
+      "buyer": "CULines",
+      "shipyard": "Hudong-Zhonghua Shipbuilding",
+      "country": "China",
+      "vessel_type": "Containership",
+      "quantity": 2,
+      "detail": "Two 14,000 TEU containerships",
+      "relevance": "Large containership newbuilds mean fresh propulsion and deck-machinery torque-tooling demand at the builder.",
+      "source_name": "New-Ships.com — Newbuilding Contracts, Week 36/2026",
+      "source_url": "https://www.new-ships.com/ns/news/6239"
+    },
+    {
+      "date_reported": "2026-09 (week 36)",
+      "buyer": "BW LNG",
+      "shipyard": "HD Hyundai (Ulsan, South Korea)",
+      "country": "South Korea",
+      "vessel_type": "LNG Carrier",
+      "quantity": 4,
+      "detail": "Four LNG carriers with a new three-tank design",
+      "relevance": "HD Hyundai is already a known Ulsan-region shipbuilder in C-TORQ's target segment; a 4-vessel order is a concrete reason to reach out now.",
+      "source_name": "New-Ships.com — Newbuilding Contracts, Week 36/2026",
+      "source_url": "https://www.new-ships.com/ns/news/6239"
+    },
+    {
+      "date_reported": "2026-09 (week 36)",
+      "buyer": "Exmar",
+      "shipyard": "DaeHan Instrument Co., Ltd (South Korea)",
+      "country": "South Korea",
+      "vessel_type": "Suezmax Tanker",
+      "quantity": 1,
+      "detail": "Steel-cutting ceremony held for the first Suezmax tanker in the order",
+      "relevance": "Early build-stage signal -- a good moment to introduce C-TORQ before procurement decisions for propulsion-adjacent tooling are locked in.",
+      "source_name": "New-Ships.com — Newbuilding Contracts, Week 36/2026",
+      "source_url": "https://www.new-ships.com/ns/news/6239"
+    },
+    {
+      "date_reported": "2026-09 (week 36)",
+      "buyer": "Shandong Shipping Corp",
+      "shipyard": "Qingdao Beihai Shipbuilding Heavy Industry (CSSC)",
+      "country": "China",
+      "vessel_type": "Bulk Carrier",
+      "quantity": 5,
+      "detail": "325,000 DWT each, deliveries from January 2029",
+      "relevance": "A 5-vessel order with deliveries years out means a long build programme -- worth a slower-cadence relationship-building approach rather than a rushed pitch.",
+      "source_name": "New-Ships.com — Newbuilding Contracts, Week 36/2026",
+      "source_url": "https://www.new-ships.com/ns/news/6239"
+    }
+  ]
+}

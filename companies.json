@@ -1,0 +1,554 @@
+{
+  "schemaVersion": 1,
+  "generated": "2026-09-19",
+  "note": "Interim git-tracked data store. Structure: country -> region -> company. Each company carries contacts, progress (stage/lastContact/nextAction/history), local (country-specific registry/currency/timezone facts), and instructions (notes/approvals entered through the app). Once Supabase is wired up, this file is superseded by the `companies` table but kept in the same shape for a clean migration.",
+  "countries": [
+    {
+      "id": "no",
+      "name": "Norway",
+      "regions": [
+        {
+          "name": "Møre og Romsdal",
+          "country": "no",
+          "companies": [
+            {
+              "id": "no-fjordal-marine-yard",
+              "name": "Fjordal Marine Yard",
+              "address": "Storgata 14, 6003 Ålesund, Norway",
+              "website": "fjordalmarine.no",
+              "segment": "Shipbuilder — offshore support vessels",
+              "source": "OpenCorporates",
+              "contacts": [
+                {
+                  "name": "Ingrid Haugen",
+                  "role": "Procurement Lead",
+                  "email": "i.haugen@fjordalmarine.no",
+                  "phone": "+47 700 12 340"
+                }
+              ],
+              "stage": "won",
+              "lastContact": "2026-09-02",
+              "nextAction": "Kickoff call scheduled",
+              "feedback": 5,
+              "meetingFormat": "online",
+              "history": [
+                {
+                  "type": "email",
+                  "date": "2026-08-04",
+                  "text": "Introduced C·TORQ propulsion line for OSV refits."
+                },
+                {
+                  "type": "reply",
+                  "date": "2026-08-06",
+                  "text": "Send specs for the 2400-series unit."
+                },
+                {
+                  "type": "meeting",
+                  "date": "2026-08-19",
+                  "text": "Online demo with engineering team."
+                },
+                {
+                  "type": "deal",
+                  "date": "2026-09-02",
+                  "text": "Signed for 2 vessels, refit programme."
+                }
+              ],
+              "local": {
+                "currency": "NOK",
+                "timezone": "Europe/Oslo",
+                "language": "Norwegian (nb)",
+                "registrationNumber": null,
+                "registryNote": "Not yet compliantly sourced from Brønnøysund Register Centre — see architecture doc's OpenCorporates guidance."
+              },
+              "instructions": []
+            },
+            {
+              "id": "no-nordkyst-verft-as",
+              "name": "Nordkyst Verft AS",
+              "address": "Kaigata 2, 6270 Brattvåg, Norway",
+              "website": "nordkystverft.no",
+              "segment": "Shipyard — fishing vessels",
+              "source": "Company website",
+              "contacts": [
+                {
+                  "name": "Per Solberg",
+                  "role": "Yard Manager",
+                  "email": "per@nordkystverft.no",
+                  "phone": "+47 700 55 812"
+                }
+              ],
+              "stage": "meeting",
+              "lastContact": "2026-09-10",
+              "nextAction": "Follow up after site visit",
+              "meetingFormat": "offline",
+              "history": [
+                {
+                  "type": "email",
+                  "date": "2026-08-20",
+                  "text": "First outreach on torque units for trawler refits."
+                },
+                {
+                  "type": "reply",
+                  "date": "2026-08-25",
+                  "text": "Asked for an in-person yard visit."
+                },
+                {
+                  "type": "meeting",
+                  "date": "2026-09-10",
+                  "text": "Yard visit booked for next month."
+                }
+              ],
+              "local": {
+                "currency": "NOK",
+                "timezone": "Europe/Oslo",
+                "language": "Norwegian (nb)",
+                "registrationNumber": null,
+                "registryNote": "Not yet compliantly sourced from Brønnøysund Register Centre — see architecture doc's OpenCorporates guidance."
+              },
+              "instructions": []
+            }
+          ]
+        },
+        {
+          "name": "Vestland",
+          "country": "no",
+          "companies": [
+            {
+              "id": "no-bergen-subsea-fabrication",
+              "name": "Bergen Subsea Fabrication",
+              "address": "Damsgårdsveien 90, 5058 Bergen, Norway",
+              "website": "bergensubsea.no",
+              "segment": "Fabricator — subsea structures",
+              "source": "Trade association directory",
+              "contacts": [
+                {
+                  "name": "Kari Nystrøm",
+                  "role": "Head of Sourcing",
+                  "email": "k.nystrom@bergensubsea.no",
+                  "phone": "+47 700 33 210"
+                }
+              ],
+              "stage": "replied",
+              "lastContact": "2026-09-08",
+              "nextAction": "Propose a meeting slot",
+              "history": [
+                {
+                  "type": "email",
+                  "date": "2026-09-01",
+                  "text": "Outreach on torque tooling for subsea assembly."
+                },
+                {
+                  "type": "reply",
+                  "date": "2026-09-08",
+                  "text": "Interesting — what's the lead time?"
+                }
+              ],
+              "local": {
+                "currency": "NOK",
+                "timezone": "Europe/Oslo",
+                "language": "Norwegian (nb)",
+                "registrationNumber": null,
+                "registryNote": "Not yet compliantly sourced from Brønnøysund Register Centre — see architecture doc's OpenCorporates guidance."
+              },
+              "instructions": []
+            },
+            {
+              "id": "no-vestland-skipsservice",
+              "name": "Vestland Skipsservice",
+              "address": "Sjøgata 8, 5411 Stord, Norway",
+              "website": "vestlandskip.no",
+              "segment": "Vessel operator — ferries",
+              "source": "IMO GISIS",
+              "contacts": [
+                {
+                  "name": "Ole Fjeld",
+                  "role": "Technical Director",
+                  "email": "ole.fjeld@vestlandskip.no",
+                  "phone": "+47 700 44 921"
+                }
+              ],
+              "stage": "sent",
+              "lastContact": "2026-09-14",
+              "nextAction": "Awaiting reply",
+              "history": [
+                {
+                  "type": "email",
+                  "date": "2026-09-14",
+                  "text": "Sent intro email on ferry engine torque maintenance kits."
+                }
+              ],
+              "local": {
+                "currency": "NOK",
+                "timezone": "Europe/Oslo",
+                "language": "Norwegian (nb)",
+                "registrationNumber": null,
+                "registryNote": "Not yet compliantly sourced from Brønnøysund Register Centre — see architecture doc's OpenCorporates guidance."
+              },
+              "instructions": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kr",
+      "name": "South Korea",
+      "regions": [
+        {
+          "name": "Ulsan",
+          "country": "kr",
+          "companies": [
+            {
+              "id": "kr-hanul-heavy-marine",
+              "name": "Hanul Heavy Marine",
+              "address": "204 Yeompo-ro, Ulsan, South Korea",
+              "website": "hanulmarine.kr",
+              "segment": "Shipbuilder — bulk carriers",
+              "source": "OpenCorporates",
+              "contacts": [
+                {
+                  "name": "Jiho Park",
+                  "role": "Procurement Director",
+                  "email": "jpark@hanulmarine.kr",
+                  "phone": "+82 52 700 1122"
+                }
+              ],
+              "stage": "won",
+              "lastContact": "2026-08-28",
+              "nextAction": "Second unit order under discussion",
+              "feedback": 4,
+              "meetingFormat": "online",
+              "history": [
+                {
+                  "type": "email",
+                  "date": "2026-07-10",
+                  "text": "Outreach on torque unit line for bulk carrier newbuilds."
+                },
+                {
+                  "type": "reply",
+                  "date": "2026-07-14",
+                  "text": "Can we set up a call?"
+                },
+                {
+                  "type": "meeting",
+                  "date": "2026-07-22",
+                  "text": "Online meeting with engineering."
+                },
+                {
+                  "type": "deal",
+                  "date": "2026-08-28",
+                  "text": "Signed for 4-vessel newbuild programme."
+                }
+              ],
+              "local": {
+                "currency": "KRW",
+                "timezone": "Asia/Seoul",
+                "language": "Korean (ko)",
+                "registrationNumber": null,
+                "registryNote": "Not yet compliantly sourced from Korea's Financial Supervisory Service (DART) — see architecture doc's OpenCorporates guidance."
+              },
+              "instructions": []
+            },
+            {
+              "id": "kr-donghae-shipbuilding-co-",
+              "name": "Donghae Shipbuilding Co.",
+              "address": "55 Mipo-ro, Ulsan, South Korea",
+              "website": "donghaesb.kr",
+              "segment": "Shipbuilder — container vessels",
+              "source": "Company website",
+              "contacts": [
+                {
+                  "name": "Seo-yeon Choi",
+                  "role": "Sourcing Manager",
+                  "email": "choi@donghaesb.kr",
+                  "phone": "+82 52 700 4471"
+                }
+              ],
+              "stage": "rejected",
+              "rejectedAfter": 3,
+              "lastContact": "2026-08-30",
+              "nextAction": "Closed — revisit next fiscal year",
+              "history": [
+                {
+                  "type": "email",
+                  "date": "2026-08-05",
+                  "text": "Outreach on torque tooling for container vessel line."
+                },
+                {
+                  "type": "reply",
+                  "date": "2026-08-12",
+                  "text": "We've already committed our supplier budget this year."
+                }
+              ],
+              "local": {
+                "currency": "KRW",
+                "timezone": "Asia/Seoul",
+                "language": "Korean (ko)",
+                "registrationNumber": null,
+                "registryNote": "Not yet compliantly sourced from Korea's Financial Supervisory Service (DART) — see architecture doc's OpenCorporates guidance."
+              },
+              "instructions": []
+            }
+          ]
+        },
+        {
+          "name": "Busan",
+          "country": "kr",
+          "companies": [
+            {
+              "id": "kr-busan-marine-equipment-ltd-",
+              "name": "Busan Marine Equipment Ltd.",
+              "address": "88 Haeundae-ro, Busan, South Korea",
+              "website": "busanmarine.kr",
+              "segment": "Equipment integrator",
+              "source": "Trade show exhibitor list",
+              "contacts": [
+                {
+                  "name": "Min-jun Lee",
+                  "role": "Engineering Lead",
+                  "email": "mjlee@busanmarine.kr",
+                  "phone": "+82 51 700 8834"
+                }
+              ],
+              "stage": "approved",
+              "lastContact": "2026-09-15",
+              "nextAction": "Send approved draft",
+              "history": [
+                {
+                  "type": "email",
+                  "date": "2026-09-15",
+                  "text": "Draft approved, queued to send."
+                }
+              ],
+              "local": {
+                "currency": "KRW",
+                "timezone": "Asia/Seoul",
+                "language": "Korean (ko)",
+                "registrationNumber": null,
+                "registryNote": "Not yet compliantly sourced from Korea's Financial Supervisory Service (DART) — see architecture doc's OpenCorporates guidance."
+              },
+              "instructions": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ae",
+      "name": "United Arab Emirates",
+      "regions": [
+        {
+          "name": "Abu Dhabi",
+          "country": "ae",
+          "companies": [
+            {
+              "id": "ae-al-reef-vessel-services",
+              "name": "Al Reef Vessel Services",
+              "address": "Mussafah Industrial Area, Abu Dhabi, UAE",
+              "website": "alreefvessel.ae",
+              "segment": "Vessel operator — offshore supply",
+              "source": "OpenCorporates",
+              "contacts": [
+                {
+                  "name": "Fatima Al Suwaidi",
+                  "role": "Fleet Manager",
+                  "email": "f.alsuwaidi@alreefvessel.ae",
+                  "phone": "+971 2 700 1290"
+                }
+              ],
+              "stage": "meeting",
+              "lastContact": "2026-09-12",
+              "nextAction": "Offline meeting at their office",
+              "meetingFormat": "offline",
+              "history": [
+                {
+                  "type": "email",
+                  "date": "2026-08-22",
+                  "text": "Outreach on OSV engine torque maintenance kits."
+                },
+                {
+                  "type": "reply",
+                  "date": "2026-08-29",
+                  "text": "Can someone visit our Abu Dhabi office?"
+                },
+                {
+                  "type": "meeting",
+                  "date": "2026-09-12",
+                  "text": "Offline meeting confirmed."
+                }
+              ],
+              "local": {
+                "currency": "AED",
+                "timezone": "Asia/Dubai",
+                "language": "Arabic (ar) / English",
+                "registrationNumber": null,
+                "registryNote": "Not yet compliantly sourced from UAE Ministry of Economy / Emirate-level DED — see architecture doc's OpenCorporates guidance."
+              },
+              "instructions": []
+            }
+          ]
+        },
+        {
+          "name": "Dubai",
+          "country": "ae",
+          "companies": [
+            {
+              "id": "ae-gulf-star-shipbuilding",
+              "name": "Gulf Star Shipbuilding",
+              "address": "Dubai Maritime City, Dubai, UAE",
+              "website": "gulfstarship.ae",
+              "segment": "Shipyard — patrol & workboats",
+              "source": "Company website",
+              "contacts": [
+                {
+                  "name": "Omar Khalid",
+                  "role": "Procurement",
+                  "email": "o.khalid@gulfstarship.ae",
+                  "phone": "+971 4 700 5521"
+                }
+              ],
+              "stage": "drafted",
+              "lastContact": "2026-09-16",
+              "nextAction": "Awaiting your approval",
+              "history": [
+                {
+                  "type": "email",
+                  "date": "2026-09-16",
+                  "text": "AI draft ready for review."
+                }
+              ],
+              "local": {
+                "currency": "AED",
+                "timezone": "Asia/Dubai",
+                "language": "Arabic (ar) / English",
+                "registrationNumber": null,
+                "registryNote": "Not yet compliantly sourced from UAE Ministry of Economy / Emirate-level DED — see architecture doc's OpenCorporates guidance."
+              },
+              "instructions": []
+            },
+            {
+              "id": "ae-emirates-coastal-craft",
+              "name": "Emirates Coastal Craft",
+              "address": "Jebel Ali Free Zone, Dubai, UAE",
+              "website": "emiratescoastal.ae",
+              "segment": "Vessel operator — coastal patrol",
+              "source": "IMO GISIS",
+              "contacts": [
+                {
+                  "name": "Sara Nasser",
+                  "role": "Technical Manager",
+                  "email": "s.nasser@emiratescoastal.ae",
+                  "phone": "+971 4 700 7743"
+                }
+              ],
+              "stage": "rejected",
+              "rejectedAfter": 4,
+              "lastContact": "2026-09-01",
+              "nextAction": "Closed — not a fit currently",
+              "history": [
+                {
+                  "type": "email",
+                  "date": "2026-08-18",
+                  "text": "Outreach on coastal craft torque kits."
+                },
+                {
+                  "type": "reply",
+                  "date": "2026-08-24",
+                  "text": "We standardised on another supplier last quarter."
+                }
+              ],
+              "local": {
+                "currency": "AED",
+                "timezone": "Asia/Dubai",
+                "language": "Arabic (ar) / English",
+                "registrationNumber": null,
+                "registryNote": "Not yet compliantly sourced from UAE Ministry of Economy / Emirate-level DED — see architecture doc's OpenCorporates guidance."
+              },
+              "instructions": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sg",
+      "name": "Singapore",
+      "regions": [
+        {
+          "name": "Jurong",
+          "country": "sg",
+          "companies": [
+            {
+              "id": "sg-jurong-marine-fabricators",
+              "name": "Jurong Marine Fabricators",
+              "address": "32 Shipyard Road, Jurong, Singapore",
+              "website": "jurongmarine.sg",
+              "segment": "Fabricator — rig support",
+              "source": "Trade association directory",
+              "contacts": [
+                {
+                  "name": "Wei Ling Tan",
+                  "role": "Sourcing Lead",
+                  "email": "wltan@jurongmarine.sg",
+                  "phone": "+65 700 2210"
+                }
+              ],
+              "stage": "found",
+              "lastContact": "2026-09-17",
+              "nextAction": "AI drafting first email",
+              "history": [
+                {
+                  "type": "found",
+                  "date": "2026-09-17",
+                  "text": "Added from OpenCorporates lookup."
+                }
+              ],
+              "local": {
+                "currency": "SGD",
+                "timezone": "Asia/Singapore",
+                "language": "English (en)",
+                "registrationNumber": null,
+                "registryNote": "Not yet compliantly sourced from ACRA (Accounting and Corporate Regulatory Authority) — see architecture doc's OpenCorporates guidance."
+              },
+              "instructions": []
+            },
+            {
+              "id": "sg-straits-offshore-pte-ltd",
+              "name": "Straits Offshore Pte Ltd",
+              "address": "19 Benoi Road, Jurong, Singapore",
+              "website": "straitsoffshore.sg",
+              "segment": "Vessel operator — anchor handling",
+              "source": "Equasis",
+              "contacts": [
+                {
+                  "name": "Daniel Koh",
+                  "role": "Technical Superintendent",
+                  "email": "dkoh@straitsoffshore.sg",
+                  "phone": "+65 700 6650"
+                }
+              ],
+              "stage": "sent",
+              "lastContact": "2026-09-13",
+              "nextAction": "Awaiting reply",
+              "history": [
+                {
+                  "type": "email",
+                  "date": "2026-09-13",
+                  "text": "Sent intro on anchor-handling winch torque units."
+                }
+              ],
+              "local": {
+                "currency": "SGD",
+                "timezone": "Asia/Singapore",
+                "language": "English (en)",
+                "registrationNumber": null,
+                "registryNote": "Not yet compliantly sourced from ACRA (Accounting and Corporate Regulatory Authority) — see architecture doc's OpenCorporates guidance."
+              },
+              "instructions": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "generated": "2026-09-19",
+  "note": "Company-level prospect candidates derived from today's real market signals (see market_signals_sample.json). No personal contact data is included -- names/emails/phones must come from a compliant per-company lookup (company website, OpenCorporates once a token is approved, or manual Equasis/GISIS lookup) before any outreach is drafted. Every entry starts at stage 'found' with no fabricated history.",
+  "candidates": [
+    {
+      "id": "kr-hd-hyundai-heavy-industries",
+      "name": "HD Hyundai Heavy Industries",
+      "country": "South Korea",
+      "region": "Ulsan",
+      "segment": "Shipbuilder — LNG carriers, bulk carriers, tankers",
+      "website": "https://www.hd.com/en/business/shipbuilding/hhi",
+      "address": null,
+      "source": "New-Ships.com newbuilding-contracts roundup, week 36/2026",
+      "sourceUrl": "https://www.new-ships.com/ns/news/6239",
+      "contacts": [],
+      "stage": "found",
+      "lastContact": "2026-09-19",
+      "nextAction": "Find a compliant public contact (procurement or newbuilding department) via the company site, then queue for an AI-drafted introduction referencing the BW LNG order.",
+      "history": [
+        {
+          "type": "found",
+          "date": "2026-09-19",
+          "text": "BW LNG placed a 4-vessel LNG carrier order here (new three-tank design) -- reported 16 Sept 2026. Fresh newbuild programme, worth an introduction now."
+        }
+      ]
+    }
+  ]
+}
