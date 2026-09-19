@@ -131,6 +131,10 @@
     font-size:13px; font-weight:590; cursor:pointer; transition:background .15s ease, color .15s ease;
   }
   .tab-btn[aria-selected="true"]{background:var(--glass-strong); color:var(--text); box-shadow:0 1px 4px rgba(0,0,0,.12), inset 0 0 0 1px var(--glass-border)}
+  .signal-badge{
+    display:inline-flex; align-items:center; justify-content:center; min-width:16px; height:16px; padding:0 5px;
+    margin-left:6px; border-radius:999px; background:var(--critical); color:#fff; font-size:10px; font-weight:700;
+  }
   .export-btn{
     border:1px solid var(--glass-border); background:var(--tint-cool); color:var(--text-muted);
     padding:6px 12px; border-radius:8px; font-size:12.5px; font-weight:590; cursor:pointer; flex:none;
@@ -230,6 +234,24 @@
   .activity li{background:var(--glass-soft); border:1px solid var(--glass-border); border-radius:12px; padding:10px 13px; font-size:13px; -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px)}
   .activity .a-meta{font-size:11px; color:var(--text-muted); margin-bottom:3px}
 
+  /* ---------- signals (raw, unreviewed automation output) ---------- */
+  .signals{flex:1; overflow-y:auto; padding:22px clamp(16px,3vw,32px)}
+  .signals-intro{font-size:13px; color:var(--text-muted); margin:0 0 18px; max-width:640px; line-height:1.5}
+  .signal-list{display:flex; flex-direction:column; gap:12px; max-width:760px}
+  .signal-card{
+    background:var(--glass-strong); border:1px solid var(--glass-border); border-radius:16px; padding:14px 18px;
+    box-shadow:0 6px 20px rgba(0,0,0,.08); -webkit-backdrop-filter:blur(18px); backdrop-filter:blur(18px);
+  }
+  .signal-card .s-top{display:flex; align-items:flex-start; justify-content:space-between; gap:12px}
+  .signal-card .s-title{font-size:14px; font-weight:650; margin:0; line-height:1.4}
+  .signal-card .s-title a{color:var(--text); text-decoration:none}
+  .signal-card .s-title a:hover{color:var(--accent); text-decoration:underline}
+  .signal-card .s-meta{font-size:11.5px; color:var(--text-muted); margin-top:6px; display:flex; gap:8px; flex-wrap:wrap; align-items:center}
+  .signal-pill{
+    flex:none; font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.03em;
+    color:var(--warning); background:color-mix(in srgb, var(--warning) 14%, transparent); padding:3px 8px; border-radius:999px;
+  }
+
   /* ---------- analytics ---------- */
   .analytics{flex:1; overflow-y:auto; padding:22px clamp(16px,3vw,32px)}
 
@@ -295,6 +317,7 @@
     </div>
     <div class="tabs" role="tablist" aria-label="View">
       <button class="tab-btn" id="tabPipeline" role="tab" aria-selected="true">Pipeline</button>
+      <button class="tab-btn" id="tabSignals" role="tab" aria-selected="false">New signals<span class="signal-badge" id="signalBadge" hidden></span></button>
       <button class="tab-btn" id="tabAnalytics" role="tab" aria-selected="false">Analytics</button>
     </div>
     <button class="export-btn" id="exportBtn" type="button" title="Download the current data, including any notes added this session, as data/companies.json">Export data</button>
@@ -314,6 +337,8 @@
       </div>
     </section>
 
+    <section class="signals" id="viewSignals" hidden></section>
+
     <section class="analytics" id="viewAnalytics" hidden></section>
   </div>
 </div>
@@ -328,6 +353,7 @@ var STAGE_LABELS = {found:'Found', drafted:'AI drafted', approved:'You approved'
 
 var DATA = [];                       // populated by loadData(), from data/companies.json
 var DATA_META = {schemaVersion:null, generated:null};
+var SIGNALS = [];                    // populated by loadSignals(), from data/rss_signals.json — raw, unreviewed automation output
 
 // Embedded fallback so the app still renders something if data/companies.json
 // can't be fetched (e.g. opened directly as a file:// page). When served
@@ -344,6 +370,55 @@ function loadData(){
       DATA_META.schemaVersion = payload.schemaVersion;
       DATA_META.generated = payload.generated;
     });
+}
+
+function loadSignals(){
+  return fetch('./data/rss_signals.json', {cache:'no-store'})
+    .then(function(r){ if (!r.ok) throw new Error('bad status ' + r.status); return r.json(); })
+    .catch(function(){ return []; })
+    .then(function(payload){ SIGNALS = Array.isArray(payload) ? payload : []; });
+}
+
+function fmtDateTime(d){
+  var dt = new Date(d);
+  if (isNaN(dt.getTime())) return d;
+  return dt.toLocaleDateString('en-GB', {day:'numeric', month:'short', year:'numeric'});
+}
+
+function sourceLabel(url){
+  try { return new URL(url).hostname.replace(/^www\./,''); } catch(e){ return url; }
+}
+
+function buildSignals(){
+  var root = document.getElementById('viewSignals');
+  var badge = document.getElementById('signalBadge');
+  if (SIGNALS.length){ badge.hidden = false; badge.textContent = String(SIGNALS.length); }
+  else { badge.hidden = true; }
+
+  root.innerHTML =
+    '<p class="signals-intro">Raw signals the automated lead-sourcing workflow found in maritime trade press — ' +
+    'nobody has reviewed these yet, and none of them are in the pipeline. Once outreach drafting is connected, ' +
+    'confirmed signals will be promoted into the Pipeline tab as new companies.</p>';
+
+  if (!SIGNALS.length){
+    root.insertAdjacentHTML('beforeend', '<div class="empty-state">No new signals yet. The lead-sourcing workflow checks maritime trade press daily and will list anything it finds here.</div>');
+    return;
+  }
+
+  var list = document.createElement('div');
+  list.className = 'signal-list';
+  SIGNALS.slice().reverse().forEach(function(sig){
+    var card = document.createElement('div');
+    card.className = 'signal-card';
+    card.innerHTML =
+      '<div class="s-top">' +
+        '<h3 class="s-title"><a href="'+sig.link+'" target="_blank" rel="noopener">'+sig.title+'</a></h3>' +
+        '<span class="signal-pill">Unreviewed</span>' +
+      '</div>' +
+      '<div class="s-meta"><span>'+fmtDateTime(sig.published)+'</span><span>·</span><span>'+sourceLabel(sig.source)+'</span></div>';
+    list.appendChild(card);
+  });
+  root.appendChild(list);
 }
 
 function addInstruction(co, text){
@@ -482,14 +557,16 @@ function renderDetail(){
 }
 
 document.getElementById('tabPipeline').addEventListener('click', function(){ switchTab('pipeline'); });
+document.getElementById('tabSignals').addEventListener('click', function(){ switchTab('signals'); });
 document.getElementById('tabAnalytics').addEventListener('click', function(){ switchTab('analytics'); });
 document.getElementById('exportBtn').addEventListener('click', exportData);
 function switchTab(which){
-  var isPipeline = which === 'pipeline';
-  document.getElementById('tabPipeline').setAttribute('aria-selected', String(isPipeline));
-  document.getElementById('tabAnalytics').setAttribute('aria-selected', String(!isPipeline));
-  document.getElementById('viewPipeline').hidden = !isPipeline;
-  document.getElementById('viewAnalytics').hidden = isPipeline;
+  document.getElementById('tabPipeline').setAttribute('aria-selected', String(which === 'pipeline'));
+  document.getElementById('tabSignals').setAttribute('aria-selected', String(which === 'signals'));
+  document.getElementById('tabAnalytics').setAttribute('aria-selected', String(which === 'analytics'));
+  document.getElementById('viewPipeline').hidden = which !== 'pipeline';
+  document.getElementById('viewSignals').hidden = which !== 'signals';
+  document.getElementById('viewAnalytics').hidden = which !== 'analytics';
 }
 
 // initial render happens once loadData() resolves, at the bottom of this file
@@ -862,6 +939,8 @@ loadData().then(function(){
   renderCountries(); renderList(); renderDetail();
   buildAnalytics();
 });
+
+loadSignals().then(buildSignals);
 
 })();
 </script>
