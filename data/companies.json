@@ -1,7 +1,7 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "generated": "2026-09-19",
-  "note": "Interim git-tracked data store. Structure: country -> region -> company. Each company carries contacts, progress (stage/lastContact/nextAction/history), local (country-specific registry/currency/timezone facts), and instructions (notes/approvals entered through the app). Once Supabase is wired up, this file is superseded by the `companies` table but kept in the same shape for a clean migration.",
+  "note": "Real company directory. Name/website/segment/region verified via each company's own official website plus an independent source (Wikipedia, stock-exchange filing, or trade press) during initial research. Contacts use a publicly published procurement/supplier contact where one exists; otherwise a general-inquiries contact, labeled as such — no name, email or phone was invented. Formal government company-registry lookups (registration numbers) have not yet been performed — see local.registryNote per country. All companies start at the 'found' stage since none have been contacted yet. Structure: country -> region -> company.",
   "countries": [
     {
       "id": "no",
@@ -12,45 +12,28 @@
           "country": "no",
           "companies": [
             {
-              "id": "no-fjordal-marine-yard",
-              "name": "Fjordal Marine Yard",
-              "address": "Storgata 14, 6003 Ålesund, Norway",
-              "website": "fjordalmarine.no",
-              "segment": "Shipbuilder — offshore support vessels",
-              "source": "OpenCorporates",
+              "id": "no-vard-group-as",
+              "name": "Vard Group AS",
+              "address": "Ålesund, Norway",
+              "website": "vard.com",
+              "segment": "Shipbuilder and ship designer — offshore energy, seafood, expedition and security vessels, plus ship repair/conversion.",
+              "source": "Official site (vard.com) + Fincantieri corporate site (independent, confirms ownership)",
               "contacts": [
                 {
-                  "name": "Ingrid Haugen",
-                  "role": "Procurement Lead",
-                  "email": "i.haugen@fjordalmarine.no",
-                  "phone": "+47 700 12 340"
+                  "name": "Michele Zecchin",
+                  "role": "SVP Procurement",
+                  "email": "michele.zecchin@vard.com",
+                  "source": "https://www.vard.com/contact-us-2"
                 }
               ],
-              "stage": "won",
-              "lastContact": "2026-09-02",
-              "nextAction": "Kickoff call scheduled",
-              "feedback": 5,
-              "meetingFormat": "online",
+              "stage": "found",
+              "lastContact": "2026-09-19",
+              "nextAction": "AI drafting first email",
               "history": [
                 {
-                  "type": "email",
-                  "date": "2026-08-04",
-                  "text": "Introduced C·TORQ propulsion line for OSV refits."
-                },
-                {
-                  "type": "reply",
-                  "date": "2026-08-06",
-                  "text": "Send specs for the 2400-series unit."
-                },
-                {
-                  "type": "meeting",
-                  "date": "2026-08-19",
-                  "text": "Online demo with engineering team."
-                },
-                {
-                  "type": "deal",
-                  "date": "2026-09-02",
-                  "text": "Signed for 2 vessels, refit programme."
+                  "type": "found",
+                  "date": "2026-09-19",
+                  "text": "Added from web research — verified via official site + independent source."
                 }
               ],
               "local": {
@@ -60,42 +43,35 @@
                 "registrationNumber": null,
                 "registryNote": "Not yet compliantly sourced from Brønnøysund Register Centre — see architecture doc's OpenCorporates guidance."
               },
-              "instructions": []
+              "instructions": [],
+              "categories": [
+                "hull",
+                "electrical"
+              ]
             },
             {
-              "id": "no-nordkyst-verft-as",
-              "name": "Nordkyst Verft AS",
-              "address": "Kaigata 2, 6270 Brattvåg, Norway",
-              "website": "nordkystverft.no",
-              "segment": "Shipyard — fishing vessels",
-              "source": "Company website",
+              "id": "no-ulstein-group-asa",
+              "name": "Ulstein Group ASA",
+              "address": "Ulsteinvik, Norway",
+              "website": "ulstein.com",
+              "segment": "Shipbuilder and ship designer — advanced offshore, cruise/expedition vessels; known for the patented X-BOW hull.",
+              "source": "Official site (ulstein.com) + Wikipedia",
               "contacts": [
                 {
-                  "name": "Per Solberg",
-                  "role": "Yard Manager",
-                  "email": "per@nordkystverft.no",
-                  "phone": "+47 700 55 812"
+                  "name": "Inge Sleipnes",
+                  "role": "Supply Chain Manager, Ulstein Verft AS",
+                  "phone": "+47 900 63 683",
+                  "source": "https://ulstein.com/contact"
                 }
               ],
-              "stage": "meeting",
-              "lastContact": "2026-09-10",
-              "nextAction": "Follow up after site visit",
-              "meetingFormat": "offline",
+              "stage": "found",
+              "lastContact": "2026-09-19",
+              "nextAction": "AI drafting first email",
               "history": [
                 {
-                  "type": "email",
-                  "date": "2026-08-20",
-                  "text": "First outreach on torque units for trawler refits."
-                },
-                {
-                  "type": "reply",
-                  "date": "2026-08-25",
-                  "text": "Asked for an in-person yard visit."
-                },
-                {
-                  "type": "meeting",
-                  "date": "2026-09-10",
-                  "text": "Yard visit booked for next month."
+                  "type": "found",
+                  "date": "2026-09-19",
+                  "text": "Added from web research — verified via official site + independent source."
                 }
               ],
               "local": {
@@ -105,76 +81,35 @@
                 "registrationNumber": null,
                 "registryNote": "Not yet compliantly sourced from Brønnøysund Register Centre — see architecture doc's OpenCorporates guidance."
               },
-              "instructions": []
-            }
-          ]
-        },
-        {
-          "name": "Vestland",
-          "country": "no",
-          "companies": [
-            {
-              "id": "no-bergen-subsea-fabrication",
-              "name": "Bergen Subsea Fabrication",
-              "address": "Damsgårdsveien 90, 5058 Bergen, Norway",
-              "website": "bergensubsea.no",
-              "segment": "Fabricator — subsea structures",
-              "source": "Trade association directory",
-              "contacts": [
-                {
-                  "name": "Kari Nystrøm",
-                  "role": "Head of Sourcing",
-                  "email": "k.nystrom@bergensubsea.no",
-                  "phone": "+47 700 33 210"
-                }
-              ],
-              "stage": "replied",
-              "lastContact": "2026-09-08",
-              "nextAction": "Propose a meeting slot",
-              "history": [
-                {
-                  "type": "email",
-                  "date": "2026-09-01",
-                  "text": "Outreach on torque tooling for subsea assembly."
-                },
-                {
-                  "type": "reply",
-                  "date": "2026-09-08",
-                  "text": "Interesting — what's the lead time?"
-                }
-              ],
-              "local": {
-                "currency": "NOK",
-                "timezone": "Europe/Oslo",
-                "language": "Norwegian (nb)",
-                "registrationNumber": null,
-                "registryNote": "Not yet compliantly sourced from Brønnøysund Register Centre — see architecture doc's OpenCorporates guidance."
-              },
-              "instructions": []
+              "instructions": [],
+              "categories": [
+                "hull",
+                "automation"
+              ]
             },
             {
-              "id": "no-vestland-skipsservice",
-              "name": "Vestland Skipsservice",
-              "address": "Sjøgata 8, 5411 Stord, Norway",
-              "website": "vestlandskip.no",
-              "segment": "Vessel operator — ferries",
-              "source": "IMO GISIS",
+              "id": "no-hav-group-asa",
+              "name": "HAV Group ASA",
+              "address": "Fosnavåg, Norway",
+              "website": "havgroup.no",
+              "segment": "Ship designer and maritime technology group — low/zero-emission vessel design plus electrical propulsion and hydrogen systems.",
+              "source": "Official site (havgroup.no) + Wikipedia (as Havyard Group)",
               "contacts": [
                 {
-                  "name": "Ole Fjeld",
-                  "role": "Technical Director",
-                  "email": "ole.fjeld@vestlandskip.no",
-                  "phone": "+47 700 44 921"
+                  "name": "General Enquiries",
+                  "email": "office@havgroup.no",
+                  "phone": "+47 70 08 01 80",
+                  "source": "https://www.havgroup.no/contact"
                 }
               ],
-              "stage": "sent",
-              "lastContact": "2026-09-14",
-              "nextAction": "Awaiting reply",
+              "stage": "found",
+              "lastContact": "2026-09-19",
+              "nextAction": "AI drafting first email",
               "history": [
                 {
-                  "type": "email",
-                  "date": "2026-09-14",
-                  "text": "Sent intro email on ferry engine torque maintenance kits."
+                  "type": "found",
+                  "date": "2026-09-19",
+                  "text": "Added from web research — verified via official site + independent source."
                 }
               ],
               "local": {
@@ -184,7 +119,11 @@
                 "registrationNumber": null,
                 "registryNote": "Not yet compliantly sourced from Brønnøysund Register Centre — see architecture doc's OpenCorporates guidance."
               },
-              "instructions": []
+              "instructions": [],
+              "categories": [
+                "software",
+                "electrical"
+              ]
             }
           ]
         }
@@ -199,45 +138,28 @@
           "country": "kr",
           "companies": [
             {
-              "id": "kr-hanul-heavy-marine",
-              "name": "Hanul Heavy Marine",
-              "address": "204 Yeompo-ro, Ulsan, South Korea",
-              "website": "hanulmarine.kr",
-              "segment": "Shipbuilder — bulk carriers",
-              "source": "OpenCorporates",
+              "id": "kr-hd-hyundai-heavy-industries",
+              "name": "HD Hyundai Heavy Industries",
+              "address": "Ulsan, South Korea",
+              "website": "hhi.co.kr",
+              "segment": "Shipbuilder and marine engine maker — LNG/LPG carriers, tankers, container ships, offshore platforms and naval vessels.",
+              "source": "Official site (hd.com/hhi.co.kr) + Wikipedia",
               "contacts": [
                 {
-                  "name": "Jiho Park",
-                  "role": "Procurement Director",
-                  "email": "jpark@hanulmarine.kr",
-                  "phone": "+82 52 700 1122"
+                  "name": "HiPro SCM Supplier Portal",
+                  "role": "Procurement — registration required, no public email/phone",
+                  "portalUrl": "https://hiproscm.hhi.co.kr/HomePage/Register/regist",
+                  "source": "https://hiproscm.hhi.co.kr/HomePage/Register/regist"
                 }
               ],
-              "stage": "won",
-              "lastContact": "2026-08-28",
-              "nextAction": "Second unit order under discussion",
-              "feedback": 4,
-              "meetingFormat": "online",
+              "stage": "found",
+              "lastContact": "2026-09-19",
+              "nextAction": "AI drafting first email",
               "history": [
                 {
-                  "type": "email",
-                  "date": "2026-07-10",
-                  "text": "Outreach on torque unit line for bulk carrier newbuilds."
-                },
-                {
-                  "type": "reply",
-                  "date": "2026-07-14",
-                  "text": "Can we set up a call?"
-                },
-                {
-                  "type": "meeting",
-                  "date": "2026-07-22",
-                  "text": "Online meeting with engineering."
-                },
-                {
-                  "type": "deal",
-                  "date": "2026-08-28",
-                  "text": "Signed for 4-vessel newbuild programme."
+                  "type": "found",
+                  "date": "2026-09-19",
+                  "text": "Added from web research — verified via official site + independent source."
                 }
               ],
               "local": {
@@ -247,77 +169,40 @@
                 "registrationNumber": null,
                 "registryNote": "Not yet compliantly sourced from Korea's Financial Supervisory Service (DART) — see architecture doc's OpenCorporates guidance."
               },
-              "instructions": []
-            },
-            {
-              "id": "kr-donghae-shipbuilding-co-",
-              "name": "Donghae Shipbuilding Co.",
-              "address": "55 Mipo-ro, Ulsan, South Korea",
-              "website": "donghaesb.kr",
-              "segment": "Shipbuilder — container vessels",
-              "source": "Company website",
-              "contacts": [
-                {
-                  "name": "Seo-yeon Choi",
-                  "role": "Sourcing Manager",
-                  "email": "choi@donghaesb.kr",
-                  "phone": "+82 52 700 4471"
-                }
-              ],
-              "stage": "rejected",
-              "rejectedAfter": 3,
-              "lastContact": "2026-08-30",
-              "nextAction": "Closed — revisit next fiscal year",
-              "history": [
-                {
-                  "type": "email",
-                  "date": "2026-08-05",
-                  "text": "Outreach on torque tooling for container vessel line."
-                },
-                {
-                  "type": "reply",
-                  "date": "2026-08-12",
-                  "text": "We've already committed our supplier budget this year."
-                }
-              ],
-              "local": {
-                "currency": "KRW",
-                "timezone": "Asia/Seoul",
-                "language": "Korean (ko)",
-                "registrationNumber": null,
-                "registryNote": "Not yet compliantly sourced from Korea's Financial Supervisory Service (DART) — see architecture doc's OpenCorporates guidance."
-              },
-              "instructions": []
+              "instructions": [],
+              "categories": [
+                "hull",
+                "propulsion"
+              ]
             }
           ]
         },
         {
-          "name": "Busan",
+          "name": "Gyeongsangnam-do",
           "country": "kr",
           "companies": [
             {
-              "id": "kr-busan-marine-equipment-ltd-",
-              "name": "Busan Marine Equipment Ltd.",
-              "address": "88 Haeundae-ro, Busan, South Korea",
-              "website": "busanmarine.kr",
-              "segment": "Equipment integrator",
-              "source": "Trade show exhibitor list",
+              "id": "kr-samsung-heavy-industries",
+              "name": "Samsung Heavy Industries",
+              "address": "Geoje, South Korea",
+              "website": "samsungshi.com",
+              "segment": "Shipbuilder — container ships, LNG carriers, drillships and offshore FPSO/FSO units; main yard on Geoje Island.",
+              "source": "Official site (samsungshi.com) + Wikipedia",
               "contacts": [
                 {
-                  "name": "Min-jun Lee",
-                  "role": "Engineering Lead",
-                  "email": "mjlee@busanmarine.kr",
-                  "phone": "+82 51 700 8834"
+                  "name": "General Enquiries",
+                  "phone": "031-5171-7000",
+                  "source": "https://samsungshi.com/En/"
                 }
               ],
-              "stage": "approved",
-              "lastContact": "2026-09-15",
-              "nextAction": "Send approved draft",
+              "stage": "found",
+              "lastContact": "2026-09-19",
+              "nextAction": "AI drafting first email",
               "history": [
                 {
-                  "type": "email",
-                  "date": "2026-09-15",
-                  "text": "Draft approved, queued to send."
+                  "type": "found",
+                  "date": "2026-09-19",
+                  "text": "Added from web research — verified via official site + independent source."
                 }
               ],
               "local": {
@@ -327,7 +212,49 @@
                 "registrationNumber": null,
                 "registryNote": "Not yet compliantly sourced from Korea's Financial Supervisory Service (DART) — see architecture doc's OpenCorporates guidance."
               },
-              "instructions": []
+              "instructions": [],
+              "categories": [
+                "hull",
+                "cargo"
+              ]
+            },
+            {
+              "id": "kr-hanwha-ocean",
+              "name": "Hanwha Ocean",
+              "address": "Geoje, South Korea",
+              "website": "hanwhaocean.com",
+              "segment": "Shipbuilder (formerly DSME) — LNG carriers, container ships, floating production units and naval vessels including submarines.",
+              "source": "Official site (hanwhaocean.com) + Wikipedia",
+              "contacts": [
+                {
+                  "name": "ICOPS Supplier Portal",
+                  "role": "Procurement — registration required, no public email/phone",
+                  "portalUrl": "https://icops.hanwhaocean.com/spLogin.do?lang=KO",
+                  "source": "https://icops.hanwhaocean.com/spLogin.do?lang=KO"
+                }
+              ],
+              "stage": "found",
+              "lastContact": "2026-09-19",
+              "nextAction": "AI drafting first email",
+              "history": [
+                {
+                  "type": "found",
+                  "date": "2026-09-19",
+                  "text": "Added from web research — verified via official site + independent source."
+                }
+              ],
+              "local": {
+                "currency": "KRW",
+                "timezone": "Asia/Seoul",
+                "language": "Korean (ko)",
+                "registrationNumber": null,
+                "registryNote": "Not yet compliantly sourced from Korea's Financial Supervisory Service (DART) — see architecture doc's OpenCorporates guidance."
+              },
+              "instructions": [],
+              "categories": [
+                "hull",
+                "cargo"
+              ]
             }
           ]
         }
@@ -342,39 +269,29 @@
           "country": "ae",
           "companies": [
             {
-              "id": "ae-al-reef-vessel-services",
-              "name": "Al Reef Vessel Services",
-              "address": "Mussafah Industrial Area, Abu Dhabi, UAE",
-              "website": "alreefvessel.ae",
-              "segment": "Vessel operator — offshore supply",
-              "source": "OpenCorporates",
+              "id": "ae-adsb-abu-dhabi-ship-building",
+              "name": "ADSB (Abu Dhabi Ship Building)",
+              "address": "Abu Dhabi, United Arab Emirates",
+              "website": "adsb.ae",
+              "segment": "Shipyard — naval and commercial vessel construction, repair, maintenance, refit and conversion.",
+              "source": "Official site (adsb.ae, EDGE Group) + Wikipedia",
               "contacts": [
                 {
-                  "name": "Fatima Al Suwaidi",
-                  "role": "Fleet Manager",
-                  "email": "f.alsuwaidi@alreefvessel.ae",
-                  "phone": "+971 2 700 1290"
+                  "name": "EDGE Group Vendor Portal",
+                  "role": "Procurement — group-wide portal covering ADSB as an EDGE Group company",
+                  "email": "support@edgegroup.ae",
+                  "phone": "+971 2 205 6666",
+                  "source": "https://edgegroup.ae/e-vendor"
                 }
               ],
-              "stage": "meeting",
-              "lastContact": "2026-09-12",
-              "nextAction": "Offline meeting at their office",
-              "meetingFormat": "offline",
+              "stage": "found",
+              "lastContact": "2026-09-19",
+              "nextAction": "AI drafting first email",
               "history": [
                 {
-                  "type": "email",
-                  "date": "2026-08-22",
-                  "text": "Outreach on OSV engine torque maintenance kits."
-                },
-                {
-                  "type": "reply",
-                  "date": "2026-08-29",
-                  "text": "Can someone visit our Abu Dhabi office?"
-                },
-                {
-                  "type": "meeting",
-                  "date": "2026-09-12",
-                  "text": "Offline meeting confirmed."
+                  "type": "found",
+                  "date": "2026-09-19",
+                  "text": "Added from web research — verified via official site + independent source."
                 }
               ],
               "local": {
@@ -384,7 +301,11 @@
                 "registrationNumber": null,
                 "registryNote": "Not yet compliantly sourced from UAE Ministry of Economy / Emirate-level DED — see architecture doc's OpenCorporates guidance."
               },
-              "instructions": []
+              "instructions": [],
+              "categories": [
+                "hull",
+                "safety"
+              ]
             }
           ]
         },
@@ -393,28 +314,29 @@
           "country": "ae",
           "companies": [
             {
-              "id": "ae-gulf-star-shipbuilding",
-              "name": "Gulf Star Shipbuilding",
-              "address": "Dubai Maritime City, Dubai, UAE",
-              "website": "gulfstarship.ae",
-              "segment": "Shipyard — patrol & workboats",
-              "source": "Company website",
+              "id": "ae-grandweld-shipyards",
+              "name": "Grandweld Shipyards",
+              "address": "Dubai, United Arab Emirates",
+              "website": "grandweld.com",
+              "segment": "Shipyard — aluminum vessel shipbuilding (crew/patrol boats, ferries, OSVs, tugs) plus ship repair and conversion.",
+              "source": "Official site (grandweld.com) + trade press (Motorship shipyard directory)",
               "contacts": [
                 {
-                  "name": "Omar Khalid",
-                  "role": "Procurement",
-                  "email": "o.khalid@gulfstarship.ae",
-                  "phone": "+971 4 700 5521"
+                  "name": "Mohamed Mehyar",
+                  "role": "Supply Chain Manager",
+                  "email": "mohamed.m@grandweld.com",
+                  "phone": "+971 4 427 0800",
+                  "source": "https://www.grandweld.com/contact-us/"
                 }
               ],
-              "stage": "drafted",
-              "lastContact": "2026-09-16",
-              "nextAction": "Awaiting your approval",
+              "stage": "found",
+              "lastContact": "2026-09-19",
+              "nextAction": "AI drafting first email",
               "history": [
                 {
-                  "type": "email",
-                  "date": "2026-09-16",
-                  "text": "AI draft ready for review."
+                  "type": "found",
+                  "date": "2026-09-19",
+                  "text": "Added from web research — verified via official site + independent source."
                 }
               ],
               "local": {
@@ -424,37 +346,35 @@
                 "registrationNumber": null,
                 "registryNote": "Not yet compliantly sourced from UAE Ministry of Economy / Emirate-level DED — see architecture doc's OpenCorporates guidance."
               },
-              "instructions": []
+              "instructions": [],
+              "categories": [
+                "hull",
+                "services"
+              ]
             },
             {
-              "id": "ae-emirates-coastal-craft",
-              "name": "Emirates Coastal Craft",
-              "address": "Jebel Ali Free Zone, Dubai, UAE",
-              "website": "emiratescoastal.ae",
-              "segment": "Vessel operator — coastal patrol",
-              "source": "IMO GISIS",
+              "id": "ae-drydocks-world-dubai",
+              "name": "Drydocks World (Dubai)",
+              "address": "Dubai, United Arab Emirates",
+              "website": "drydocks.gov.ae",
+              "segment": "Shipyard — large-scale ship repair, conversion and offshore/marine engineering services.",
+              "source": "Official site (drydocks.gov.ae, part of DP World) + Wikipedia",
               "contacts": [
                 {
-                  "name": "Sara Nasser",
-                  "role": "Technical Manager",
-                  "email": "s.nasser@emiratescoastal.ae",
-                  "phone": "+971 4 700 7743"
+                  "name": "General Enquiries",
+                  "email": "info@dpworld.com",
+                  "phone": "+971-4-3450626",
+                  "source": "https://www.drydocks.gov.ae/contact-us"
                 }
               ],
-              "stage": "rejected",
-              "rejectedAfter": 4,
-              "lastContact": "2026-09-01",
-              "nextAction": "Closed — not a fit currently",
+              "stage": "found",
+              "lastContact": "2026-09-19",
+              "nextAction": "AI drafting first email",
               "history": [
                 {
-                  "type": "email",
-                  "date": "2026-08-18",
-                  "text": "Outreach on coastal craft torque kits."
-                },
-                {
-                  "type": "reply",
-                  "date": "2026-08-24",
-                  "text": "We standardised on another supplier last quarter."
+                  "type": "found",
+                  "date": "2026-09-19",
+                  "text": "Added from web research — verified via official site + independent source."
                 }
               ],
               "local": {
@@ -464,7 +384,11 @@
                 "registrationNumber": null,
                 "registryNote": "Not yet compliantly sourced from UAE Ministry of Economy / Emirate-level DED — see architecture doc's OpenCorporates guidance."
               },
-              "instructions": []
+              "instructions": [],
+              "categories": [
+                "hull",
+                "services"
+              ]
             }
           ]
         }
@@ -475,32 +399,32 @@
       "name": "Singapore",
       "regions": [
         {
-          "name": "Jurong",
+          "name": "Tuas / Benoi Shipyard Belt",
           "country": "sg",
           "companies": [
             {
-              "id": "sg-jurong-marine-fabricators",
-              "name": "Jurong Marine Fabricators",
-              "address": "32 Shipyard Road, Jurong, Singapore",
-              "website": "jurongmarine.sg",
-              "segment": "Fabricator — rig support",
-              "source": "Trade association directory",
+              "id": "sg-seatrium-limited",
+              "name": "Seatrium Limited",
+              "address": "Tuas, Singapore",
+              "website": "seatrium.com",
+              "segment": "Shipyard — offshore rig and floater newbuilds, specialised shipbuilding, and ship repair & upgrades.",
+              "source": "Official site (seatrium.com) + Wikipedia; SGX-listed (S51)",
               "contacts": [
                 {
-                  "name": "Wei Ling Tan",
-                  "role": "Sourcing Lead",
-                  "email": "wltan@jurongmarine.sg",
-                  "phone": "+65 700 2210"
+                  "name": "General Enquiries",
+                  "email": "info@seatrium.com",
+                  "phone": "+65 6265 1766",
+                  "source": "https://seatrium.com/contact.php"
                 }
               ],
               "stage": "found",
-              "lastContact": "2026-09-17",
+              "lastContact": "2026-09-19",
               "nextAction": "AI drafting first email",
               "history": [
                 {
                   "type": "found",
-                  "date": "2026-09-17",
-                  "text": "Added from OpenCorporates lookup."
+                  "date": "2026-09-19",
+                  "text": "Added from web research — verified via official site + independent source."
                 }
               ],
               "local": {
@@ -510,31 +434,35 @@
                 "registrationNumber": null,
                 "registryNote": "Not yet compliantly sourced from ACRA (Accounting and Corporate Regulatory Authority) — see architecture doc's OpenCorporates guidance."
               },
-              "instructions": []
+              "instructions": [],
+              "categories": [
+                "hull",
+                "services"
+              ]
             },
             {
-              "id": "sg-straits-offshore-pte-ltd",
-              "name": "Straits Offshore Pte Ltd",
-              "address": "19 Benoi Road, Jurong, Singapore",
-              "website": "straitsoffshore.sg",
-              "segment": "Vessel operator — anchor handling",
-              "source": "Equasis",
+              "id": "sg-st-engineering-marine-ltd",
+              "name": "ST Engineering Marine Ltd",
+              "address": "7 Benoi Road, Singapore 629882",
+              "website": "stengg.com",
+              "segment": "Shipyard — naval and commercial shipbuilding, ship repair and conversion (Marine arm of ST Engineering).",
+              "source": "Official site (stengg.com) + Wikipedia; address confirmed via OpenGovSG corporate registry",
               "contacts": [
                 {
-                  "name": "Daniel Koh",
-                  "role": "Technical Superintendent",
-                  "email": "dkoh@straitsoffshore.sg",
-                  "phone": "+65 700 6650"
+                  "name": "Vendor Information Portal",
+                  "role": "PO terms & supplier documents — no public email/phone",
+                  "portalUrl": "https://www.stengg.com/en/vendor-information/",
+                  "source": "https://www.stengg.com/en/vendor-information/"
                 }
               ],
-              "stage": "sent",
-              "lastContact": "2026-09-13",
-              "nextAction": "Awaiting reply",
+              "stage": "found",
+              "lastContact": "2026-09-19",
+              "nextAction": "AI drafting first email",
               "history": [
                 {
-                  "type": "email",
-                  "date": "2026-09-13",
-                  "text": "Sent intro on anchor-handling winch torque units."
+                  "type": "found",
+                  "date": "2026-09-19",
+                  "text": "Added from web research — verified via official site + independent source."
                 }
               ],
               "local": {
@@ -544,7 +472,1643 @@
                 "registrationNumber": null,
                 "registryNote": "Not yet compliantly sourced from ACRA (Accounting and Corporate Regulatory Authority) — see architecture doc's OpenCorporates guidance."
               },
-              "instructions": []
+              "instructions": [],
+              "categories": [
+                "hull",
+                "safety"
+              ]
+            },
+            {
+              "id": "sg-paxocean-group",
+              "name": "PaxOcean Group",
+              "address": "Jalan Samulun, Singapore",
+              "website": "paxocean.com",
+              "segment": "Shipyard — vessel newbuilding, offshore fabrication, rig building, and ship/rig repair, maintenance & conversion.",
+              "source": "Official site (paxocean.com) + Kuok Group corporate page + EDB press release",
+              "contacts": [
+                {
+                  "name": "General Enquiries",
+                  "email": "marketing@paxocean.com",
+                  "phone": "+65 6733 3600",
+                  "source": "https://paxocean.com/connect/"
+                }
+              ],
+              "stage": "found",
+              "lastContact": "2026-09-19",
+              "nextAction": "AI drafting first email",
+              "history": [
+                {
+                  "type": "found",
+                  "date": "2026-09-19",
+                  "text": "Added from web research — verified via official site + independent source."
+                }
+              ],
+              "local": {
+                "currency": "SGD",
+                "timezone": "Asia/Singapore",
+                "language": "English (en)",
+                "registrationNumber": null,
+                "registryNote": "Not yet compliantly sourced from ACRA (Accounting and Corporate Regulatory Authority) — see architecture doc's OpenCorporates guidance."
+              },
+              "instructions": [],
+              "categories": [
+                "hull",
+                "cargo"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cn",
+      "name": "China",
+      "regions": [
+        {
+          "name": "Shanghai",
+          "country": "cn",
+          "companies": [
+            {
+              "id": "cn-jiangnan-shipyard-group-co-ltd",
+              "name": "Jiangnan Shipyard (Group) Co., Ltd.",
+              "address": "Shanghai, China",
+              "website": "jnshipyard.com.cn",
+              "segment": "Shipbuilder — LNG/LPG carriers, large container ships (up to 23,000 TEU) and naval vessels.",
+              "source": "Official site (jnshipyard.com.cn) + Wikipedia; CSSC subsidiary",
+              "contacts": [
+                {
+                  "name": "General Switchboard",
+                  "role": "No published procurement/supplier contact found",
+                  "phone": "+86-21-6315-1818",
+                  "source": "https://www.motorship.com/ms-directory/jiangnan-shipyard-group-co-ltd/contact-us/353318.contact"
+                }
+              ],
+              "stage": "found",
+              "lastContact": "2026-09-19",
+              "nextAction": "AI drafting first email",
+              "history": [
+                {
+                  "type": "found",
+                  "date": "2026-09-19",
+                  "text": "Added from web research — verified via official site + independent source."
+                }
+              ],
+              "local": {
+                "currency": "CNY",
+                "timezone": "Asia/Shanghai",
+                "language": "Mandarin Chinese (zh)",
+                "registrationNumber": null,
+                "registryNote": "Not yet compliantly sourced from China's National Enterprise Credit Information Publicity System — see architecture doc's OpenCorporates guidance."
+              },
+              "instructions": [],
+              "categories": [
+                "hull",
+                "propulsion"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Liaoning",
+          "country": "cn",
+          "companies": [
+            {
+              "id": "cn-dalian-shipbuilding-industry-co-ltd",
+              "name": "Dalian Shipbuilding Industry Co., Ltd.",
+              "address": "Dalian, China",
+              "website": "dsic.cn",
+              "segment": "Shipbuilder — VLCCs, bulk carriers, FPSO/offshore conversions and naval vessels.",
+              "source": "Official site (dsic.cn) + Wikipedia; part of CSSC",
+              "contacts": [
+                {
+                  "name": "General Switchboard",
+                  "role": "No published procurement/supplier contact found",
+                  "phone": "+86-411-4417703",
+                  "source": "https://www.motorship.com/ms-directory/dalian-new-shipbuilding-industry-co-ltd/contact-us/353278.contact"
+                }
+              ],
+              "stage": "found",
+              "lastContact": "2026-09-19",
+              "nextAction": "AI drafting first email",
+              "history": [
+                {
+                  "type": "found",
+                  "date": "2026-09-19",
+                  "text": "Added from web research — verified via official site + independent source."
+                }
+              ],
+              "local": {
+                "currency": "CNY",
+                "timezone": "Asia/Shanghai",
+                "language": "Mandarin Chinese (zh)",
+                "registrationNumber": null,
+                "registryNote": "Not yet compliantly sourced from China's National Enterprise Credit Information Publicity System — see architecture doc's OpenCorporates guidance."
+              },
+              "instructions": [],
+              "categories": [
+                "hull",
+                "propulsion"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Jiangsu",
+          "country": "cn",
+          "companies": [
+            {
+              "id": "cn-yangzijiang-shipbuilding-holdings-ltd",
+              "name": "Yangzijiang Shipbuilding (Holdings) Ltd",
+              "address": "Jingjiang, China",
+              "website": "yzjship.com",
+              "segment": "Shipbuilder — large container ships (13,000+ TEU), bulk carriers, oil/chemical/LNG/LPG carriers and offshore equipment.",
+              "source": "Official site (yzjship.com) + SGX corporate information filing",
+              "contacts": [
+                {
+                  "name": "Marketing & Business Dept.",
+                  "role": "General Manager's Office — no dedicated procurement page found",
+                  "email": "office@yzjship.com",
+                  "phone": "+86-523-8466-0022",
+                  "source": "https://www.yzjship.com/en/contact.html"
+                }
+              ],
+              "stage": "found",
+              "lastContact": "2026-09-19",
+              "nextAction": "AI drafting first email",
+              "history": [
+                {
+                  "type": "found",
+                  "date": "2026-09-19",
+                  "text": "Added from web research — verified via official site + independent source."
+                }
+              ],
+              "local": {
+                "currency": "CNY",
+                "timezone": "Asia/Shanghai",
+                "language": "Mandarin Chinese (zh)",
+                "registrationNumber": null,
+                "registryNote": "Not yet compliantly sourced from China's National Enterprise Credit Information Publicity System — see architecture doc's OpenCorporates guidance."
+              },
+              "instructions": [],
+              "categories": [
+                "hull",
+                "cargo"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "jp",
+      "name": "Japan",
+      "regions": [
+        {
+          "name": "Ehime Prefecture",
+          "country": "jp",
+          "companies": [
+            {
+              "id": "jp-imabari-shipbuilding-co-ltd",
+              "name": "Imabari Shipbuilding Co., Ltd.",
+              "address": "Imabari, Japan",
+              "website": "imazo.co.jp",
+              "segment": "Shipbuilder — bulk carriers, ultra-large container ships and tankers; Japan's largest shipbuilder by tonnage.",
+              "source": "Official site + Wikipedia + JETRO Ehime trade directory",
+              "contacts": [
+                {
+                  "name": "General Inquiries",
+                  "role": "HQ switchboard — no public procurement contact found",
+                  "phone": "0898-36-5000",
+                  "source": "https://www.jetro.go.jp/jetro/japan/ehime/company/2026_10041.html"
+                }
+              ],
+              "stage": "found",
+              "lastContact": "2026-09-19",
+              "nextAction": "AI drafting first email",
+              "history": [
+                {
+                  "type": "found",
+                  "date": "2026-09-19",
+                  "text": "Added from web research — verified via official site + independent source."
+                }
+              ],
+              "local": {
+                "currency": "JPY",
+                "timezone": "Asia/Tokyo",
+                "language": "Japanese (ja)",
+                "registrationNumber": null,
+                "registryNote": "Not yet compliantly sourced from Japan's Legal Affairs Bureau corporate registry — see architecture doc's OpenCorporates guidance."
+              },
+              "instructions": [],
+              "categories": [
+                "hull",
+                "propulsion"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Kanagawa Prefecture",
+          "country": "jp",
+          "companies": [
+            {
+              "id": "jp-japan-marine-united-corporation",
+              "name": "Japan Marine United Corporation",
+              "address": "Yokohama, Japan",
+              "website": "jmuc.co.jp",
+              "segment": "Shipbuilder — container ships, bulk carriers, LNG/LPG carriers, ferries, naval and patrol vessels, offshore structures.",
+              "source": "Official site (jmuc.co.jp) + Wikipedia",
+              "contacts": [
+                {
+                  "name": "General Inquiries",
+                  "role": "Contact Us web form — no named procurement contact published",
+                  "phone": "+81-45-264-7200",
+                  "source": "https://www.jmuc.co.jp/en/company/profile/"
+                }
+              ],
+              "stage": "found",
+              "lastContact": "2026-09-19",
+              "nextAction": "AI drafting first email",
+              "history": [
+                {
+                  "type": "found",
+                  "date": "2026-09-19",
+                  "text": "Added from web research — verified via official site + independent source."
+                }
+              ],
+              "local": {
+                "currency": "JPY",
+                "timezone": "Asia/Tokyo",
+                "language": "Japanese (ja)",
+                "registrationNumber": null,
+                "registryNote": "Not yet compliantly sourced from Japan's Legal Affairs Bureau corporate registry — see architecture doc's OpenCorporates guidance."
+              },
+              "instructions": [],
+              "categories": [
+                "hull",
+                "cargo"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Osaka Prefecture (Imari yard, Saga)",
+          "country": "jp",
+          "companies": [
+            {
+              "id": "jp-namura-shipbuilding-co-ltd",
+              "name": "Namura Shipbuilding Co., Ltd.",
+              "address": "Osaka, Japan",
+              "website": "namura.co.jp",
+              "segment": "Shipbuilder — bulk carriers, tankers, LNG/LPG gas carriers.",
+              "source": "Official site (namura.co.jp) + independent company-profile cross-check",
+              "contacts": [
+                {
+                  "name": "Personnel & Administration Dept.",
+                  "role": "Imari Shipyard & Works — no procurement-specific contact found",
+                  "phone": "+81-955-27-1121",
+                  "source": "https://www.namura.co.jp/en/contact1.html"
+                }
+              ],
+              "stage": "found",
+              "lastContact": "2026-09-19",
+              "nextAction": "AI drafting first email",
+              "history": [
+                {
+                  "type": "found",
+                  "date": "2026-09-19",
+                  "text": "Added from web research — verified via official site + independent source."
+                }
+              ],
+              "local": {
+                "currency": "JPY",
+                "timezone": "Asia/Tokyo",
+                "language": "Japanese (ja)",
+                "registrationNumber": null,
+                "registryNote": "Not yet compliantly sourced from Japan's Legal Affairs Bureau corporate registry — see architecture doc's OpenCorporates guidance."
+              },
+              "instructions": [],
+              "categories": [
+                "hull",
+                "cargo"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "de",
+      "name": "Germany",
+      "regions": [
+        {
+          "name": "Lower Saxony",
+          "country": "de",
+          "companies": [
+            {
+              "id": "de-meyer-werft-gmbh-co-kg",
+              "name": "Meyer Werft GmbH & Co. KG",
+              "address": "Papenburg, Germany",
+              "website": "meyerwerft.de",
+              "segment": "Shipbuilder — cruise ships and specialised vessels; acts as general contractor over ~3,000 supplier partners.",
+              "source": "Official site (meyerwerft.de) + Wikipedia",
+              "contacts": [
+                {
+                  "name": "General Enquiries",
+                  "email": "info@meyerwerft.de",
+                  "source": "https://www.meyerwerft.de/de/kontakt.jsp"
+                }
+              ],
+              "stage": "found",
+              "lastContact": "2026-09-19",
+              "nextAction": "AI drafting first email",
+              "history": [
+                {
+                  "type": "found",
+                  "date": "2026-09-19",
+                  "text": "Added from web research — verified via official site + independent source."
+                }
+              ],
+              "local": {
+                "currency": "EUR",
+                "timezone": "Europe/Berlin",
+                "language": "German (de)",
+                "registrationNumber": null,
+                "registryNote": "Not yet compliantly sourced from Germany's Handelsregister — see architecture doc's OpenCorporates guidance."
+              },
+              "instructions": [],
+              "categories": [
+                "hull",
+                "integration"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Schleswig-Holstein",
+          "country": "de",
+          "companies": [
+            {
+              "id": "de-tkms-thyssenkrupp-marine-systems",
+              "name": "TKMS (thyssenkrupp Marine Systems)",
+              "address": "Kiel, Germany",
+              "website": "tkmsgroup.com",
+              "segment": "Naval shipbuilder — submarines (Type 212CD, 214) and surface combatants (MEKO frigates).",
+              "source": "Official site (tkmsgroup.com) + trade press (Naval News, 2025 rebrand)",
+              "contacts": [
+                {
+                  "name": "General Enquiries",
+                  "role": "Procurement page offers a supplier-registration form, no published contact",
+                  "email": "info@tkmsgroup.com",
+                  "phone": "+49 431 700 0",
+                  "source": "https://www.tkmsgroup.com/contact"
+                }
+              ],
+              "stage": "found",
+              "lastContact": "2026-09-19",
+              "nextAction": "AI drafting first email",
+              "history": [
+                {
+                  "type": "found",
+                  "date": "2026-09-19",
+                  "text": "Added from web research — verified via official site + independent source."
+                }
+              ],
+              "local": {
+                "currency": "EUR",
+                "timezone": "Europe/Berlin",
+                "language": "German (de)",
+                "registrationNumber": null,
+                "registryNote": "Not yet compliantly sourced from Germany's Handelsregister — see architecture doc's OpenCorporates guidance."
+              },
+              "instructions": [],
+              "categories": [
+                "propulsion",
+                "navigation"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Bremen",
+          "country": "de",
+          "companies": [
+            {
+              "id": "de-fr-lürssen-werft-gmbh-co-kg",
+              "name": "Fr. Lürssen Werft GmbH & Co. KG",
+              "address": "Bremen, Germany",
+              "website": "lurssen.com",
+              "segment": "Shipbuilder — bespoke luxury motor yachts and superyachts.",
+              "source": "Official site (lurssen.com) + Wikipedia",
+              "contacts": [
+                {
+                  "name": "Supplier Relationship Management (SRM)",
+                  "role": "Procurement",
+                  "email": "srm@luerssen.de",
+                  "source": "https://www.lurssen.com/en/contact/"
+                }
+              ],
+              "stage": "found",
+              "lastContact": "2026-09-19",
+              "nextAction": "AI drafting first email",
+              "history": [
+                {
+                  "type": "found",
+                  "date": "2026-09-19",
+                  "text": "Added from web research — verified via official site + independent source."
+                }
+              ],
+              "local": {
+                "currency": "EUR",
+                "timezone": "Europe/Berlin",
+                "language": "German (de)",
+                "registrationNumber": null,
+                "registryNote": "Not yet compliantly sourced from Germany's Handelsregister — see architecture doc's OpenCorporates guidance."
+              },
+              "instructions": [],
+              "categories": [
+                "hull",
+                "hvac"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "nl",
+      "name": "Netherlands",
+      "regions": [
+        {
+          "name": "Zuid-Holland",
+          "country": "nl",
+          "companies": [
+            {
+              "id": "nl-damen-shipyards-group",
+              "name": "Damen Shipyards Group",
+              "address": "Gorinchem, Netherlands",
+              "website": "damen.com",
+              "segment": "Shipbuilder — tugs, workboats, dredgers, naval and offshore support vessels, ferries.",
+              "source": "Official site (damen.com) + Wikipedia",
+              "contacts": [
+                {
+                  "name": "Procurement",
+                  "role": "Supplier registration",
+                  "email": "procurement@damen.com",
+                  "source": "https://www.damen.com/about/suppliers"
+                }
+              ],
+              "stage": "found",
+              "lastContact": "2026-09-19",
+              "nextAction": "AI drafting first email",
+              "history": [
+                {
+                  "type": "found",
+                  "date": "2026-09-19",
+                  "text": "Added from web research — verified via official site + independent source."
+                }
+              ],
+              "local": {
+                "currency": "EUR",
+                "timezone": "Europe/Amsterdam",
+                "language": "Dutch (nl)",
+                "registrationNumber": null,
+                "registryNote": "Not yet compliantly sourced from the Dutch Chamber of Commerce (KVK) — see architecture doc's OpenCorporates guidance."
+              },
+              "instructions": [],
+              "categories": [
+                "hull",
+                "propulsion"
+              ]
+            },
+            {
+              "id": "nl-royal-ihc",
+              "name": "Royal IHC",
+              "address": "Kinderdijk, Netherlands",
+              "website": "royalihc.com",
+              "segment": "Shipbuilder — dredgers, offshore construction vessels, and mining/defence equipment.",
+              "source": "Official site (royalihc.com) + Wikipedia",
+              "contacts": [
+                {
+                  "name": "General Enquiries",
+                  "role": "No published procurement/supplier contact; 24/7 emergency line only",
+                  "phone": "+31 88 015 25 35",
+                  "source": "https://www.royalihc.com/contact"
+                }
+              ],
+              "stage": "found",
+              "lastContact": "2026-09-19",
+              "nextAction": "AI drafting first email",
+              "history": [
+                {
+                  "type": "found",
+                  "date": "2026-09-19",
+                  "text": "Added from web research — verified via official site + independent source."
+                }
+              ],
+              "local": {
+                "currency": "EUR",
+                "timezone": "Europe/Amsterdam",
+                "language": "Dutch (nl)",
+                "registrationNumber": null,
+                "registryNote": "Not yet compliantly sourced from the Dutch Chamber of Commerce (KVK) — see architecture doc's OpenCorporates guidance."
+              },
+              "instructions": [],
+              "categories": [
+                "hull",
+                "cargo"
+              ]
+            },
+            {
+              "id": "nl-feadship-royal-van-lent-shipyard",
+              "name": "Feadship (Royal Van Lent Shipyard)",
+              "address": "Kaag, Netherlands",
+              "website": "feadship.nl",
+              "segment": "Shipbuilder — custom-built luxury superyachts.",
+              "source": "Official site (feadship.nl) + Wikipedia",
+              "contacts": [
+                {
+                  "name": "General Enquiries",
+                  "email": "info@feadship.nl",
+                  "phone": "+31 23 524 7000",
+                  "source": "https://feadship.nl/contact"
+                }
+              ],
+              "stage": "found",
+              "lastContact": "2026-09-19",
+              "nextAction": "AI drafting first email",
+              "history": [
+                {
+                  "type": "found",
+                  "date": "2026-09-19",
+                  "text": "Added from web research — verified via official site + independent source."
+                }
+              ],
+              "local": {
+                "currency": "EUR",
+                "timezone": "Europe/Amsterdam",
+                "language": "Dutch (nl)",
+                "registrationNumber": null,
+                "registryNote": "Not yet compliantly sourced from the Dutch Chamber of Commerce (KVK) — see architecture doc's OpenCorporates guidance."
+              },
+              "instructions": [],
+              "categories": [
+                "electrical",
+                "hvac"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "it",
+      "name": "Italy",
+      "regions": [
+        {
+          "name": "Friuli-Venezia Giulia",
+          "country": "it",
+          "companies": [
+            {
+              "id": "it-fincantieri-spa",
+              "name": "Fincantieri S.p.A.",
+              "address": "Trieste, Italy",
+              "website": "fincantieri.com",
+              "segment": "Shipbuilder — cruise ships, naval/defence vessels, offshore and underwater systems.",
+              "source": "Official site (fincantieri.com) + Wikipedia; listed on Borsa Italiana (FCT)",
+              "contacts": [
+                {
+                  "name": "Fornitori e Partner",
+                  "role": "Supplier invoicing & procurement correspondence",
+                  "email": "FC.fornitori@fincantieri.it",
+                  "source": "https://www.fincantieri.com/it/fornitori-e-partner/centro-servizi-amministrativi/modalita-invio-fatture"
+                }
+              ],
+              "stage": "found",
+              "lastContact": "2026-09-19",
+              "nextAction": "AI drafting first email",
+              "history": [
+                {
+                  "type": "found",
+                  "date": "2026-09-19",
+                  "text": "Added from web research — verified via official site + independent source."
+                }
+              ],
+              "local": {
+                "currency": "EUR",
+                "timezone": "Europe/Rome",
+                "language": "Italian (it)",
+                "registrationNumber": null,
+                "registryNote": "Not yet compliantly sourced from Italy's Registro Imprese — see architecture doc's OpenCorporates guidance."
+              },
+              "instructions": [],
+              "categories": [
+                "hull",
+                "integration"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Emilia-Romagna",
+          "country": "it",
+          "companies": [
+            {
+              "id": "it-ferretti-group",
+              "name": "Ferretti Group",
+              "address": "Forlì, Italy",
+              "website": "ferrettigroup.com",
+              "segment": "Luxury yacht builder — motor yachts and superyachts across Ferretti Yachts, Riva, Pershing, CRN, Custom Line, Itama and Wally.",
+              "source": "Official site (ferrettigroup.com) + Wikipedia; listed on Euronext Milan (YACHT)",
+              "contacts": [
+                {
+                  "name": "Registered Office",
+                  "role": "No public procurement page — general/legal contact",
+                  "email": "ferrettispa@pec.it",
+                  "phone": "+39 0543-787511",
+                  "source": "https://www.ferrettigroup.com/en-us/Contacts"
+                }
+              ],
+              "stage": "found",
+              "lastContact": "2026-09-19",
+              "nextAction": "AI drafting first email",
+              "history": [
+                {
+                  "type": "found",
+                  "date": "2026-09-19",
+                  "text": "Added from web research — verified via official site + independent source."
+                }
+              ],
+              "local": {
+                "currency": "EUR",
+                "timezone": "Europe/Rome",
+                "language": "Italian (it)",
+                "registrationNumber": null,
+                "registryNote": "Not yet compliantly sourced from Italy's Registro Imprese — see architecture doc's OpenCorporates guidance."
+              },
+              "instructions": [],
+              "categories": [
+                "hull",
+                "propulsion"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Veneto",
+          "country": "it",
+          "companies": [
+            {
+              "id": "it-cantiere-navale-vittoria-spa",
+              "name": "Cantiere Navale Vittoria S.p.A.",
+              "address": "Adria, Italy",
+              "website": "vittoria.biz",
+              "segment": "Shipbuilder — patrol boats, landing craft, dredgers, tugboats, and small-to-medium naval/commercial vessels.",
+              "source": "Official site (vittoria.biz) + Italian Wikipedia",
+              "contacts": [],
+              "stage": "found",
+              "lastContact": "2026-09-19",
+              "nextAction": "AI drafting first email",
+              "history": [
+                {
+                  "type": "found",
+                  "date": "2026-09-19",
+                  "text": "Added from web research — verified via official site + independent source."
+                }
+              ],
+              "local": {
+                "currency": "EUR",
+                "timezone": "Europe/Rome",
+                "language": "Italian (it)",
+                "registrationNumber": null,
+                "registryNote": "Not yet compliantly sourced from Italy's Registro Imprese — see architecture doc's OpenCorporates guidance."
+              },
+              "instructions": [],
+              "categories": [
+                "hull",
+                "safety"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tr",
+      "name": "Turkey",
+      "regions": [
+        {
+          "name": "Yalova",
+          "country": "tr",
+          "companies": [
+            {
+              "id": "tr-sefine-shipyard",
+              "name": "Sefine Shipyard",
+              "address": "Altınova, Turkey",
+              "website": "sefine.com.tr",
+              "segment": "Shipyard — tugs, ferries, live fish carrier vessels, hybrid/zero-emission newbuilds plus ship repair and conversion.",
+              "source": "Official site (sefine.com.tr) + Wikipedia",
+              "contacts": [
+                {
+                  "name": "General Enquiries",
+                  "role": "No published procurement/supplier page found",
+                  "phone": "+90 226 815 36 36",
+                  "source": "https://www.infomarine.gr/maritimedirectory/shipbuilders-shipyards/sefine-shipyard-turkey.html"
+                }
+              ],
+              "stage": "found",
+              "lastContact": "2026-09-19",
+              "nextAction": "AI drafting first email",
+              "history": [
+                {
+                  "type": "found",
+                  "date": "2026-09-19",
+                  "text": "Added from web research — verified via official site + independent source."
+                }
+              ],
+              "local": {
+                "currency": "TRY",
+                "timezone": "Europe/Istanbul",
+                "language": "Turkish (tr)",
+                "registrationNumber": null,
+                "registryNote": "Not yet compliantly sourced from Turkey's Trade Registry Gazette (Ticaret Sicil) — see architecture doc's OpenCorporates guidance."
+              },
+              "instructions": [],
+              "categories": [
+                "hull",
+                "services"
+              ]
+            },
+            {
+              "id": "tr-cemre-shipyard",
+              "name": "Cemre Shipyard",
+              "address": "Altınova, Turkey",
+              "website": "cemreshipyard.com",
+              "segment": "Shipyard — offshore support/service operation vessels, windfarm support vessels, ferries and hybrid/battery newbuilds.",
+              "source": "Official site (cemreshipyard.com) + Wikipedia",
+              "contacts": [
+                {
+                  "name": "General Enquiries",
+                  "email": "info@cemreshipyard.com",
+                  "phone": "+90 226 461 30 05",
+                  "source": "https://www.cemreshipyard.com/en/news"
+                }
+              ],
+              "stage": "found",
+              "lastContact": "2026-09-19",
+              "nextAction": "AI drafting first email",
+              "history": [
+                {
+                  "type": "found",
+                  "date": "2026-09-19",
+                  "text": "Added from web research — verified via official site + independent source."
+                }
+              ],
+              "local": {
+                "currency": "TRY",
+                "timezone": "Europe/Istanbul",
+                "language": "Turkish (tr)",
+                "registrationNumber": null,
+                "registryNote": "Not yet compliantly sourced from Turkey's Trade Registry Gazette (Ticaret Sicil) — see architecture doc's OpenCorporates guidance."
+              },
+              "instructions": [],
+              "categories": [
+                "hull",
+                "propulsion"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Istanbul",
+          "country": "tr",
+          "companies": [
+            {
+              "id": "tr-sedef-shipyard",
+              "name": "Sedef Shipyard",
+              "address": "Tuzla, Turkey",
+              "website": "sedefshipyard.com",
+              "segment": "Shipyard — naval vessels (LHD amphibious assault ships, MILGEM-class frigates), Ro-Ro/Ro-Pax ferries, tankers and powerships.",
+              "source": "Official site (sedefshipyard.com) + Wikipedia",
+              "contacts": [
+                {
+                  "name": "General Enquiries",
+                  "email": "sedef@kalkavanshipyard.com",
+                  "phone": "+90 216 581 77 00",
+                  "source": "https://www.sedefshipyard.com/en/iletisim.aspx"
+                }
+              ],
+              "stage": "found",
+              "lastContact": "2026-09-19",
+              "nextAction": "AI drafting first email",
+              "history": [
+                {
+                  "type": "found",
+                  "date": "2026-09-19",
+                  "text": "Added from web research — verified via official site + independent source."
+                }
+              ],
+              "local": {
+                "currency": "TRY",
+                "timezone": "Europe/Istanbul",
+                "language": "Turkish (tr)",
+                "registrationNumber": null,
+                "registryNote": "Not yet compliantly sourced from Turkey's Trade Registry Gazette (Ticaret Sicil) — see architecture doc's OpenCorporates guidance."
+              },
+              "instructions": [],
+              "categories": [
+                "hull",
+                "integration"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "us",
+      "name": "United States",
+      "regions": [
+        {
+          "name": "Virginia",
+          "country": "us",
+          "companies": [
+            {
+              "id": "us-huntington-ingalls-industries",
+              "name": "Huntington Ingalls Industries",
+              "address": "Newport News, United States",
+              "website": "hii.com",
+              "segment": "Shipbuilder — sole builder of US Navy nuclear-powered aircraft carriers and submarines; also destroyers, amphibious ships and cutters.",
+              "source": "Official site (hii.com) + Wikipedia; NYSE-listed (HII)",
+              "contacts": [
+                {
+                  "name": "Supplier Registration",
+                  "role": "General Inquiries — no named supplier/procurement contact published",
+                  "portalUrl": "https://www.hii.com/suppliers/newport-news-suppliers",
+                  "source": "https://www.hii.com/suppliers/newport-news-suppliers"
+                }
+              ],
+              "stage": "found",
+              "lastContact": "2026-09-19",
+              "nextAction": "AI drafting first email",
+              "history": [
+                {
+                  "type": "found",
+                  "date": "2026-09-19",
+                  "text": "Added from web research — verified via official site + independent source."
+                }
+              ],
+              "local": {
+                "currency": "USD",
+                "timezone": "America/New_York",
+                "language": "English (en)",
+                "registrationNumber": null,
+                "registryNote": "Not yet compliantly sourced from state Secretary of State corporate registries — see architecture doc's OpenCorporates guidance."
+              },
+              "instructions": [],
+              "categories": [
+                "hull",
+                "propulsion"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "California",
+          "country": "us",
+          "companies": [
+            {
+              "id": "us-general-dynamics-nassco",
+              "name": "General Dynamics NASSCO",
+              "address": "San Diego, United States",
+              "website": "nassco.com",
+              "segment": "Shipbuilder & ship repair — US Navy auxiliary ships and commercial tankers/container ships.",
+              "source": "Official site (nassco.com) + Wikipedia; subsidiary of General Dynamics (NYSE: GD)",
+              "contacts": [
+                {
+                  "name": "Shawn Sanders",
+                  "role": "Small Business Administration (Supply Chain)",
+                  "email": "shawn.sanders@nassco.com",
+                  "phone": "(619) 544-3400",
+                  "source": "https://nassco.com/suppliers/supplier-contacts/"
+                }
+              ],
+              "stage": "found",
+              "lastContact": "2026-09-19",
+              "nextAction": "AI drafting first email",
+              "history": [
+                {
+                  "type": "found",
+                  "date": "2026-09-19",
+                  "text": "Added from web research — verified via official site + independent source."
+                }
+              ],
+              "local": {
+                "currency": "USD",
+                "timezone": "America/New_York",
+                "language": "English (en)",
+                "registrationNumber": null,
+                "registryNote": "Not yet compliantly sourced from state Secretary of State corporate registries — see architecture doc's OpenCorporates guidance."
+              },
+              "instructions": [],
+              "categories": [
+                "hull",
+                "services"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Louisiana",
+          "country": "us",
+          "companies": [
+            {
+              "id": "us-bollinger-shipyards",
+              "name": "Bollinger Shipyards",
+              "address": "Lockport, United States",
+              "website": "bollingershipyards.com",
+              "segment": "Shipbuilder & repair — US Coast Guard cutters, Navy patrol vessels, commercial workboats and tugs.",
+              "source": "Official site (bollingershipyards.com) + Wikipedia",
+              "contacts": [
+                {
+                  "name": "General Enquiries",
+                  "role": "No named vendor/procurement contact published",
+                  "phone": "(985) 532-2554",
+                  "source": "https://www.bollingershipyards.com/contact/"
+                }
+              ],
+              "stage": "found",
+              "lastContact": "2026-09-19",
+              "nextAction": "AI drafting first email",
+              "history": [
+                {
+                  "type": "found",
+                  "date": "2026-09-19",
+                  "text": "Added from web research — verified via official site + independent source."
+                }
+              ],
+              "local": {
+                "currency": "USD",
+                "timezone": "America/New_York",
+                "language": "English (en)",
+                "registrationNumber": null,
+                "registryNote": "Not yet compliantly sourced from state Secretary of State corporate registries — see architecture doc's OpenCorporates guidance."
+              },
+              "instructions": [],
+              "categories": [
+                "hull",
+                "services"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gr",
+      "name": "Greece",
+      "regions": [
+        {
+          "name": "Attica",
+          "country": "gr",
+          "companies": [
+            {
+              "id": "gr-costamare-inc",
+              "name": "Costamare Inc.",
+              "address": "60 Zephyrou St. & Syngrou Ave., Athens",
+              "website": "costamare.com",
+              "segment": "Ship owner/operator — one of the world's largest independent containership fleets; also dry bulk carriers since 2021.",
+              "source": "Official site (costamare.com) + Wikipedia + SEC Form 20-F",
+              "contacts": [
+                {
+                  "name": "Fleet Management Office",
+                  "role": "Costamare Shipping Company S.A. (Athens) — general inquiries, no dedicated procurement contact published",
+                  "phone": "+30-210-9490000",
+                  "source": "https://www.costamare.com/contact/general-inquiries"
+                }
+              ],
+              "stage": "found",
+              "lastContact": "2026-09-19",
+              "nextAction": "AI drafting first email",
+              "history": [
+                {
+                  "type": "found",
+                  "date": "2026-09-19",
+                  "text": "Added from web research — verified via official site + independent source."
+                }
+              ],
+              "local": {
+                "currency": "EUR",
+                "timezone": "Europe/Athens",
+                "language": "Greek (el)",
+                "registrationNumber": null,
+                "registryNote": "Not yet compliantly sourced from Greece's General Commercial Registry (GEMI) — see architecture doc's OpenCorporates guidance."
+              },
+              "instructions": [],
+              "categories": [
+                "propulsion",
+                "cargo"
+              ]
+            },
+            {
+              "id": "gr-star-bulk-carriers-corp",
+              "name": "Star Bulk Carriers Corp.",
+              "address": "40 Agiou Konstantinou St., Aithrio Center, Marousi, Athens GR-151 24",
+              "website": "starbulk.com",
+              "segment": "Ship owner/operator — dry bulk carrier fleet (Capesize, Newcastlemax, Panamax, Ultramax/Supramax).",
+              "source": "Official site (starbulk.com) + SEC EDGAR filings (CIK 1386716)",
+              "contacts": [
+                {
+                  "name": "Stefanos Spanos",
+                  "role": "Vice President, Finance / Investor Relations (fallback — no dedicated technical purchasing contact published)",
+                  "email": "ir@starbulk.com",
+                  "phone": "+30 210 6178099",
+                  "source": "https://www.starbulk.com/gr/en/inquiries/"
+                }
+              ],
+              "stage": "found",
+              "lastContact": "2026-09-19",
+              "nextAction": "AI drafting first email",
+              "history": [
+                {
+                  "type": "found",
+                  "date": "2026-09-19",
+                  "text": "Added from web research — verified via official site + independent source."
+                }
+              ],
+              "local": {
+                "currency": "EUR",
+                "timezone": "Europe/Athens",
+                "language": "Greek (el)",
+                "registrationNumber": null,
+                "registryNote": "Not yet compliantly sourced from Greece's General Commercial Registry (GEMI) — see architecture doc's OpenCorporates guidance."
+              },
+              "instructions": [],
+              "categories": [
+                "cargo",
+                "safety"
+              ]
+            },
+            {
+              "id": "gr-tsakos-energy-navigation-ltd",
+              "name": "Tsakos Energy Navigation Ltd.",
+              "address": "Megaron Makedonia, 367 Syngrou Ave., 175 64, P. Faliro, Athens",
+              "website": "tenn.gr",
+              "segment": "Ship owner/operator — crude/product tanker, shuttle tanker and LNG carrier fleet.",
+              "source": "Official site (tenn.gr) + Wikipedia; NYSE-listed (TEN)",
+              "contacts": [
+                {
+                  "name": "Head Office",
+                  "role": "General inquiries — no dedicated procurement contact published",
+                  "phone": "+30 210 9407710-13",
+                  "source": "https://www.tenn.gr/contact-us/"
+                }
+              ],
+              "stage": "found",
+              "lastContact": "2026-09-19",
+              "nextAction": "AI drafting first email",
+              "history": [
+                {
+                  "type": "found",
+                  "date": "2026-09-19",
+                  "text": "Added from web research — verified via official site + independent source."
+                }
+              ],
+              "local": {
+                "currency": "EUR",
+                "timezone": "Europe/Athens",
+                "language": "Greek (el)",
+                "registrationNumber": null,
+                "registryNote": "Not yet compliantly sourced from Greece's General Commercial Registry (GEMI) — see architecture doc's OpenCorporates guidance."
+              },
+              "instructions": [],
+              "categories": [
+                "propulsion",
+                "safety"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "in",
+      "name": "India",
+      "regions": [
+        {
+          "name": "Kerala",
+          "country": "in",
+          "companies": [
+            {
+              "id": "in-cochin-shipyard-limited",
+              "name": "Cochin Shipyard Limited",
+              "address": "Kochi, India",
+              "website": "cochinshipyard.in",
+              "segment": "Shipyard — newbuilding & ship repair (assembly + MRO); Government of India (Miniratna) owned.",
+              "source": "Official site (cochinshipyard.in) + Wikipedia; BSE 540678 / NSE COCHINSHIP",
+              "contacts": [
+                {
+                  "name": "Seena M S",
+                  "role": "Assistant General Manager (Materials)",
+                  "email": "seena.ms@cochinshipyard.in",
+                  "phone": "0484-2501630",
+                  "source": "https://cochinshipyard.in/contact-us"
+                }
+              ],
+              "stage": "found",
+              "lastContact": "2026-09-19",
+              "nextAction": "AI drafting first email",
+              "history": [
+                {
+                  "type": "found",
+                  "date": "2026-09-19",
+                  "text": "Added from web research — verified via official site + independent source."
+                }
+              ],
+              "local": {
+                "currency": "INR",
+                "timezone": "Asia/Kolkata",
+                "language": "English (en) / Hindi (hi)",
+                "registrationNumber": null,
+                "registryNote": "Not yet compliantly sourced from India's Ministry of Corporate Affairs (MCA) registry — see architecture doc's OpenCorporates guidance."
+              },
+              "instructions": [],
+              "categories": [
+                "hull",
+                "services"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Maharashtra",
+          "country": "in",
+          "companies": [
+            {
+              "id": "in-mazagon-dock-shipbuilders-limited",
+              "name": "Mazagon Dock Shipbuilders Limited",
+              "address": "Mumbai, India",
+              "website": "mazagondock.in",
+              "segment": "Shipyard — naval newbuilding (warships & submarines) and ship repair/refit; Ministry of Defence Navratna PSU.",
+              "source": "Official site (mazagondock.in) + Wikipedia; BSE 543237 / NSE MAZDOCK",
+              "contacts": [
+                {
+                  "name": "Material/Procurement Department",
+                  "role": "Corporate Office — no named officer or email published",
+                  "phone": "+91-22-23738151",
+                  "source": "https://mazagondock.in/english/pages/contact-us"
+                }
+              ],
+              "stage": "found",
+              "lastContact": "2026-09-19",
+              "nextAction": "AI drafting first email",
+              "history": [
+                {
+                  "type": "found",
+                  "date": "2026-09-19",
+                  "text": "Added from web research — verified via official site + independent source."
+                }
+              ],
+              "local": {
+                "currency": "INR",
+                "timezone": "Asia/Kolkata",
+                "language": "English (en) / Hindi (hi)",
+                "registrationNumber": null,
+                "registryNote": "Not yet compliantly sourced from India's Ministry of Corporate Affairs (MCA) registry — see architecture doc's OpenCorporates guidance."
+              },
+              "instructions": [],
+              "categories": [
+                "hull",
+                "propulsion"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "West Bengal",
+          "country": "in",
+          "companies": [
+            {
+              "id": "in-garden-reach-shipbuilders-engineers-limited",
+              "name": "Garden Reach Shipbuilders & Engineers Limited",
+              "address": "Kolkata, India",
+              "website": "grse.in",
+              "segment": "Shipyard — naval newbuilding (frigates, corvettes, patrol/survey vessels), ship repair, and marine diesel engines.",
+              "source": "Official site (grse.in) + Wikipedia; BSE 542011 / NSE GRSE",
+              "contacts": [
+                {
+                  "name": "Gulshan Ratan",
+                  "role": "General Manager (CP, VD, IND) & Chief Indigenisation Officer",
+                  "email": "ratan.gulshan@grse.co.in",
+                  "phone": "+91-33-2469-8101 ext 4190",
+                  "source": "https://grse.in/contact-us/"
+                }
+              ],
+              "stage": "found",
+              "lastContact": "2026-09-19",
+              "nextAction": "AI drafting first email",
+              "history": [
+                {
+                  "type": "found",
+                  "date": "2026-09-19",
+                  "text": "Added from web research — verified via official site + independent source."
+                }
+              ],
+              "local": {
+                "currency": "INR",
+                "timezone": "Asia/Kolkata",
+                "language": "English (en) / Hindi (hi)",
+                "registrationNumber": null,
+                "registryNote": "Not yet compliantly sourced from India's Ministry of Corporate Affairs (MCA) registry — see architecture doc's OpenCorporates guidance."
+              },
+              "instructions": [],
+              "categories": [
+                "propulsion",
+                "hull"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "br",
+      "name": "Brazil",
+      "regions": [
+        {
+          "name": "Pernambuco (Porto de Suape)",
+          "country": "br",
+          "companies": [
+            {
+              "id": "br-estaleiro-atlântico-sul",
+              "name": "Estaleiro Atlântico Sul",
+              "address": "Ipojuca, Brazil",
+              "website": "easbr.com",
+              "segment": "Shipyard — Suezmax/Aframax oil tankers, offshore construction, decommissioning and naval ship repair.",
+              "source": "Official site (easbr.com) + Wikipedia + Suape port authority news",
+              "contacts": [],
+              "stage": "found",
+              "lastContact": "2026-09-19",
+              "nextAction": "AI drafting first email",
+              "history": [
+                {
+                  "type": "found",
+                  "date": "2026-09-19",
+                  "text": "Added from web research — verified via official site + independent source."
+                }
+              ],
+              "local": {
+                "currency": "BRL",
+                "timezone": "America/Recife",
+                "language": "Portuguese (pt)",
+                "registrationNumber": null,
+                "registryNote": "Not yet compliantly sourced from Brazil's Receita Federal (CNPJ registry) — see architecture doc's OpenCorporates guidance."
+              },
+              "instructions": [],
+              "categories": [
+                "hull",
+                "services"
+              ]
+            },
+            {
+              "id": "br-vard-promar-sa",
+              "name": "Vard Promar S.A.",
+              "address": "Ipojuca, Brazil",
+              "website": "vard.com",
+              "segment": "Shipyard — fully integrated shipbuilding of offshore support vessels and gas carriers, plus ship repair/conversion; part of VARD/Fincantieri.",
+              "source": "Official site (vard.com/location/brazil/vard-promar) + Brazilian trade press",
+              "contacts": [
+                {
+                  "name": "VARD Group HQ (Norway)",
+                  "role": "General inquiries — no Brazil-specific supplier contact found",
+                  "email": "mail@vard.com",
+                  "phone": "+47 7021 0600",
+                  "source": "https://www.vard.com/location/brazil/vard-promar"
+                }
+              ],
+              "stage": "found",
+              "lastContact": "2026-09-19",
+              "nextAction": "AI drafting first email",
+              "history": [
+                {
+                  "type": "found",
+                  "date": "2026-09-19",
+                  "text": "Added from web research — verified via official site + independent source."
+                }
+              ],
+              "local": {
+                "currency": "BRL",
+                "timezone": "America/Recife",
+                "language": "Portuguese (pt)",
+                "registrationNumber": null,
+                "registryNote": "Not yet compliantly sourced from Brazil's Receita Federal (CNPJ registry) — see architecture doc's OpenCorporates guidance."
+              },
+              "instructions": [],
+              "categories": [
+                "hull",
+                "services"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Bahia (Enseada do Paraguaçu)",
+          "country": "br",
+          "companies": [
+            {
+              "id": "br-enseada-indústria-naval-sa",
+              "name": "Enseada Indústria Naval S.A.",
+              "address": "Maragojipe, Brazil",
+              "website": "enseada.com",
+              "segment": "Shipyard — offshore modules and FPSO integration, tankers, container ships, and Brazilian Navy corvettes/frigates.",
+              "source": "Official site (enseada.com) + Portuguese Wikipedia + SINAVAL/Agência Brasil coverage of 2025 Petrobras contract",
+              "contacts": [
+                {
+                  "name": "Cadastro de Fornecedores",
+                  "role": "Supplier registration channel",
+                  "email": "fornecedores@enseada.com",
+                  "source": "https://www.enseada.com/addresses/?lang=en"
+                }
+              ],
+              "stage": "found",
+              "lastContact": "2026-09-19",
+              "nextAction": "AI drafting first email",
+              "history": [
+                {
+                  "type": "found",
+                  "date": "2026-09-19",
+                  "text": "Added from web research — verified via official site + independent source."
+                }
+              ],
+              "local": {
+                "currency": "BRL",
+                "timezone": "America/Recife",
+                "language": "Portuguese (pt)",
+                "registrationNumber": null,
+                "registryNote": "Not yet compliantly sourced from Brazil's Receita Federal (CNPJ registry) — see architecture doc's OpenCorporates guidance."
+              },
+              "instructions": [],
+              "categories": [
+                "integration",
+                "hull"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "za",
+      "name": "South Africa",
+      "regions": [
+        {
+          "name": "Western Cape",
+          "country": "za",
+          "companies": [
+            {
+              "id": "za-damen-shipyards-cape-town",
+              "name": "Damen Shipyards Cape Town",
+              "address": "Cape Town, South Africa",
+              "website": "damen.com",
+              "segment": "Shipyard — inshore/offshore patrol vessels, tugs, dredgers, naval and offshore support vessels.",
+              "source": "Official site (damen.com) + Wikipedia + DefenceWeb",
+              "contacts": [
+                {
+                  "name": "General Enquiries",
+                  "role": "No published supplier/procurement-specific contact",
+                  "phone": "+27 21 447 1714",
+                  "source": "https://www.damen.com/companies/damen-shipyards-cape-town"
+                }
+              ],
+              "stage": "found",
+              "lastContact": "2026-09-19",
+              "nextAction": "AI drafting first email",
+              "history": [
+                {
+                  "type": "found",
+                  "date": "2026-09-19",
+                  "text": "Added from web research — verified via official site + independent source."
+                }
+              ],
+              "local": {
+                "currency": "ZAR",
+                "timezone": "Africa/Johannesburg",
+                "language": "English (en)",
+                "registrationNumber": null,
+                "registryNote": "Not yet compliantly sourced from South Africa's CIPC (Companies and Intellectual Property Commission) — see architecture doc's OpenCorporates guidance."
+              },
+              "instructions": [],
+              "categories": [
+                "hull",
+                "propulsion"
+              ]
+            },
+            {
+              "id": "za-amsol-african-marine-solutions",
+              "name": "AMSOL (African Marine Solutions)",
+              "address": "Cape Town, South Africa",
+              "website": "amsol.co.za",
+              "segment": "Marine operations provider — towage, salvage, marine emergency response, and vessel technical management for ship operators.",
+              "source": "Official site (amsol.co.za) + Engineering News + International Salvage Union membership listing",
+              "contacts": [],
+              "stage": "found",
+              "lastContact": "2026-09-19",
+              "nextAction": "AI drafting first email",
+              "history": [
+                {
+                  "type": "found",
+                  "date": "2026-09-19",
+                  "text": "Added from web research — verified via official site + independent source."
+                }
+              ],
+              "local": {
+                "currency": "ZAR",
+                "timezone": "Africa/Johannesburg",
+                "language": "English (en)",
+                "registrationNumber": null,
+                "registryNote": "Not yet compliantly sourced from South Africa's CIPC (Companies and Intellectual Property Commission) — see architecture doc's OpenCorporates guidance."
+              },
+              "instructions": [],
+              "categories": [
+                "services",
+                "safety"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "KwaZulu-Natal",
+          "country": "za",
+          "companies": [
+            {
+              "id": "za-southern-african-shipyards",
+              "name": "Southern African Shipyards",
+              "address": "Durban, South Africa",
+              "website": "sas.co.za",
+              "segment": "Shipyard & ship repair — naval and commercial vessel construction, hydrographic/patrol vessels, ship repair and naval maintenance.",
+              "source": "Official site (sas.co.za) + DefenceWeb + KZN Growth Fund portfolio page",
+              "contacts": [
+                {
+                  "name": "General Enquiries",
+                  "email": "enquiries@sas.co.za",
+                  "phone": "+27 31 274 1800",
+                  "source": "https://www.sas.co.za/contact.html"
+                }
+              ],
+              "stage": "found",
+              "lastContact": "2026-09-19",
+              "nextAction": "AI drafting first email",
+              "history": [
+                {
+                  "type": "found",
+                  "date": "2026-09-19",
+                  "text": "Added from web research — verified via official site + independent source."
+                }
+              ],
+              "local": {
+                "currency": "ZAR",
+                "timezone": "Africa/Johannesburg",
+                "language": "English (en)",
+                "registrationNumber": null,
+                "registryNote": "Not yet compliantly sourced from South Africa's CIPC (Companies and Intellectual Property Commission) — see architecture doc's OpenCorporates guidance."
+              },
+              "instructions": [],
+              "categories": [
+                "hull",
+                "services"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "au",
+      "name": "Australia",
+      "regions": [
+        {
+          "name": "Western Australia",
+          "country": "au",
+          "companies": [
+            {
+              "id": "au-austal-limited",
+              "name": "Austal Limited",
+              "address": "Henderson, Australia",
+              "website": "austal.com",
+              "segment": "Shipbuilder — aluminium naval vessels (patrol boats, fast transports) and high-speed commercial/passenger ferries.",
+              "source": "Official site (austal.com) + Wikipedia; ASX-listed (ASB)",
+              "contacts": [
+                {
+                  "name": "General Enquiries",
+                  "role": "No named supplier/procurement contact published",
+                  "phone": "+61 8 9410 1111",
+                  "source": "https://www.austal.com/become-a-supplier"
+                }
+              ],
+              "stage": "found",
+              "lastContact": "2026-09-19",
+              "nextAction": "AI drafting first email",
+              "history": [
+                {
+                  "type": "found",
+                  "date": "2026-09-19",
+                  "text": "Added from web research — verified via official site + independent source."
+                }
+              ],
+              "local": {
+                "currency": "AUD",
+                "timezone": "Australia/Perth",
+                "language": "English (en)",
+                "registrationNumber": null,
+                "registryNote": "Not yet compliantly sourced from Australia's ASIC company registry — see architecture doc's OpenCorporates guidance."
+              },
+              "instructions": [],
+              "categories": [
+                "hull",
+                "propulsion"
+              ]
+            },
+            {
+              "id": "au-civmec-limited",
+              "name": "Civmec Limited",
+              "address": "Henderson, Australia",
+              "website": "civmec.com.au",
+              "segment": "Heavy engineering and shipbuilder — steel fabrication and naval vessel construction/sustainment.",
+              "source": "Official site (civmec.com.au) + Wikipedia; dual-listed ASX/SGX",
+              "contacts": [
+                {
+                  "name": "General Enquiries",
+                  "role": "No named supplier/procurement contact published",
+                  "phone": "+61 8 9437 6288",
+                  "source": "https://www.civmec.com.au/contact/"
+                }
+              ],
+              "stage": "found",
+              "lastContact": "2026-09-19",
+              "nextAction": "AI drafting first email",
+              "history": [
+                {
+                  "type": "found",
+                  "date": "2026-09-19",
+                  "text": "Added from web research — verified via official site + independent source."
+                }
+              ],
+              "local": {
+                "currency": "AUD",
+                "timezone": "Australia/Perth",
+                "language": "English (en)",
+                "registrationNumber": null,
+                "registryNote": "Not yet compliantly sourced from Australia's ASIC company registry — see architecture doc's OpenCorporates guidance."
+              },
+              "instructions": [],
+              "categories": [
+                "hull",
+                "integration"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tasmania",
+          "country": "au",
+          "companies": [
+            {
+              "id": "au-incat-tasmania",
+              "name": "Incat Tasmania",
+              "address": "Hobart, Australia",
+              "website": "incat.com.au",
+              "segment": "Shipbuilder — aluminium wave-piercing high-speed catamaran ferries, including a battery-electric ferry under construction.",
+              "source": "Official site (incat.com.au) + Wikipedia",
+              "contacts": [
+                {
+                  "name": "Supplier Enquiries",
+                  "email": "suppliers@incat.com.au",
+                  "phone": "+61 3 6271 1333",
+                  "source": "https://incat.com.au/contact/"
+                }
+              ],
+              "stage": "found",
+              "lastContact": "2026-09-19",
+              "nextAction": "AI drafting first email",
+              "history": [
+                {
+                  "type": "found",
+                  "date": "2026-09-19",
+                  "text": "Added from web research — verified via official site + independent source."
+                }
+              ],
+              "local": {
+                "currency": "AUD",
+                "timezone": "Australia/Perth",
+                "language": "English (en)",
+                "registrationNumber": null,
+                "registryNote": "Not yet compliantly sourced from Australia's ASIC company registry — see architecture doc's OpenCorporates guidance."
+              },
+              "instructions": [],
+              "categories": [
+                "hull",
+                "propulsion"
+              ]
             }
           ]
         }
