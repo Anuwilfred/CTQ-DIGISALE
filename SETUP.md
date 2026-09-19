@@ -92,6 +92,39 @@ Save, commit, and push (or upload through the GitHub web UI as usual). The
 Research desk box will detect the config and switch from "Live search
 isn't connected yet" to "Connected."
 
+## Step 5 — turn on automatic daily AI research (no clicking required)
+
+Once Steps 1–4 are done, the app can also research on its own, every day,
+without anyone opening the app or clicking anything. A GitHub Actions job
+(`.github/workflows/ai-research-daily.yml`, already in this repo) runs
+once a day, asks the same backend from Step 3 about a **fixed list of ~20
+real shipyards, systems suppliers and discovery queries**
+(`scripts/ai_research_daily.py`), and automatically adds any genuinely new,
+still-open opportunity it finds straight into the Active Projects tab —
+skipping anything where a competitor's systems have already been publicly
+awarded.
+
+That fixed list is the important part: it means the automatic side of the
+app makes the same small, known number of Anthropic calls every day —
+about 20 — no matter how many people are using the app or clicking
+"Search live" that day. The two don't add up to some unpredictable
+runaway number; automatic research has its own fixed daily budget
+(roughly $0.30–$0.60/day, so well under $20/month on its own), completely
+separate from whatever ad-hoc searching your team does by hand.
+
+To turn it on, add two **repository secrets** (Settings → Secrets and
+variables → Actions → New repository secret) using the same two values
+from Step 4:
+
+- `RESEARCH_URL` — your Supabase function URL
+- `RESEARCH_ANON_KEY` — your Supabase anon public key
+
+That's it — the workflow already exists and is scheduled; it just needs
+those two secrets to stop no-op-ing. You can also trigger it manually any
+time from the repo's **Actions** tab → "AI research (daily, automatic)" →
+**Run workflow**, to see it work immediately rather than waiting for the
+next scheduled run.
+
 ## Notes on safety
 
 - The **anon key** is meant to be public — Supabase issues it specifically
