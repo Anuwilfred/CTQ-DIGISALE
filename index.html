@@ -295,6 +295,54 @@
   .project-card .p-meta{font-size:11.5px; color:var(--text-muted); margin-top:10px; display:flex; gap:8px; flex-wrap:wrap; align-items:center}
   .project-card .p-cats{display:flex; gap:6px; flex-wrap:wrap; margin-top:10px}
 
+  /* ---------- research desk (live AI search, Active projects tab) ---------- */
+  .research-desk{
+    background:var(--glass-strong); border:1px solid var(--glass-border); border-radius:16px; padding:16px 20px;
+    box-shadow:0 6px 20px rgba(0,0,0,.08); -webkit-backdrop-filter:blur(18px); backdrop-filter:blur(18px);
+    max-width:920px; margin:0 0 20px;
+  }
+  .rd-title{font-size:14px; font-weight:650; margin:0 0 4px}
+  .rd-sub{font-size:12px; color:var(--text-muted); margin:0 0 12px; line-height:1.5}
+  .rd-sub.rd-ready{color:var(--accent-2)}
+  .rd-sub.rd-error{color:var(--critical)}
+  .rd-row{display:flex; gap:8px}
+  .rd-input{
+    flex:1; min-width:0; padding:9px 12px; border-radius:10px; border:1px solid var(--glass-border);
+    background:var(--tint-cool); color:var(--text); font-size:13px;
+  }
+  .rd-input::placeholder{color:var(--text-muted)}
+  .rd-btn{
+    flex:none; border:none; background:var(--accent); color:var(--accent-ink); padding:9px 16px;
+    border-radius:10px; font-size:13px; font-weight:600; cursor:pointer;
+  }
+  .rd-btn:disabled{opacity:.5; cursor:not-allowed}
+  .rd-notes{
+    width:100%; margin-top:8px; min-height:40px; resize:vertical; padding:8px 12px; border-radius:10px;
+    border:1px solid var(--glass-border); background:var(--tint-cool); color:var(--text); font-size:12.5px; font-family:inherit;
+  }
+  .rd-notes::placeholder{color:var(--text-muted)}
+  .rd-result{margin-top:14px; border-top:1px solid var(--hairline); padding-top:14px}
+  .rd-result-top{display:flex; align-items:flex-start; justify-content:space-between; gap:12px}
+  .rd-result-name{font-size:14px; font-weight:650; margin:0}
+  .rd-badge{
+    flex:none; font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.03em;
+    padding:3px 8px; border-radius:999px; white-space:nowrap;
+  }
+  .rd-badge.rd-open{color:var(--critical); background:color-mix(in srgb, var(--critical) 14%, transparent)}
+  .rd-badge.rd-awarded{color:var(--text-muted); background:var(--tint-cool)}
+  .rd-badge.rd-unknown{color:var(--warning); background:color-mix(in srgb, var(--warning) 14%, transparent)}
+  .rd-summary{font-size:12.5px; color:var(--text-muted); line-height:1.5; margin:8px 0 0}
+  .rd-line{font-size:12px; color:var(--text-muted); margin:6px 0 0}
+  .rd-line strong{color:var(--text); font-weight:600}
+  .rd-sources{font-size:11px; margin-top:8px; display:flex; flex-direction:column; gap:2px}
+  .rd-sources a{color:var(--accent)}
+  .rd-history{margin-top:14px}
+  .rd-history-item{
+    font-size:11.5px; color:var(--text-muted); padding:6px 0; border-top:1px solid var(--hairline);
+    display:flex; justify-content:space-between; gap:8px; cursor:pointer;
+  }
+  .rd-history-item:hover{color:var(--text)}
+
   /* ---------- services (job-category tiles, Windows-tile style) ---------- */
   .services{flex:1; overflow-y:auto; padding:22px clamp(16px,3vw,32px); display:flex; flex-direction:column; align-items:center}
   .services-intro{font-size:13px; color:var(--text-muted); margin:0 0 22px; text-align:center}
@@ -449,7 +497,20 @@
       </div>
     </section>
 
-    <section class="projects" id="viewProjects" hidden></section>
+    <section class="projects" id="viewProjects" hidden>
+      <div class="research-desk" id="researchDesk">
+        <h3 class="rd-title">Research desk</h3>
+        <p class="rd-sub" id="rdStatus">Live search isn't connected yet — see SETUP.md in the repo.</p>
+        <div class="rd-row">
+          <input type="text" id="rdQuery" class="rd-input" maxlength="200" placeholder="Company, shipyard, vessel or project name…">
+          <button type="button" id="rdSearchBtn" class="rd-btn" disabled>Search live</button>
+        </div>
+        <textarea id="rdNotes" class="rd-notes" maxlength="500" placeholder="Optional — any extra context (e.g. where you heard about it)"></textarea>
+        <div class="rd-result" id="rdResult" hidden></div>
+        <div class="rd-history" id="rdHistory"></div>
+      </div>
+      <div id="projectsList"></div>
+    </section>
 
     <section class="signals" id="viewSignals" hidden></section>
 
@@ -462,6 +523,16 @@
 <script>
 (function(){
 'use strict';
+
+/* =================== live research backend =================== */
+// Filled in after deploying the Supabase Edge Function — see SETUP.md.
+// RESEARCH_ANON_KEY is a Supabase *anon* public key (safe to ship in client
+// code by design); the real secret, ANTHROPIC_API_KEY, lives only on the
+// server side inside the Edge Function and is never put here.
+var CONFIG = {
+  RESEARCH_URL: '',       // e.g. 'https://xxxxxxxx.supabase.co/functions/v1/research'
+  RESEARCH_ANON_KEY: ''   // your Supabase project's anon public key
+};
 
 /* =================== data (country -> region -> company) =================== */
 var STAGES = ['found','drafted','approved','sent','replied','meeting','won'];
@@ -568,7 +639,7 @@ function priorityInfo(p){
 }
 
 function buildProjects(){
-  var root = document.getElementById('viewProjects');
+  var root = document.getElementById('projectsList');
   root.innerHTML =
     '<p class="projects-intro">Real, sourced vessel projects and contracts — ranked by how closely they match ' +
     'C·TORQ\'s systems (automation, navigation, safety, LNG) and how recent they are.</p>';
@@ -624,6 +695,170 @@ function fmtDateTime(d){
 
 function sourceLabel(url){
   try { return new URL(url).hostname.replace(/^www\./,''); } catch(e){ return url; }
+}
+
+/* =================== research desk (live Anthropic-backed search) =================== */
+var RD_HISTORY_KEY = 'ctorq_research_history_v1';
+
+function rdLoadHistory(){
+  try {
+    var raw = localStorage.getItem(RD_HISTORY_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch(e){ return []; }
+}
+function rdSaveHistory(list){
+  try { localStorage.setItem(RD_HISTORY_KEY, JSON.stringify(list.slice(0, 20))); } catch(e){ /* private mode etc — ignore */ }
+}
+function rdAddHistory(entry){
+  var list = rdLoadHistory();
+  list.unshift(entry);
+  rdSaveHistory(list);
+  rdRenderHistory();
+}
+
+function rdInit(){
+  var statusEl = document.getElementById('rdStatus');
+  var btn = document.getElementById('rdSearchBtn');
+  if (!statusEl || !btn) return;
+
+  if (CONFIG.RESEARCH_URL && CONFIG.RESEARCH_ANON_KEY){
+    statusEl.textContent = 'Connected — type a company, shipyard, vessel or project name and search live.';
+    statusEl.className = 'rd-sub rd-ready';
+    btn.disabled = false;
+  } else {
+    statusEl.textContent = 'Live search isn\'t connected yet — see SETUP.md in the repo to wire up the backend.';
+    statusEl.className = 'rd-sub';
+    btn.disabled = true;
+  }
+
+  btn.addEventListener('click', rdRunSearch);
+  document.getElementById('rdQuery').addEventListener('keydown', function(e){
+    if (e.key === 'Enter') rdRunSearch();
+  });
+  rdRenderHistory();
+}
+
+function rdRunSearch(){
+  var queryEl = document.getElementById('rdQuery');
+  var notesEl = document.getElementById('rdNotes');
+  var btn = document.getElementById('rdSearchBtn');
+  var statusEl = document.getElementById('rdStatus');
+  var resultEl = document.getElementById('rdResult');
+
+  var query = (queryEl.value || '').trim();
+  var notes = (notesEl.value || '').trim();
+  if (!query) { queryEl.focus(); return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Searching…';
+  statusEl.textContent = 'Searching the web for real, current information — this can take 10–30 seconds.';
+  statusEl.className = 'rd-sub';
+  resultEl.hidden = true;
+
+  fetch(CONFIG.RESEARCH_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'apikey': CONFIG.RESEARCH_ANON_KEY,
+      'Authorization': 'Bearer ' + CONFIG.RESEARCH_ANON_KEY
+    },
+    body: JSON.stringify({ query: query, notes: notes })
+  })
+  .then(function(r){ return r.json().then(function(data){ return {ok:r.ok, data:data}; }); })
+  .then(function(res){
+    btn.disabled = false;
+    btn.textContent = 'Search live';
+    statusEl.textContent = 'Connected — type a company, shipyard, vessel or project name and search live.';
+    statusEl.className = 'rd-sub rd-ready';
+    if (!res.ok || res.data.error){
+      statusEl.textContent = 'Search failed: ' + (res.data.error || 'unknown error');
+      statusEl.className = 'rd-sub rd-error';
+      return;
+    }
+    rdRenderResult(res.data, query);
+    rdAddHistory({query: query, at: new Date().toISOString(), result: res.data});
+  })
+  .catch(function(err){
+    btn.disabled = false;
+    btn.textContent = 'Search live';
+    statusEl.textContent = 'Search failed: could not reach the research backend (' + err.message + ').';
+    statusEl.className = 'rd-sub rd-error';
+  });
+}
+
+function rdSystemsBadge(status){
+  if (status === 'open') return {cls:'rd-open', label:'Open — contact now'};
+  if (status === 'already_awarded') return {cls:'rd-awarded', label:'Already awarded'};
+  return {cls:'rd-unknown', label:'Status unclear'};
+}
+
+function rdRenderResult(data, query){
+  var resultEl = document.getElementById('rdResult');
+  if (data.found === false){
+    resultEl.innerHTML = '<p class="rd-summary">No confirmed real, current information found for "' + query + '". ' + (data.summary || '') + '</p>';
+    resultEl.hidden = false;
+    return;
+  }
+
+  var badge = rdSystemsBadge(data.systemsStatus);
+  var companiesHtml = (data.companies || []).map(function(name){
+    var match = findCompanyByName(name);
+    if (match) return '<button type="button" class="co-link" data-country="'+match.countryId+'" data-company="'+match.id+'">'+name+'</button>';
+    return '<span>'+name+'</span>';
+  }).join(', ');
+  var catsHtml = (data.categories || []).map(function(id){ return '<span class="cat-chip">'+categoryLabel(id)+'</span>'; }).join('');
+
+  var contactHtml = '';
+  if (data.contact && (data.contact.name || data.contact.email || data.contact.phone || data.contact.portalUrl)){
+    var bits = [];
+    if (data.contact.email) bits.push('<a href="mailto:'+data.contact.email+'" style="color:var(--accent)">'+data.contact.email+'</a>');
+    if (data.contact.phone) bits.push(data.contact.phone);
+    if (data.contact.portalUrl) bits.push('<a href="'+data.contact.portalUrl+'" target="_blank" rel="noopener" style="color:var(--accent)">Supplier portal</a>');
+    contactHtml = '<p class="rd-line"><strong>Contact:</strong> ' + (data.contact.name || 'Unnamed') + (data.contact.role ? ' — ' + data.contact.role : '') + (bits.length ? ' · ' + bits.join(' · ') : '') + '</p>';
+  }
+
+  var sourcesHtml = (data.sources || []).map(function(u){
+    return '<a href="'+u+'" target="_blank" rel="noopener">'+sourceLabel(u)+'</a>';
+  }).join('');
+
+  resultEl.innerHTML =
+    '<div class="rd-result-top"><h4 class="rd-result-name">' + (data.name || query) + '</h4>' +
+    '<span class="rd-badge ' + badge.cls + '">' + badge.label + '</span></div>' +
+    (data.vesselType ? '<p class="rd-line"><strong>Vessel:</strong> ' + data.vesselType + '</p>' : '') +
+    (companiesHtml ? '<p class="rd-line"><strong>Companies:</strong> ' + companiesHtml + '</p>' : '') +
+    (data.systemsAwardedTo ? '<p class="rd-line"><strong>Systems awarded to:</strong> ' + data.systemsAwardedTo + '</p>' : '') +
+    '<p class="rd-summary">' + (data.summary || '') + '</p>' +
+    contactHtml +
+    (catsHtml ? '<div class="p-cats">' + catsHtml + '</div>' : '') +
+    (sourcesHtml ? '<div class="rd-sources">' + sourcesHtml + '</div>' : '');
+  resultEl.hidden = false;
+
+  resultEl.querySelectorAll('.co-link').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      selectedCountry = btn.getAttribute('data-country');
+      selectedCompany = btn.getAttribute('data-company');
+      switchTab('pipeline');
+      renderCountries(); renderList(); renderDetail();
+    });
+  });
+}
+
+function rdRenderHistory(){
+  var histEl = document.getElementById('rdHistory');
+  if (!histEl) return;
+  var list = rdLoadHistory();
+  if (!list.length){ histEl.innerHTML = ''; return; }
+  histEl.innerHTML = '<p class="rd-line" style="margin-top:14px"><strong>Past searches (this browser)</strong></p>' +
+    list.map(function(h, i){
+      return '<div class="rd-history-item" data-i="' + i + '"><span>' + h.query + '</span><span>' + fmtDateTime(h.at) + '</span></div>';
+    }).join('');
+  histEl.querySelectorAll('.rd-history-item').forEach(function(row){
+    row.addEventListener('click', function(){
+      var i = parseInt(row.getAttribute('data-i'), 10);
+      var entry = list[i];
+      if (entry) rdRenderResult(entry.result, entry.query);
+    });
+  });
 }
 
 function buildSignals(){
@@ -1326,6 +1561,7 @@ loadData().then(function(){
 
 loadSignals().then(buildSignals);
 loadProjects().then(buildProjects);
+rdInit();
 
 })();
 </script>
