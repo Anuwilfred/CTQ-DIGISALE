@@ -70,6 +70,7 @@ happen, via the approval-gated email workflow described in the doc.
 from __future__ import annotations
 
 import argparse
+import html
 import json
 import os
 import re
@@ -293,6 +294,50 @@ NEWBUILD_KEYWORDS = (
 )
 
 
+def _clean_summary(raw: str | None, max_len: int = 220) -> str | None:
+    """Strip HTML and collapse whitespace from an RSS <description>, so the
+    dashboard can show a short, readable excerpt instead of raw markup."""
+    if not raw:
+        return None
+    text = re.sub(r"<[^>]+>", " ", raw)
+    text = html.unescape(text)
+    text = re.sub(r"\s+", " ", text).strip()
+    # Some feeds append "The post ... appeared first on ..." boilerplate to
+    # the description -- trim it so the excerpt reads like an actual summary.
+    text = re.sub(r"\s*The post .* appeared first on .*$", "", text).strip()
+    if not text:
+        return None
+    if len(text) > max_len:
+        text = text[:max_len].rsplit(" ", 1)[0].rstrip(",.;:") + "…"
+    return text
+
+
+def _extract_image(entry: dict) -> str | None:
+    """Best-effort image URL for an RSS entry, checked against real feed
+    output from several maritime outlets. Not every feed publishes one
+    (e.g. gCaptain's doesn't) -- this returns None rather than guessing."""
+    thumbs = entry.get("media_thumbnail") or []
+    if thumbs and thumbs[0].get("url"):
+        return thumbs[0]["url"]
+
+    for media in entry.get("media_content") or []:
+        media_type = (media.get("type") or "").lower()
+        if media.get("url") and (media.get("medium") == "image" or media_type.startswith("image")):
+            return media["url"]
+
+    for enc in entry.get("enclosures") or []:
+        enc_type = (enc.get("type") or "").lower()
+        href = enc.get("href") or enc.get("url")
+        if href and (not enc_type or enc_type.startswith("image")):
+            return href
+
+    for link in entry.get("links") or []:
+        if link.get("rel") == "enclosure" and (link.get("type") or "").startswith("image") and link.get("href"):
+            return link["href"]
+
+    return None
+
+
 def monitor_rss_feeds(feed_urls: list[str]) -> list[dict]:
     _require(feedparser, "feedparser")
     hits = []
@@ -307,6 +352,8 @@ def monitor_rss_feeds(feed_urls: list[str]) -> list[dict]:
                         "link": entry.get("link"),
                         "published": entry.get("published", entry.get("updated")),
                         "source": feed_url,
+                        "summary": _clean_summary(entry.get("summary")),
+                        "image": _extract_image(entry),
                     }
                 )
     return hits
