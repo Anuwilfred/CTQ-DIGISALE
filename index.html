@@ -512,6 +512,13 @@
   .settings-btn-primary{background:var(--accent); color:var(--accent-ink)}
   .settings-btn-secondary{background:var(--tint-cool); color:var(--text-muted); border:1px solid var(--glass-border)}
   .settings-note{font-size:11.5px; color:var(--text-muted); line-height:1.5; margin:12px 0 0}
+  .watch-list{margin-top:10px; display:flex; flex-direction:column; gap:6px}
+  .watch-item{display:flex; align-items:center; gap:8px; padding:8px 10px; border:1px solid var(--glass-border); border-radius:10px; background:var(--tint-cool)}
+  .watch-item .w-label{font-weight:600; font-size:12.5px; color:var(--text); flex:none; max-width:35%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+  .watch-item .w-url{font-size:11.5px; color:var(--text-muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1}
+  .watch-item .w-remove{flex:none; border:none; background:transparent; color:var(--critical); cursor:pointer; font-size:11.5px; font-weight:600; padding:2px 4px}
+  .watch-item .w-remove:hover{text-decoration:underline}
+  .watch-empty{font-size:12px; color:var(--text-muted); padding:2px 0}
   .settings-note:empty{display:none; margin:0}
   .settings-toggle-row{
     display:flex; align-items:center; justify-content:space-between; gap:12px; margin:14px 0 0;
@@ -697,6 +704,19 @@
             <button type="button" class="settings-btn settings-btn-primary" id="setSaveProfileBtn">Save profile</button>
           </div>
           <p class="settings-note" id="setProfileStatus"></p>
+        </div>
+
+        <div class="settings-card">
+          <h3 class="settings-title">Watched websites</h3>
+          <p class="settings-sub">Add a company's website here once, and the daily automatic research job checks it for new announcements from then on — no one has to spot the news and type it in by hand.</p>
+          <div class="settings-field-label">Label &amp; website</div>
+          <div class="settings-row-inline">
+            <input type="text" id="setWatchLabel" class="settings-input" placeholder="e.g. Al Seer Marine" style="max-width:180px">
+            <input type="text" id="setWatchUrl" class="settings-input" placeholder="https://www.example.com">
+            <button type="button" class="settings-btn settings-btn-primary" id="setWatchAddBtn" style="flex:none">Add</button>
+          </div>
+          <p class="settings-note" id="setWatchStatus">Checked once a day by the same job that runs the fixed watchlist — any real news it confirms shows up in Active projects like everything else it finds. Needs one extra one-time Supabase step — see SETUP.md's "Watched websites" section.</p>
+          <div id="setWatchList" class="watch-list"></div>
         </div>
 
       </div>
@@ -1656,6 +1676,115 @@ function runStudyWebsite(){
   });
 }
 
+/* ---- Watched websites: lets a person add a company URL from Settings and
+   have the daily automatic research job (scripts/ai_research_daily.py) check
+   it for new announcements going forward, instead of someone having to spot
+   news and type it in. Stored in a small Supabase table (public REST via the
+   same anon key everything else here already uses) — no new Edge Function
+   needed, and no code push needed to add or remove a site. ---- */
+function supabaseBaseUrl(){
+  if (!CONFIG.RESEARCH_URL) return '';
+  var m = CONFIG.RESEARCH_URL.match(/^(https:\/\/[^/]+\.supabase\.co)\//);
+  return m ? m[1] : '';
+}
+function supabaseRestHeaders(extra){
+  var h = { 'apikey': CONFIG.RESEARCH_ANON_KEY, 'Authorization': 'Bearer ' + CONFIG.RESEARCH_ANON_KEY, 'Content-Type': 'application/json' };
+  if (extra) for (var k in extra) h[k] = extra[k];
+  return h;
+}
+function watchedSourcesRenderEmpty(msg){
+  var list = document.getElementById('setWatchList');
+  if (list) list.innerHTML = '<p class="watch-empty">' + escapeHtml(msg) + '</p>';
+}
+function watchedSourcesRender(rows){
+  var list = document.getElementById('setWatchList');
+  if (!list) return;
+  if (!rows || !rows.length){ watchedSourcesRenderEmpty('No websites watched yet — add one above.'); return; }
+  list.innerHTML = rows.map(function(row){
+    var label = row.label || row.url;
+    return '<div class="watch-item" data-id="'+escapeHtml(String(row.id))+'">' +
+      '<span class="w-label">'+escapeHtml(label)+'</span>' +
+      '<span class="w-url">'+escapeHtml(row.url)+'</span>' +
+      '<button type="button" class="w-remove" data-remove-id="'+escapeHtml(String(row.id))+'">Remove</button>' +
+      '</div>';
+  }).join('');
+  Array.prototype.forEach.call(list.querySelectorAll('[data-remove-id]'), function(btn){
+    btn.addEventListener('click', function(){ watchedSourcesRemove(btn.getAttribute('data-remove-id')); });
+  });
+}
+function watchedSourcesLoad(){
+  var base = supabaseBaseUrl();
+  if (!base){ watchedSourcesRenderEmpty('Connect the backend above first.'); return; }
+  fetch(base + '/rest/v1/watched_sources?select=id,url,label,added_at&order=added_at.desc', {
+    headers: supabaseRestHeaders(), cache: 'no-store'
+  })
+  .then(function(r){
+    if (!r.ok){
+      if (r.status === 404) throw new Error('table-missing');
+      throw new Error('http-' + r.status);
+    }
+    return r.json();
+  })
+  .then(watchedSourcesRender)
+  .catch(function(err){
+    watchedSourcesRenderEmpty(
+      err && err.message === 'table-missing'
+        ? 'This needs a one-time Supabase table — see SETUP.md’s "Watched websites" section, then reopen Settings.'
+        : 'Could not load the list right now.'
+    );
+  });
+}
+function watchedSourcesAdd(){
+  var labelEl = document.getElementById('setWatchLabel');
+  var urlEl = document.getElementById('setWatchUrl');
+  var statusEl = document.getElementById('setWatchStatus');
+  var btn = document.getElementById('setWatchAddBtn');
+  var base = supabaseBaseUrl();
+  var rawUrl = (urlEl.value || '').trim();
+  var label = (labelEl.value || '').trim();
+  if (!rawUrl){ urlEl.focus(); return; }
+  if (!base){ statusEl.textContent = 'Connect the backend above first.'; statusEl.style.color = 'var(--critical)'; return; }
+  var url = /^https?:\/\//i.test(rawUrl) ? rawUrl : ('https://' + rawUrl);
+  btn.disabled = true; btn.textContent = 'Adding…';
+  fetch(base + '/rest/v1/watched_sources', {
+    method: 'POST',
+    headers: supabaseRestHeaders({ 'Prefer': 'return=representation' }),
+    body: JSON.stringify([{ url: url, label: label || null }])
+  })
+  .then(function(r){
+    if (!r.ok) return r.text().then(function(t){ throw new Error(t || ('http-' + r.status)); });
+    return r.json();
+  })
+  .then(function(){
+    urlEl.value = ''; labelEl.value = '';
+    statusEl.textContent = 'Added — it’ll be checked from the next daily run onward.';
+    statusEl.style.color = 'var(--accent-2)';
+    watchedSourcesLoad();
+  })
+  .catch(function(err){
+    var msg = String(err && err.message || '');
+    statusEl.textContent = /relation .* does not exist|42P01/i.test(msg)
+      ? 'This needs a one-time Supabase table first — see SETUP.md’s "Watched websites" section.'
+      : 'Could not add that site — double-check the URL and try again.';
+    statusEl.style.color = 'var(--critical)';
+  })
+  .then(function(){ btn.disabled = false; btn.textContent = 'Add'; });
+}
+function watchedSourcesRemove(id){
+  var base = supabaseBaseUrl();
+  if (!base) return;
+  fetch(base + '/rest/v1/watched_sources?id=eq.' + encodeURIComponent(id), {
+    method: 'DELETE',
+    headers: supabaseRestHeaders()
+  }).then(function(){ watchedSourcesLoad(); });
+}
+function watchedSourcesInit(){
+  var btn = document.getElementById('setWatchAddBtn');
+  if (!btn) return;
+  btn.addEventListener('click', watchedSourcesAdd);
+  watchedSourcesLoad();
+}
+
 var THEME_KEY = 'ctorq-settings-theme';
 function themeGetPref(){
   try {
@@ -1738,6 +1867,8 @@ function settingsInit(){
   aiToggle.addEventListener('keydown', function(e){
     if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); settingsSetAiPaused(aiToggle.getAttribute('aria-checked') !== 'true'); }
   });
+
+  watchedSourcesInit();
 }
 
 /* =================== helpers =================== */
