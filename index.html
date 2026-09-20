@@ -2249,7 +2249,7 @@ function renderDetail(){
       '</div>' +
       '<div class="fact">' +
         '<div class="fact-icon" style="background:linear-gradient(135deg, var(--accent-2), color-mix(in srgb, var(--accent-2) 70%, black))"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.3"/><path d="M4 12h16M12 3.7c2.2 2.2 3.4 5.2 3.4 8.3s-1.2 6.1-3.4 8.3c-2.2-2.2-3.4-5.2-3.4-8.3S9.8 5.9 12 3.7z"/></svg></div>' +
-        '<div class="fact-body"><div class="fact-label">Website</div><div class="fact-value"><a href="#" style="color:var(--accent)">'+co.website+'</a></div></div>' +
+        '<div class="fact-body"><div class="fact-label">Website</div><div class="fact-value">'+(co.website ? '<a href="'+escapeHtml(normalizeUrlStr(co.website))+'" target="_blank" rel="noopener" style="color:var(--accent)">'+escapeHtml(co.website)+'</a>' : '<span style="color:var(--text-muted)">Not on file</span>')+'</div></div>' +
       '</div>' +
       '<div class="fact fact-wide">' +
         '<div class="fact-icon" style="background:linear-gradient(135deg, var(--slot-aqua), color-mix(in srgb, var(--slot-aqua) 70%, black))"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.3"/><path d="M3.5 20c.6-3.4 3-5.4 5.5-5.4s4.9 2 5.5 5.4"/><circle cx="17.5" cy="8.5" r="2.6" opacity=".7"/><path d="M15.8 14.8c2 .3 3.6 2 4.1 4.6" opacity=".7"/></svg></div>' +
