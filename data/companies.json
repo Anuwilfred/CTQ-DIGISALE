@@ -1525,6 +1525,53 @@
               ]
             }
           ]
+        },
+        {
+          "name": "Flevoland",
+          "country": "nl",
+          "companies": [
+            {
+              "id": "nl-marble-automation",
+              "name": "Marble Automation B.V.",
+              "address": "Urk, Netherlands",
+              "website": "marbleautomation.com",
+              "segment": "Alarm, monitoring and automation systems for ships — originally fishing vessels, now also luxury motoryachts and sailing yachts. Founded 1997, 2-10 employees.",
+              "source": "Official site (marbleautomation.com) + independent sources (urkmaritime.nl, dnb.com, LinkedIn)",
+              "contacts": [
+                {
+                  "name": "Stefan Meun-Visser",
+                  "email": "info@marbleautomation.com",
+                  "phone": "+31 527 687 953",
+                  "source": "https://www.marbleautomation.com"
+                }
+              ],
+              "stage": "found",
+              "lastContact": "2026-09-20",
+              "nextAction": "AI drafting first email",
+              "history": [
+                {
+                  "type": "found",
+                  "date": "2026-09-20",
+                  "text": "Added from a live Research Desk search — verified via official site + independent sources (urkmaritime.nl, dnb.com)."
+                }
+              ],
+              "local": {
+                "currency": "EUR",
+                "timezone": "Europe/Amsterdam",
+                "language": "Dutch (nl)",
+                "registrationNumber": null,
+                "registryNote": "Not yet compliantly sourced from the Dutch Chamber of Commerce (KVK) — see architecture doc's OpenCorporates guidance."
+              },
+              "instructions": [],
+              "categories": [
+                "automation",
+                "safety",
+                "integration",
+                "electrical",
+                "software"
+              ]
+            }
+          ]
         }
       ]
     },
