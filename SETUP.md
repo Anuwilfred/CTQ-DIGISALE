@@ -112,6 +112,27 @@ that C-TORQ is the solution provider sending the email, never the
 recipient. This is stored only in this browser (like the backend
 connection above) and sent along with each drafting request.
 
+**"Study our website" button:** instead of writing the About-us paragraph
+by hand, paste C-TORQ's website address and click **Study our website**.
+This actually visits the real site — the homepage plus up to ~11 of its
+most relevant internal pages (about, products, services, etc.) — reads
+the real text on them, and drafts a factual summary of what C-TORQ
+actually does, straight from that content (never invented). The draft
+appears below for review; nothing is saved until you click **Use this
+text** (copies it into the About-us box) and then the separate **Save
+profile** button. This needs one more Edge Function deployed, using the
+same secrets you already set in Steps 1–3 — no new keys needed:
+
+```bash
+supabase functions deploy study-website --no-verify-jwt
+```
+
+(Or, without the CLI: paste `supabase/functions/study-website/index.ts`
+into a new Edge Function through the Supabase dashboard, same as the
+no-CLI option in Step 3.) The app finds it automatically once
+`RESEARCH_URL` is set, since it lives right next to the other functions
+in the same Supabase project.
+
 ## Step 5 — turn on automatic daily AI research (no clicking required)
 
 Once Steps 1–4 are done, the app can also research on its own, every day,
