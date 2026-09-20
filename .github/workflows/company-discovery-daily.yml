@@ -23,6 +23,11 @@ name: Company discovery (daily, automatic)
 # Also requires the research Edge Function to be redeployed after this was
 # added (it now understands mode: "company" as well as the existing
 # mode: "project") — see SETUP.md.
+#
+# Also runs merge_pending_companies.py in the same job, which folds in any
+# companies a person searched and clicked "Save to directory" on inside the
+# app itself (Research Desk or Discover-a-company) — see that script's own
+# docstring and SETUP.md's "Save a discovered company" section.
 
 on:
   schedule:
@@ -49,6 +54,12 @@ jobs:
           RESEARCH_URL: ${{ secrets.RESEARCH_URL }}
           RESEARCH_ANON_KEY: ${{ secrets.RESEARCH_ANON_KEY }}
         run: python scripts/discover_companies_daily.py
+
+      - name: Merge companies saved from the app ("Save to directory")
+        env:
+          RESEARCH_URL: ${{ secrets.RESEARCH_URL }}
+          RESEARCH_ANON_KEY: ${{ secrets.RESEARCH_ANON_KEY }}
+        run: python scripts/merge_pending_companies.py
 
       - name: Commit updated directory if changed
         run: |
