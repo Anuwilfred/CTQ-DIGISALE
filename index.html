@@ -234,6 +234,12 @@
   .company-row .meta{font-size:11.5px; color:var(--text-muted); display:block; margin-top:2px}
   .company-row[aria-selected="true"] .meta{color:rgba(255,255,255,.8)}
   .company-row .stage-pill{align-self:flex-start}
+  .needs-review-badge{
+    display:inline-block; margin-left:6px; padding:1px 7px; border-radius:999px; font-size:9.5px; font-weight:700;
+    text-transform:uppercase; letter-spacing:.03em; color:var(--warning); background:color-mix(in srgb, var(--warning) 16%, transparent);
+    vertical-align:middle; white-space:nowrap;
+  }
+  .company-row[aria-selected="true"] .needs-review-badge{color:#fff; background:rgba(255,255,255,.25)}
 
   .stage-pill{
     display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:600; padding:3px 9px;
@@ -1926,7 +1932,8 @@ function renderList(){
       btn.className = 'row-btn company-row';
       btn.setAttribute('aria-selected', String(selectedCompany === co.id));
       var stageCls = co.stage === 'won' ? 'st-won' : (co.stage === 'rejected' ? 'st-rejected' : 'st-active');
-      btn.innerHTML = '<span><span class="name">'+co.name+'</span><span class="meta">'+co.segment+'</span></span>' +
+      var reviewBadge = co.needsReview ? '<span class="needs-review-badge" title="Added by the automatic discovery run — single AI web-search pass, give it a quick glance before outreach">Needs review</span>' : '';
+      btn.innerHTML = '<span><span class="name">'+co.name+reviewBadge+'</span><span class="meta">'+co.segment+'</span></span>' +
         '<span class="stage-pill '+stageCls+'"><span class="dot"></span>'+STAGE_LABELS[co.stage]+'</span>';
       btn.addEventListener('click', function(){ selectedCompany = co.id; renderList(); renderDetail(); });
       listPaneEl.appendChild(btn);
@@ -1974,9 +1981,12 @@ function renderDetail(){
     : (local.registryNote || 'Registration number not yet compliantly sourced');
   var localSub = [local.currency, local.timezone, local.language].filter(Boolean).join(' · ');
 
+  var reviewNote = co.needsReview
+    ? '<p class="settings-note" style="color:var(--warning); margin:6px 0 0">Added by the automatic discovery run — a single AI web-search pass, not yet cross-checked against a second source like the rest of this directory. Worth a quick glance (its own website is usually enough) before outreach.</p>'
+    : '';
   detailPaneEl.innerHTML =
     '<div class="detail-header">' +
-      '<div><h2 class="detail-title">'+co.name+'</h2><p class="detail-sub">'+co.segment+' · '+co.region+', '+co.country+'</p></div>' +
+      '<div><h2 class="detail-title">'+co.name+'</h2><p class="detail-sub">'+co.segment+' · '+co.region+', '+co.country+'</p>'+reviewNote+'</div>' +
     '</div>' +
     '<div class="fact-grid">' +
       '<div class="fact">' +
