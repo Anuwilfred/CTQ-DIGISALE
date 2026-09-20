@@ -696,6 +696,51 @@
                 "services",
                 "safety"
               ]
+            },
+            {
+              "id": "ae-premier-marine-engineering",
+              "name": "Premier Marine Engineering Services LLC",
+              "address": "Dubai Maritime City, Dubai, United Arab Emirates",
+              "website": "premiermarineeng.com",
+              "segment": "Fully integrated shipyard (est. 2003) — ship repair, shipbuilding, retrofitting and marine engineering. Currently building cargo barges, a multicat and a shallow draft tug for ADNOC Logistics & Services.",
+              "source": "Official site (premiermarineeng.com) + independent sources (Khaleej Times, Gulf News, Superyacht Times)",
+              "contacts": [
+                {
+                  "name": "Hemant Tandon",
+                  "role": "Managing Director",
+                  "phone": "+971 4 4254111",
+                  "source": "https://www.premiermarineeng.com"
+                }
+              ],
+              "stage": "found",
+              "lastContact": "2026-09-20",
+              "nextAction": "AI drafting first email",
+              "history": [
+                {
+                  "type": "found",
+                  "date": "2026-09-20",
+                  "text": "Added from a live Research Desk search — verified via official site + independent sources (Khaleej Times, Gulf News, Superyacht Times). Currently building cargo barges/multicat/shallow draft tug for ADNOC Logistics & Services."
+                }
+              ],
+              "local": {
+                "currency": "AED",
+                "timezone": "Asia/Dubai",
+                "language": "Arabic (ar) / English",
+                "registrationNumber": null,
+                "registryNote": "Not yet compliantly sourced from UAE Ministry of Economy / Emirate-level DED — see architecture doc's OpenCorporates guidance."
+              },
+              "instructions": [],
+              "categories": [
+                "automation",
+                "integration",
+                "electrical",
+                "safety",
+                "propulsion",
+                "cargo",
+                "hull",
+                "hvac",
+                "services"
+              ]
             }
           ]
         },
