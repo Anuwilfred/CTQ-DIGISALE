@@ -436,6 +436,36 @@
     .match-cols{grid-template-columns:1fr}
   }
 
+  /* ---------- settings ---------- */
+  .settings{flex:1; overflow-y:auto; padding:22px clamp(16px,3vw,32px)}
+  .settings-wrap{max-width:640px; display:flex; flex-direction:column; gap:18px}
+  .settings-card{
+    background:var(--glass-strong); border:1px solid var(--glass-border); border-radius:18px; padding:18px 20px;
+    box-shadow:0 6px 20px rgba(0,0,0,.08); -webkit-backdrop-filter:blur(18px); backdrop-filter:blur(18px);
+  }
+  .settings-title{font-size:14.5px; font-weight:700; margin:0 0 6px}
+  .settings-sub{font-size:12.5px; color:var(--text-muted); margin:0 0 14px; line-height:1.5}
+  .settings-sub.settings-ready{color:var(--accent-2)}
+  .settings-sub.settings-error{color:var(--critical)}
+  .settings-field-label{font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--text-muted); font-weight:600; margin:12px 0 4px}
+  .settings-field-label:first-of-type{margin-top:0}
+  .settings-input{
+    width:100%; border:1px solid var(--glass-border); background:var(--tint-cool); color:var(--text);
+    border-radius:8px; padding:9px 11px; font-size:13px;
+  }
+  .settings-input::placeholder{color:var(--text-muted)}
+  .settings-textarea{
+    width:100%; min-height:110px; border:1px solid var(--glass-border); background:var(--tint-cool); color:var(--text);
+    border-radius:8px; padding:10px 11px; font-size:12.5px; line-height:1.5; font-family:inherit; resize:vertical;
+  }
+  .settings-textarea::placeholder{color:var(--text-muted)}
+  .settings-actions{display:flex; gap:8px; margin-top:12px}
+  .settings-btn{border:none; padding:8px 16px; border-radius:10px; font-size:12.5px; font-weight:600; cursor:pointer}
+  .settings-btn-primary{background:var(--accent); color:var(--accent-ink)}
+  .settings-btn-secondary{background:var(--tint-cool); color:var(--text-muted); border:1px solid var(--glass-border)}
+  .settings-note{font-size:11.5px; color:var(--text-muted); line-height:1.5; margin:12px 0 0}
+  .settings-note:empty{display:none; margin:0}
+
   /* ---------- analytics ---------- */
   .analytics{flex:1; overflow-y:auto; padding:22px clamp(16px,3vw,32px)}
 
@@ -505,6 +535,7 @@
       <button class="tab-btn" id="tabSignals" role="tab" aria-selected="false">New signals<span class="signal-badge" id="signalBadge" hidden></span></button>
       <button class="tab-btn" id="tabServices" role="tab" aria-selected="false">Services</button>
       <button class="tab-btn" id="tabAnalytics" role="tab" aria-selected="false">Analytics</button>
+      <button class="tab-btn" id="tabSettings" role="tab" aria-selected="false">Settings</button>
     </div>
     <button class="export-btn" id="exportBtn" type="button" title="Download the current data, including any notes added this session, as data/companies.json">Export data</button>
   </header>
@@ -543,6 +574,46 @@
     <section class="services" id="viewServices" hidden></section>
 
     <section class="analytics" id="viewAnalytics" hidden></section>
+
+    <section class="settings" id="viewSettings" hidden>
+      <div class="settings-wrap">
+
+        <div class="settings-card">
+          <h3 class="settings-title">Backend connection</h3>
+          <p class="settings-sub" id="setBackendStatus">Checking…</p>
+          <div class="settings-field-label">Supabase function URL</div>
+          <input type="text" id="setResearchUrl" class="settings-input mono" placeholder="https://xxxxxxxx.supabase.co/functions/v1/research">
+          <div class="settings-field-label">Supabase anon public key</div>
+          <input type="text" id="setResearchKey" class="settings-input mono" placeholder="sb_publishable_…">
+          <div class="settings-actions">
+            <button type="button" class="settings-btn settings-btn-primary" id="setSaveBackendBtn">Save connection</button>
+            <button type="button" class="settings-btn settings-btn-secondary" id="setClearBackendBtn">Clear</button>
+          </div>
+          <p class="settings-note">These two values come from your Supabase project (Project Settings → API) — see SETUP.md Steps 2–4. They're safe to store here since the anon key is meant to be public; saving just updates this browser, no code push needed.</p>
+        </div>
+
+        <div class="settings-card">
+          <h3 class="settings-title">Email sending (Gmail)</h3>
+          <p class="settings-sub" id="setEmailStatus">Uses the same backend connection above.</p>
+          <p class="settings-note">The Gmail address and app password that actually send email are configured only as Supabase secrets on the server — never inside this app — so they can't be viewed, added or removed from here. That keeps them safe even though this page's source is public. See SETUP.md Step 6 to add, change or remove the sending account from the Supabase dashboard (Edge Functions → Secrets).</p>
+          <p class="settings-note" style="color:var(--warning)">Per your note: real sending to company contacts is on hold until permission is confirmed. Drafting and reviewing still works — just keep using your own address in the "To" field for test sends.</p>
+        </div>
+
+        <div class="settings-card">
+          <h3 class="settings-title">C-TORQ company profile</h3>
+          <p class="settings-sub">Feeds the AI real facts about C-TORQ so drafted emails talk about <em>our</em> actual capabilities — not a generic or competitor-flavored description. C-TORQ is the systems provider here, not the shipyard or operator being contacted.</p>
+          <div class="settings-field-label">C-TORQ website</div>
+          <input type="text" id="setProfileWebsite" class="settings-input" placeholder="https://www.c-torq.com">
+          <div class="settings-field-label">About us / real differentiators</div>
+          <textarea id="setProfileAbout" class="settings-textarea" maxlength="1200" placeholder="e.g. What C-TORQ actually delivers, recent references, what sets us apart from the yards' preferred/incumbent suppliers, certifications, turnaround times…"></textarea>
+          <div class="settings-actions">
+            <button type="button" class="settings-btn settings-btn-primary" id="setSaveProfileBtn">Save profile</button>
+          </div>
+          <p class="settings-note" id="setProfileStatus"></p>
+        </div>
+
+      </div>
+    </section>
   </div>
 </div>
 
@@ -559,6 +630,19 @@ var CONFIG = {
   RESEARCH_URL: 'https://vwupalbfqwswwndvlcmq.supabase.co/functions/v1/research',
   RESEARCH_ANON_KEY: 'sb_publishable_FbFL_CtruN_lCAANGPgwlg_TuQhGYZ0'
 };
+// The Settings tab lets this be reconfigured from inside the app (no code
+// push needed) — a saved override in this browser's localStorage always
+// wins over the defaults above. See settingsInit() / SETTINGS_BACKEND_KEY.
+var SETTINGS_BACKEND_KEY = 'ctorq-settings-backend';
+(function applyBackendOverride(){
+  try {
+    var raw = localStorage.getItem(SETTINGS_BACKEND_KEY);
+    if (!raw) return;
+    var saved = JSON.parse(raw);
+    if (saved && saved.url) CONFIG.RESEARCH_URL = saved.url;
+    if (saved && saved.key) CONFIG.RESEARCH_ANON_KEY = saved.key;
+  } catch(e){ /* private mode / bad JSON — keep defaults */ }
+})();
 // The draft-email and send-email functions live in the same Supabase
 // project as research, so their URLs are derived automatically — no extra
 // config needed once RESEARCH_URL is set.
@@ -566,6 +650,23 @@ function backendUrl(fnName){
   if (!CONFIG.RESEARCH_URL) return '';
   return CONFIG.RESEARCH_URL.replace(/\/research$/, '/' + fnName);
 }
+
+// C-TORQ's own company profile (website + real differentiators), entered
+// on the Settings tab and persisted in this browser only. Passed as extra
+// grounding context into the draft-email backend call so AI-drafted
+// outreach correctly represents C-TORQ's actual capabilities instead of a
+// generic description — see runDraftEmail() and draft-email/index.ts.
+var SETTINGS_PROFILE_KEY = 'ctorq-settings-profile';
+var COMPANY_PROFILE = { website: '', about: '' };
+(function loadCompanyProfile(){
+  try {
+    var raw = localStorage.getItem(SETTINGS_PROFILE_KEY);
+    if (!raw) return;
+    var saved = JSON.parse(raw);
+    if (saved && typeof saved.website === 'string') COMPANY_PROFILE.website = saved.website;
+    if (saved && typeof saved.about === 'string') COMPANY_PROFILE.about = saved.about;
+  } catch(e){ /* private mode / bad JSON — keep defaults */ }
+})();
 
 /* =================== data (country -> region -> company) =================== */
 var STAGES = ['found','drafted','approved','sent','replied','meeting','won'];
@@ -757,7 +858,7 @@ function rdAddHistory(entry){
   rdRenderHistory();
 }
 
-function rdInit(){
+function rdRefreshStatus(){
   var statusEl = document.getElementById('rdStatus');
   var btn = document.getElementById('rdSearchBtn');
   if (!statusEl || !btn) return;
@@ -767,10 +868,18 @@ function rdInit(){
     statusEl.className = 'rd-sub rd-ready';
     btn.disabled = false;
   } else {
-    statusEl.textContent = 'Live search isn\'t connected yet — see SETUP.md in the repo to wire up the backend.';
+    statusEl.textContent = 'Live search isn\'t connected yet — see the Settings tab (or SETUP.md in the repo) to wire up the backend.';
     statusEl.className = 'rd-sub';
     btn.disabled = true;
   }
+}
+
+function rdInit(){
+  var statusEl = document.getElementById('rdStatus');
+  var btn = document.getElementById('rdSearchBtn');
+  if (!statusEl || !btn) return;
+
+  rdRefreshStatus();
 
   btn.addEventListener('click', rdRunSearch);
   document.getElementById('rdQuery').addEventListener('keydown', function(e){
@@ -991,7 +1100,7 @@ function primaryContactEmail(co){
 function emailBoxHTML(co){
   var idp = 'email-'+co.id;
   if (!CONFIG.RESEARCH_URL){
-    return '<div class="email-box"><p class="email-status">Live drafting isn\'t connected yet — see SETUP.md in the repo.</p>' +
+    return '<div class="email-box"><p class="email-status">Live drafting isn\'t connected yet — connect it on the Settings tab.</p>' +
       '<button type="button" class="email-btn email-btn-primary" disabled>Draft with AI</button></div>';
   }
 
@@ -1044,24 +1153,36 @@ function emailBoxHTML(co){
   return '<div class="email-box">' + statusHtml + fieldsHtml + actionsHtml + '</div>';
 }
 
-function runDraftEmail(co, notes, onSaved){
+function runDraftEmail(co, notes, onSaved, onError){
+  if (!CONFIG.RESEARCH_URL){
+    if (onError) onError('Backend not connected — set it up on the Settings tab first.');
+    return;
+  }
   var url = backendUrl('draft-email');
+  // Give up after 25s instead of leaving the button stuck forever if the
+  // backend never deployed / hangs (e.g. draft-email function not deployed yet).
+  var controller = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+  var timeoutId = controller ? setTimeout(function(){ controller.abort(); }, 25000) : null;
+
   fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'apikey': CONFIG.RESEARCH_ANON_KEY, 'Authorization': 'Bearer ' + CONFIG.RESEARCH_ANON_KEY },
+    signal: controller ? controller.signal : undefined,
     body: JSON.stringify({
       companyName: co.name,
       contactName: (co.contacts && co.contacts[0]) ? co.contacts[0].name : '',
       contactRole: (co.contacts && co.contacts[0]) ? co.contacts[0].role : '',
       segment: co.segment,
       categories: co.categories || [],
-      notes: notes || ''
+      notes: notes || '',
+      companyProfile: { website: COMPANY_PROFILE.website || '', about: COMPANY_PROFILE.about || '' }
     })
   })
   .then(function(r){ return r.json().then(function(data){ return {ok:r.ok, data:data}; }); })
   .then(function(res){
+    if (timeoutId) clearTimeout(timeoutId);
     if (!res.ok || res.data.error){
-      alert('Draft failed: ' + (res.data.error || 'unknown error'));
+      if (onError) onError(res.data.error || 'unknown error');
       return;
     }
     co.draftEmail = { subject: res.data.subject, body: res.data.body };
@@ -1070,7 +1191,11 @@ function runDraftEmail(co, notes, onSaved){
     if (co.stage === 'found') co.stage = 'drafted';
     if (onSaved) onSaved();
   })
-  .catch(function(err){ alert('Draft failed: could not reach the backend (' + err.message + ').'); });
+  .catch(function(err){
+    if (timeoutId) clearTimeout(timeoutId);
+    var msg = (err && err.name === 'AbortError') ? 'timed out after 25s — is the draft-email function deployed?' : ('could not reach the backend (' + err.message + ')');
+    if (onError) onError(msg);
+  });
 }
 
 function wireEmailBox(co, onSaved){
@@ -1081,7 +1206,10 @@ function wireEmailBox(co, onSaved){
     draftBtn.addEventListener('click', function(){
       var notesEl = document.getElementById(idp+'-notes');
       draftBtn.disabled = true; draftBtn.textContent = 'Drafting…';
-      runDraftEmail(co, notesEl ? notesEl.value.trim() : '', onSaved);
+      runDraftEmail(co, notesEl ? notesEl.value.trim() : '', onSaved, function(msg){
+        draftBtn.disabled = false; draftBtn.textContent = 'Draft with AI';
+        alert('Draft failed: ' + msg);
+      });
     });
   }
 
@@ -1089,7 +1217,10 @@ function wireEmailBox(co, onSaved){
   if (regenBtn){
     regenBtn.addEventListener('click', function(){
       regenBtn.disabled = true; regenBtn.textContent = 'Drafting…';
-      runDraftEmail(co, '', onSaved);
+      runDraftEmail(co, '', onSaved, function(msg){
+        regenBtn.disabled = false; regenBtn.textContent = 'Regenerate';
+        alert('Draft failed: ' + msg);
+      });
     });
   }
 
@@ -1261,6 +1392,76 @@ function exportData(){
   URL.revokeObjectURL(url);
 }
 
+/* =================== settings (backend config + company profile) =================== */
+function settingsRefreshBackendStatus(){
+  var el = document.getElementById('setBackendStatus');
+  if (!el) return;
+  if (CONFIG.RESEARCH_URL && CONFIG.RESEARCH_ANON_KEY){
+    el.textContent = 'Connected — research search, AI drafting and the daily automation all use this.';
+    el.className = 'settings-sub settings-ready';
+  } else {
+    el.textContent = 'Not connected yet — paste your Supabase function URL and anon key below (see SETUP.md Steps 2–4).';
+    el.className = 'settings-sub';
+  }
+}
+
+function settingsSaveBackend(){
+  var urlEl = document.getElementById('setResearchUrl');
+  var keyEl = document.getElementById('setResearchKey');
+  var url = (urlEl.value || '').trim();
+  var key = (keyEl.value || '').trim();
+
+  CONFIG.RESEARCH_URL = url;
+  CONFIG.RESEARCH_ANON_KEY = key;
+  try {
+    if (url || key) localStorage.setItem(SETTINGS_BACKEND_KEY, JSON.stringify({url: url, key: key}));
+    else localStorage.removeItem(SETTINGS_BACKEND_KEY);
+  } catch(e){ /* private mode — CONFIG is still updated in memory for this session */ }
+
+  settingsRefreshBackendStatus();
+  if (typeof rdRefreshStatus === 'function') rdRefreshStatus();
+  if (typeof renderDetail === 'function') renderDetail(); // refresh outreach email box's connected state
+}
+
+function settingsClearBackend(){
+  document.getElementById('setResearchUrl').value = '';
+  document.getElementById('setResearchKey').value = '';
+  settingsSaveBackend();
+}
+
+function settingsSaveProfile(){
+  var websiteEl = document.getElementById('setProfileWebsite');
+  var aboutEl = document.getElementById('setProfileAbout');
+  COMPANY_PROFILE.website = (websiteEl.value || '').trim();
+  COMPANY_PROFILE.about = (aboutEl.value || '').trim();
+  try { localStorage.setItem(SETTINGS_PROFILE_KEY, JSON.stringify(COMPANY_PROFILE)); } catch(e){ /* private mode */ }
+
+  var statusEl = document.getElementById('setProfileStatus');
+  if (statusEl){
+    statusEl.textContent = 'Saved — new outreach drafts will use this.';
+    statusEl.style.color = 'var(--accent-2)';
+    setTimeout(function(){ if (statusEl.textContent === 'Saved — new outreach drafts will use this.') { statusEl.textContent = ''; statusEl.style.color = ''; } }, 4000);
+  }
+}
+
+function settingsInit(){
+  var urlEl = document.getElementById('setResearchUrl');
+  var keyEl = document.getElementById('setResearchKey');
+  var websiteEl = document.getElementById('setProfileWebsite');
+  var aboutEl = document.getElementById('setProfileAbout');
+  if (!urlEl || !keyEl || !websiteEl || !aboutEl) return;
+
+  urlEl.value = CONFIG.RESEARCH_URL || '';
+  keyEl.value = CONFIG.RESEARCH_ANON_KEY || '';
+  websiteEl.value = COMPANY_PROFILE.website || '';
+  aboutEl.value = COMPANY_PROFILE.about || '';
+  settingsRefreshBackendStatus();
+
+  document.getElementById('setSaveBackendBtn').addEventListener('click', settingsSaveBackend);
+  document.getElementById('setClearBackendBtn').addEventListener('click', settingsClearBackend);
+  document.getElementById('setSaveProfileBtn').addEventListener('click', settingsSaveProfile);
+}
+
 /* =================== helpers =================== */
 function allCompanies(){
   var out = [];
@@ -1408,6 +1609,7 @@ document.getElementById('tabProjects').addEventListener('click', function(){ swi
 document.getElementById('tabSignals').addEventListener('click', function(){ switchTab('signals'); });
 document.getElementById('tabServices').addEventListener('click', function(){ switchTab('services'); });
 document.getElementById('tabAnalytics').addEventListener('click', function(){ switchTab('analytics'); });
+document.getElementById('tabSettings').addEventListener('click', function(){ switchTab('settings'); });
 document.getElementById('exportBtn').addEventListener('click', exportData);
 function switchTab(which){
   document.getElementById('tabPipeline').setAttribute('aria-selected', String(which === 'pipeline'));
@@ -1415,11 +1617,13 @@ function switchTab(which){
   document.getElementById('tabSignals').setAttribute('aria-selected', String(which === 'signals'));
   document.getElementById('tabServices').setAttribute('aria-selected', String(which === 'services'));
   document.getElementById('tabAnalytics').setAttribute('aria-selected', String(which === 'analytics'));
+  document.getElementById('tabSettings').setAttribute('aria-selected', String(which === 'settings'));
   document.getElementById('viewPipeline').hidden = which !== 'pipeline';
   document.getElementById('viewProjects').hidden = which !== 'projects';
   document.getElementById('viewSignals').hidden = which !== 'signals';
   document.getElementById('viewServices').hidden = which !== 'services';
   document.getElementById('viewAnalytics').hidden = which !== 'analytics';
+  document.getElementById('viewSettings').hidden = which !== 'settings';
   if (which === 'services') buildServices();
 }
 
@@ -1798,6 +2002,7 @@ loadData().then(function(){
 loadSignals().then(buildSignals);
 loadProjects().then(buildProjects);
 rdInit();
+settingsInit();
 
 })();
 </script>
