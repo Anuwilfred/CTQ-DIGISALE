@@ -297,6 +297,60 @@ public key could technically add or remove rows here too; if that becomes
 a concern, tighten the insert/delete policies in Supabase later — ask and
 this can be adjusted.
 
+### Save a discovered company (turns a search into a directory entry)
+
+Both the Research Desk (top box on the Projects tab — checks a named
+company/project) and Discover a company (the box below it — finds a new
+company you don't have a name for yet) can now show a **Save to
+directory** button under a result, with an **Also watch this website**
+checkbox next to it.
+
+"Also watch this website" is instant — it just adds a row to the
+`watched_sources` table above, so make sure that table already exists
+first. "Save to directory" is not instant: the app is a static site with
+no server of its own, so it can't write to `data/companies.json` directly.
+Instead it saves the company into a small holding table, and the daily
+company-discovery job (the one from the "Company discovery" section above)
+folds it into the real directory within a day, tagged `needsReview: true`
+exactly like the automatic watchlist finds — a single AI pass isn't the
+same bar as this directory's normal two-source check.
+
+This needs one more one-time table, alongside `watched_sources`:
+
+```sql
+create table public.pending_companies (
+  id bigint generated always as identity primary key,
+  name text not null,
+  website text,
+  city text,
+  country text,
+  segment text,
+  categories jsonb not null default '[]'::jsonb,
+  contact jsonb,
+  sources jsonb not null default '[]'::jsonb,
+  created_at timestamptz not null default now()
+);
+
+alter table public.pending_companies enable row level security;
+
+create policy "public read"   on public.pending_companies for select using (true);
+create policy "public insert" on public.pending_companies for insert with check (true);
+```
+
+No delete policy is needed for the app itself — only the daily job removes
+rows (via a service-level call from GitHub Actions), once they've been
+merged into `data/companies.json` or turned out to be a duplicate. A saved
+company whose country isn't tracked yet in the directory is deliberately
+left in this table rather than dropped, so it's still there once you add
+that country manually — check the table in the Supabase dashboard if a
+save doesn't show up in the directory after a day or two.
+
+Also needs the Research Desk's project-mode research to know a company's
+website/city/country (previously only the company-discovery mode did) —
+covered by the same `supabase functions deploy research --no-verify-jwt`
+from the "Company discovery" section above, so redeploy that if you
+haven't since this was added.
+
 ## Notes on safety
 
 - The **anon key** is meant to be public — Supabase issues it specifically
