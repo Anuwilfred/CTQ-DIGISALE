@@ -125,6 +125,49 @@ time from the repo's **Actions** tab → "AI research (daily, automatic)" →
 **Run workflow**, to see it work immediately rather than waiting for the
 next scheduled run.
 
+## Step 6 — turn on AI email drafting + sending (Gmail)
+
+Once Steps 1–4 are working, every company in the Pipeline tab gets an
+"Outreach email" box: click **Draft with AI** to get a personalized draft,
+edit it if you want, click **Approve**, then a separate **Send email**
+click actually sends it through your own Gmail account. Nothing sends
+without both of those explicit clicks — there's no one-click auto-send.
+
+This needs two more Edge Functions (already written, same repo) and a
+Gmail **app password** (a 16-character password Google generates just for
+this, so your real Gmail password never has to be stored anywhere).
+
+**Get a Gmail app password:**
+1. Your Google account needs **2-Step Verification** turned on first
+   (myaccount.google.com/security) — turn it on if it isn't already.
+2. Go to myaccount.google.com/apppasswords, sign in again if asked.
+3. Type a name like "C-TORQ app" and click **Create**.
+4. Google shows a 16-character password (like `abcd efgh ijkl mnop`) —
+   copy it now, it's only shown once.
+
+**Deploy the two new functions and set their secrets:**
+```bash
+supabase secrets set ANTHROPIC_API_KEY=sk-ant-your-real-key-here   # already set in Step 3 — same key, reused
+supabase functions deploy draft-email --no-verify-jwt
+
+supabase secrets set GMAIL_ADDRESS=you@gmail.com
+supabase secrets set GMAIL_APP_PASSWORD="abcdefghijklmnop"          # the 16-char password, no spaces
+supabase secrets set SENDER_NAME="Your Name"                        # optional, shown as the From name
+supabase functions deploy send-email --no-verify-jwt
+```
+
+No changes needed in `index.html` for this step — the app finds these two
+new functions automatically once `RESEARCH_URL` is set (Step 4), since
+they live right next to the research function in the same Supabase
+project.
+
+**Cost:** drafting reuses the same Anthropic key and costs a small
+fraction of a cent per draft (no web search involved, so cheaper than a
+live research search). Sending itself is free — it's just going through
+your own Gmail account, the same as sending from Gmail normally, so
+Gmail's own daily sending limits apply (roughly 500/day for a personal
+account).
+
 ## Notes on safety
 
 - The **anon key** is meant to be public — Supabase issues it specifically
