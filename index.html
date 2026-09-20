@@ -1202,6 +1202,38 @@ function addPendingCompany(payload){
     return r.json();
   });
 }
+// A Research Desk (mode:"project") result doesn't include the company's
+// website/city/country — only mode:"company" does. Rather than requiring
+// the research Edge Function to be redeployed before Save-to-directory can
+// work end-to-end, fill those fields in ourselves with one extra lookup
+// against the already-working mode:"company" search, using the company
+// name as the query. Best-effort: if it fails or finds nothing, we still
+// save whatever we already had.
+function ensureCompanyLocationFields(payload){
+  if (payload.website || !payload.name || AI_PAUSED) return Promise.resolve(payload);
+  return fetch(CONFIG.RESEARCH_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'apikey': CONFIG.RESEARCH_ANON_KEY,
+      'Authorization': 'Bearer ' + CONFIG.RESEARCH_ANON_KEY
+    },
+    body: JSON.stringify({ query: payload.name, mode: 'company' })
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(data){
+    if (data && data.found){
+      payload.website = payload.website || normalizeUrlStr(data.website);
+      payload.city = payload.city || data.city || null;
+      payload.country = payload.country || data.country || null;
+      if ((!payload.categories || !payload.categories.length) && data.categories && data.categories.length) payload.categories = data.categories;
+      if (!payload.contact && data.contact) payload.contact = data.contact;
+      if ((!payload.sources || !payload.sources.length) && data.sources && data.sources.length) payload.sources = data.sources;
+    }
+    return payload;
+  })
+  .catch(function(){ return payload; });
+}
 function saveDiscoveredCompany(payload, alsoWatch, idPrefix){
   var btn = document.getElementById(idPrefix+'-savebtn');
   var status = document.getElementById(idPrefix+'-status');
@@ -1210,15 +1242,21 @@ function saveDiscoveredCompany(payload, alsoWatch, idPrefix){
     return;
   }
   if (btn){ btn.disabled = true; btn.textContent = 'Saving…'; }
-  addPendingCompany(payload)
-    .then(function(){
-      if (alsoWatch && isValidHttpUrlStr(payload.website)) return addWatchedSource(payload.website, payload.name).then(function(){ return 'watched'; }).catch(function(){ return 'watch-failed'; });
-      return 'no-watch';
+  if (status){ status.textContent = payload.website ? '' : 'Looking up its website and location…'; status.style.color = ''; }
+  ensureCompanyLocationFields(payload)
+    .then(function(filled){
+      if (btn) btn.textContent = 'Saving…';
+      return addPendingCompany(filled).then(function(){ return filled; });
+    })
+    .then(function(filled){
+      if (alsoWatch && isValidHttpUrlStr(filled.website)) return addWatchedSource(filled.website, filled.name).then(function(){ return 'watched'; }).catch(function(){ return 'watch-failed'; });
+      return filled.website ? 'no-watch' : 'no-website';
     })
     .then(function(watchResult){
       if (status){
         if (watchResult === 'watched') { status.textContent = 'Saved — will appear in the directory within a day, and its website is now being watched for news.'; }
         else if (watchResult === 'watch-failed') { status.textContent = 'Saved to the directory (added within a day by the automatic sync). Couldn\'t start watching the site — add it manually in Settings.'; }
+        else if (watchResult === 'no-website') { status.textContent = 'Saved, but couldn\'t confirm its official website or country — it may need a manual add instead. Tell the team if it doesn\'t show up in the directory in a day or two.'; }
         else { status.textContent = 'Saved — will appear in the directory within a day by the automatic sync.'; }
         status.style.color = 'var(--accent-2)';
       }
