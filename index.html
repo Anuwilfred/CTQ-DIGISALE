@@ -120,9 +120,30 @@
     display:flex; align-items:center; gap:14px; padding:11px clamp(14px,3vw,22px);
     border-bottom:1px solid var(--hairline); flex:none;
   }
-  .brand{display:flex; align-items:baseline; gap:8px}
+  .brand{
+    display:flex; align-items:center; gap:11px;
+    position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+    pointer-events:none; /* sits over the bar visually but never blocks clicks on buttons beside it */
+  }
+  .brand-logo{
+    flex:none; width:36px; height:36px; border-radius:50%;
+    background:linear-gradient(135deg, var(--accent), var(--accent-2, var(--accent)));
+    color:#fff; font-weight:800; font-size:13.5px; letter-spacing:.02em;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 4px 12px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.25);
+  }
   .brand-mark{font-weight:700; font-size:15px; letter-spacing:.01em}
-  .brand-role{font-size:12.5px; color:var(--text-muted)}
+  .brand-role{font-size:15px; font-weight:650; color:var(--text)}
+  @media (max-width:680px){
+    /* Not enough room to center the brand AND keep the right-side buttons
+       clear of it on a phone-width bar — fall back to the normal left-
+       aligned flow instead of overlapping them, and let the bar wrap to a
+       second row rather than clipping the update button off-screen. */
+    .topbar{flex-wrap:wrap; row-gap:8px}
+    .brand{position:static; transform:none; margin-right:auto}
+    .brand-logo{width:28px; height:28px; font-size:11px}
+    .brand-role{font-size:13px; white-space:nowrap}
+  }
   .signal-badge{
     display:inline-flex; align-items:center; justify-content:center; min-width:15px; height:15px; padding:0 4px;
     border-radius:999px; background:var(--critical); color:#fff; font-size:9.5px; font-weight:700;
@@ -174,8 +195,9 @@
      overlapping buttons at the bottom of a scroll view. */
   .dock{
     align-self:center; flex:none; margin:10px 0 calc(12px + env(safe-area-inset-bottom));
-    display:flex; align-items:flex-end; gap:4px; padding:8px 10px;
-    background:var(--glass-strong); border:1px solid var(--glass-border); border-radius:22px;
+    width:min(880px, calc(100vw - 32px));
+    display:flex; align-items:flex-end; justify-content:space-between; gap:6px; padding:10px 26px;
+    background:var(--glass-strong); border:1px solid var(--glass-border); border-radius:26px;
     box-shadow:0 14px 34px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.12);
     -webkit-backdrop-filter:blur(28px) saturate(180%); backdrop-filter:blur(28px) saturate(180%);
     z-index:40;
@@ -183,7 +205,7 @@
   .dock-btn{
     position:relative; display:flex; flex-direction:column; align-items:center; gap:3px;
     border:none; background:transparent; color:var(--text-muted); cursor:pointer;
-    padding:7px 12px 6px; border-radius:15px; transition:transform .16s cubic-bezier(.2,.9,.3,1.2), background .15s ease, color .15s ease;
+    padding:9px 22px 8px; border-radius:15px; transition:transform .16s cubic-bezier(.2,.9,.3,1.2), background .15s ease, color .15s ease;
   }
   .dock-btn:hover{transform:translateY(-6px); background:var(--tint-cool); color:var(--text)}
   .dock-btn svg{width:21px; height:21px; flex:none}
@@ -644,8 +666,8 @@
 
 <div class="shell">
   <header class="topbar">
-    <div class="brand">
-      <span class="brand-mark">C·TORQ</span>
+    <div class="brand" title="C·TORQ Sales Command">
+      <span class="brand-logo">CS</span>
       <span class="brand-role">Sales Command</span>
     </div>
     <button class="export-btn" id="exportBtn" type="button" title="Download the current data, including any notes added this session, as data/companies.json">Export data</button>
