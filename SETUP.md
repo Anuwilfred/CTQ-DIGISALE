@@ -345,11 +345,16 @@ left in this table rather than dropped, so it's still there once you add
 that country manually — check the table in the Supabase dashboard if a
 save doesn't show up in the directory after a day or two.
 
-Also needs the Research Desk's project-mode research to know a company's
-website/city/country (previously only the company-discovery mode did) —
-covered by the same `supabase functions deploy research --no-verify-jwt`
-from the "Company discovery" section above, so redeploy that if you
-haven't since this was added.
+The Research Desk's project-mode search doesn't normally know a company's
+website/city/country (only company-discovery mode originally did) — the
+app works around this itself now, so no redeploy is required for this to
+work: when you click Save on a Research Desk result with no website, it
+quietly runs one extra company-mode lookup by name first to fill in the
+gaps before saving. You'll briefly see "Looking up its website and
+location…" under the button when this happens. If that extra lookup can't
+confirm a real company either, the save still goes through but says so
+plainly, since it likely won't be placeable in the directory without a
+website/country to go on.
 
 ## Notes on safety
 
