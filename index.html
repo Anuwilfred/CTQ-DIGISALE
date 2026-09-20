@@ -419,6 +419,11 @@
     display:flex; justify-content:space-between; gap:8px; cursor:pointer;
   }
   .rd-history-item:hover{color:var(--text)}
+  .save-row{
+    margin-top:14px; padding-top:12px; border-top:1px solid var(--hairline);
+    display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
+  }
+  .save-watch-label{font-size:12px; color:var(--text-muted); display:flex; align-items:center; gap:6px; cursor:pointer}
 
   /* ---------- services (job-category tiles, Windows-tile style) ---------- */
   .services{flex:1; overflow-y:auto; padding:22px clamp(16px,3vw,32px); display:flex; flex-direction:column; align-items:center}
@@ -1119,10 +1124,141 @@ function rdSystemsBadge(status){
   return {cls:'rd-unknown', label:'Status unclear'};
 }
 
+// ---- shared, defensive HTML-building for anything that came back from the
+// AI research backend. The backend reads real third-party web pages, so its
+// JSON fields are untrusted text (could contain stray markup or, in theory,
+// something hostile) and must never be interpolated into innerHTML raw. ----
+function isValidEmailStr(s){
+  return typeof s === 'string' && s.length > 0 && s.length < 200 && /^[^\s"'<>]+@[^\s"'<>]+\.[^\s"'<>]+$/.test(s);
+}
+function isValidHttpUrlStr(s){
+  if (typeof s !== 'string' || !s || s.length > 500) return false;
+  try { var u = new URL(s); return u.protocol === 'http:' || u.protocol === 'https:'; } catch(e){ return false; }
+}
+// The research backend returns website domains bare ("example.com"), same
+// convention as the Watched websites field — add the scheme so URL()
+// validation and links both work.
+function normalizeUrlStr(s){
+  if (typeof s !== 'string' || !s.trim()) return null;
+  var t = s.trim();
+  return /^https?:\/\//i.test(t) ? t : ('https://' + t);
+}
+function contactLineHtml(contact){
+  if (!contact || !(contact.name || contact.email || contact.phone || contact.portalUrl)) return '';
+  var bits = [];
+  if (contact.email){
+    bits.push(isValidEmailStr(contact.email)
+      ? '<a href="mailto:'+escapeHtml(contact.email)+'" style="color:var(--accent)">'+escapeHtml(contact.email)+'</a>'
+      : escapeHtml(contact.email));
+  }
+  if (contact.phone) bits.push(escapeHtml(contact.phone));
+  if (contact.portalUrl){
+    bits.push(isValidHttpUrlStr(contact.portalUrl)
+      ? '<a href="'+escapeHtml(contact.portalUrl)+'" target="_blank" rel="noopener" style="color:var(--accent)">Supplier portal</a>'
+      : escapeHtml(contact.portalUrl));
+  }
+  return '<p class="rd-line"><strong>Contact:</strong> ' + escapeHtml(contact.name || 'Unnamed') + (contact.role ? ' — ' + escapeHtml(contact.role) : '') + (bits.length ? ' · ' + bits.join(' · ') : '') + '</p>';
+}
+function sourcesLineHtml(sources){
+  var valid = (sources || []).filter(isValidHttpUrlStr);
+  if (!valid.length) return '';
+  return '<div class="rd-sources">' + valid.map(function(u){
+    return '<a href="'+escapeHtml(u)+'" target="_blank" rel="noopener">'+escapeHtml(sourceLabel(u))+'</a>';
+  }).join('') + '</div>';
+}
+
+// ---- "Save to directory" / "Also watch this website" — lets a Research
+// Desk or Discover-a-company result be saved without hand-editing
+// data/companies.json. Saves go into a small Supabase table
+// (pending_companies) that the daily automation folds into the real
+// directory within a day — see SETUP.md's "Save a discovered company"
+// section. Watching a site (if checked) happens immediately, since that
+// just reuses the existing watched_sources table directly. ----
+function companyPayloadFromResult(data){
+  return {
+    name: data.name || null,
+    website: normalizeUrlStr(data.website),
+    city: data.city || null,
+    country: data.country || null,
+    segment: data.segment || data.summary || null,
+    categories: data.categories || [],
+    contact: data.contact || null,
+    sources: data.sources || []
+  };
+}
+function addPendingCompany(payload){
+  var base = supabaseBaseUrl();
+  if (!base) return Promise.reject(new Error('not-connected'));
+  return fetch(base + '/rest/v1/pending_companies', {
+    method: 'POST',
+    headers: supabaseRestHeaders({ 'Prefer': 'return=representation' }),
+    body: JSON.stringify([{
+      name: payload.name, website: payload.website, city: payload.city, country: payload.country,
+      segment: payload.segment, categories: payload.categories || [], contact: payload.contact || null,
+      sources: payload.sources || []
+    }])
+  }).then(function(r){
+    if (!r.ok) return r.text().then(function(t){ throw new Error(t || ('http-' + r.status)); });
+    return r.json();
+  });
+}
+function saveDiscoveredCompany(payload, alsoWatch, idPrefix){
+  var btn = document.getElementById(idPrefix+'-savebtn');
+  var status = document.getElementById(idPrefix+'-status');
+  if (!payload.name){
+    if (status){ status.textContent = 'Missing a company name — can\'t save.'; status.style.color = 'var(--critical)'; }
+    return;
+  }
+  if (btn){ btn.disabled = true; btn.textContent = 'Saving…'; }
+  addPendingCompany(payload)
+    .then(function(){
+      if (alsoWatch && isValidHttpUrlStr(payload.website)) return addWatchedSource(payload.website, payload.name).then(function(){ return 'watched'; }).catch(function(){ return 'watch-failed'; });
+      return 'no-watch';
+    })
+    .then(function(watchResult){
+      if (status){
+        if (watchResult === 'watched') { status.textContent = 'Saved — will appear in the directory within a day, and its website is now being watched for news.'; }
+        else if (watchResult === 'watch-failed') { status.textContent = 'Saved to the directory (added within a day by the automatic sync). Couldn\'t start watching the site — add it manually in Settings.'; }
+        else { status.textContent = 'Saved — will appear in the directory within a day by the automatic sync.'; }
+        status.style.color = 'var(--accent-2)';
+      }
+      if (btn) btn.textContent = 'Saved ✓';
+    })
+    .catch(function(err){
+      var msg = String(err && err.message || '');
+      if (status){
+        status.textContent = /relation .* does not exist|42P01/i.test(msg)
+          ? 'This needs a one-time Supabase table first — see SETUP.md\'s "Save a discovered company" section.'
+          : (msg === 'not-connected' ? 'Connect the backend in Settings first.' : 'Could not save — try again.');
+        status.style.color = 'var(--critical)';
+      }
+      if (btn){ btn.disabled = false; btn.textContent = 'Save to directory'; }
+    });
+}
+function renderSaveBlock(containerId, data){
+  var container = document.getElementById(containerId);
+  if (!container) return;
+  if (!data || data.found === false || !data.name){ container.innerHTML = ''; return; }
+  var existing = findCompanyByName(data.name);
+  if (existing){
+    container.innerHTML = '<p class="settings-note" style="margin-top:10px">Already in the directory — see it on the Pipeline tab.</p>';
+    return;
+  }
+  container.innerHTML =
+    '<div class="save-row">' +
+      '<label class="save-watch-label"><input type="checkbox" id="'+containerId+'-watch" checked> Also watch this website for news</label>' +
+      '<button type="button" class="rd-btn" id="'+containerId+'-savebtn">Save to directory</button>' +
+    '</div>' +
+    '<p class="settings-note" id="'+containerId+'-status"></p>';
+  document.getElementById(containerId+'-savebtn').addEventListener('click', function(){
+    saveDiscoveredCompany(companyPayloadFromResult(data), document.getElementById(containerId+'-watch').checked, containerId);
+  });
+}
+
 function rdRenderResult(data, query){
   var resultEl = document.getElementById('rdResult');
   if (data.found === false){
-    resultEl.innerHTML = '<p class="rd-summary">No confirmed real, current information found for "' + query + '". ' + (data.summary || '') + '</p>';
+    resultEl.innerHTML = '<p class="rd-summary">No confirmed real, current information found for "' + escapeHtml(query) + '". ' + escapeHtml(data.summary || '') + '</p>';
     resultEl.hidden = false;
     return;
   }
@@ -1130,34 +1266,22 @@ function rdRenderResult(data, query){
   var badge = rdSystemsBadge(data.systemsStatus);
   var companiesHtml = (data.companies || []).map(function(name){
     var match = findCompanyByName(name);
-    if (match) return '<button type="button" class="co-link" data-country="'+match.countryId+'" data-company="'+match.id+'">'+name+'</button>';
-    return '<span>'+name+'</span>';
+    if (match) return '<button type="button" class="co-link" data-country="'+match.countryId+'" data-company="'+match.id+'">'+escapeHtml(name)+'</button>';
+    return '<span>'+escapeHtml(name)+'</span>';
   }).join(', ');
-  var catsHtml = (data.categories || []).map(function(id){ return '<span class="cat-chip">'+categoryLabel(id)+'</span>'; }).join('');
-
-  var contactHtml = '';
-  if (data.contact && (data.contact.name || data.contact.email || data.contact.phone || data.contact.portalUrl)){
-    var bits = [];
-    if (data.contact.email) bits.push('<a href="mailto:'+data.contact.email+'" style="color:var(--accent)">'+data.contact.email+'</a>');
-    if (data.contact.phone) bits.push(data.contact.phone);
-    if (data.contact.portalUrl) bits.push('<a href="'+data.contact.portalUrl+'" target="_blank" rel="noopener" style="color:var(--accent)">Supplier portal</a>');
-    contactHtml = '<p class="rd-line"><strong>Contact:</strong> ' + (data.contact.name || 'Unnamed') + (data.contact.role ? ' — ' + data.contact.role : '') + (bits.length ? ' · ' + bits.join(' · ') : '') + '</p>';
-  }
-
-  var sourcesHtml = (data.sources || []).map(function(u){
-    return '<a href="'+u+'" target="_blank" rel="noopener">'+sourceLabel(u)+'</a>';
-  }).join('');
+  var catsHtml = (data.categories || []).map(function(id){ return '<span class="cat-chip">'+escapeHtml(categoryLabel(id))+'</span>'; }).join('');
 
   resultEl.innerHTML =
-    '<div class="rd-result-top"><h4 class="rd-result-name">' + (data.name || query) + '</h4>' +
+    '<div class="rd-result-top"><h4 class="rd-result-name">' + escapeHtml(data.name || query) + '</h4>' +
     '<span class="rd-badge ' + badge.cls + '">' + badge.label + '</span></div>' +
-    (data.vesselType ? '<p class="rd-line"><strong>Vessel:</strong> ' + data.vesselType + '</p>' : '') +
+    (data.vesselType ? '<p class="rd-line"><strong>Vessel:</strong> ' + escapeHtml(data.vesselType) + '</p>' : '') +
     (companiesHtml ? '<p class="rd-line"><strong>Companies:</strong> ' + companiesHtml + '</p>' : '') +
-    (data.systemsAwardedTo ? '<p class="rd-line"><strong>Systems awarded to:</strong> ' + data.systemsAwardedTo + '</p>' : '') +
-    '<p class="rd-summary">' + (data.summary || '') + '</p>' +
-    contactHtml +
+    (data.systemsAwardedTo ? '<p class="rd-line"><strong>Systems awarded to:</strong> ' + escapeHtml(data.systemsAwardedTo) + '</p>' : '') +
+    '<p class="rd-summary">' + escapeHtml(data.summary || '') + '</p>' +
+    contactLineHtml(data.contact) +
     (catsHtml ? '<div class="p-cats">' + catsHtml + '</div>' : '') +
-    (sourcesHtml ? '<div class="rd-sources">' + sourcesHtml + '</div>' : '');
+    sourcesLineHtml(data.sources) +
+    '<div id="rdSaveBlock"></div>';
   resultEl.hidden = false;
 
   resultEl.querySelectorAll('.co-link').forEach(function(btn){
@@ -1168,6 +1292,116 @@ function rdRenderResult(data, query){
       renderCountries(); renderList(); renderDetail();
     });
   });
+
+  renderSaveBlock('rdSaveBlock', data);
+}
+
+/* =================== Discover a company (mode:"company") =================
+   Same live backend as the Research Desk above, but for finding a NEW
+   company you don't already have a name for ("marine automation integrator
+   in Dubai, UAE") instead of checking a specific named project/company.
+   Shares contactLineHtml/sourcesLineHtml/renderSaveBlock with the Research
+   Desk above so "Save to directory" behaves identically in both places. */
+function dcRefreshStatus(){
+  var statusEl = document.getElementById('dcStatus');
+  var btn = document.getElementById('dcSearchBtn');
+  if (!statusEl || !btn) return;
+
+  if (AI_PAUSED){
+    statusEl.textContent = 'AI search is paused — turn it back on in the Settings tab.';
+    btn.disabled = true;
+    return;
+  }
+  if (CONFIG.RESEARCH_URL && CONFIG.RESEARCH_ANON_KEY){
+    statusEl.textContent = 'Connected — describe a type of company and a region, and search live.';
+    statusEl.className = 'rd-sub rd-ready';
+    btn.disabled = false;
+  } else {
+    statusEl.textContent = 'Live search isn\'t connected yet — see the Settings tab (or SETUP.md in the repo) to wire up the backend.';
+    statusEl.className = 'rd-sub';
+    btn.disabled = true;
+  }
+}
+function dcInit(){
+  var statusEl = document.getElementById('dcStatus');
+  var btn = document.getElementById('dcSearchBtn');
+  if (!statusEl || !btn) return;
+  dcRefreshStatus();
+  btn.addEventListener('click', dcRunSearch);
+  document.getElementById('dcQuery').addEventListener('keydown', function(e){
+    if (e.key === 'Enter') dcRunSearch();
+  });
+}
+function dcRunSearch(){
+  var queryEl = document.getElementById('dcQuery');
+  var btn = document.getElementById('dcSearchBtn');
+  var statusEl = document.getElementById('dcStatus');
+  var resultEl = document.getElementById('dcResult');
+
+  var query = (queryEl.value || '').trim();
+  if (!query){ queryEl.focus(); return; }
+  if (AI_PAUSED){
+    statusEl.textContent = 'AI search is paused — turn it back on in the Settings tab.';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Searching…';
+  statusEl.textContent = 'Searching the web for a real company — this can take 10–30 seconds.';
+  statusEl.className = 'rd-sub';
+  resultEl.hidden = true;
+
+  fetch(CONFIG.RESEARCH_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'apikey': CONFIG.RESEARCH_ANON_KEY,
+      'Authorization': 'Bearer ' + CONFIG.RESEARCH_ANON_KEY
+    },
+    body: JSON.stringify({ query: query, mode: 'company' })
+  })
+  .then(function(r){ return r.json().then(function(data){ return {ok:r.ok, data:data}; }); })
+  .then(function(res){
+    btn.disabled = false;
+    btn.textContent = 'Search live';
+    statusEl.textContent = 'Connected — describe a type of company and a region, and search live.';
+    statusEl.className = 'rd-sub rd-ready';
+    if (!res.ok || res.data.error){
+      statusEl.textContent = 'Search failed: ' + (res.data.error || 'unknown error');
+      statusEl.className = 'rd-sub rd-error';
+      return;
+    }
+    dcRenderResult(res.data, query);
+  })
+  .catch(function(err){
+    btn.disabled = false;
+    btn.textContent = 'Search live';
+    statusEl.textContent = 'Search failed: could not reach the research backend (' + err.message + ').';
+    statusEl.className = 'rd-sub rd-error';
+  });
+}
+function dcRenderResult(data, query){
+  var resultEl = document.getElementById('dcResult');
+  if (data.found === false){
+    resultEl.innerHTML = '<p class="rd-summary">No real, verifiable company found for "' + escapeHtml(query) + '". ' + escapeHtml(data.summary || '') + '</p>';
+    resultEl.hidden = false;
+    return;
+  }
+  var catsHtml = (data.categories || []).map(function(id){ return '<span class="cat-chip">'+escapeHtml(categoryLabel(id))+'</span>'; }).join('');
+  var placeHtml = [data.city, data.country].filter(Boolean).map(escapeHtml).join(', ');
+
+  resultEl.innerHTML =
+    '<div class="rd-result-top"><h4 class="rd-result-name">' + escapeHtml(data.name || query) + '</h4></div>' +
+    (placeHtml ? '<p class="rd-line">' + placeHtml + '</p>' : '') +
+    (data.website && isValidHttpUrlStr(normalizeUrlStr(data.website)) ? '<p class="rd-line"><a href="'+escapeHtml(normalizeUrlStr(data.website))+'" target="_blank" rel="noopener" style="color:var(--accent)">'+escapeHtml(data.website)+'</a></p>' : '') +
+    '<p class="rd-summary">' + escapeHtml(data.segment || '') + '</p>' +
+    contactLineHtml(data.contact) +
+    (catsHtml ? '<div class="p-cats">' + catsHtml + '</div>' : '') +
+    sourcesLineHtml(data.sources) +
+    '<div id="dcSaveBlock"></div>';
+  resultEl.hidden = false;
+
+  renderSaveBlock('dcSaveBlock', data);
 }
 
 function rdRenderHistory(){
@@ -1606,6 +1840,7 @@ function settingsSaveBackend(){
 
   settingsRefreshBackendStatus();
   if (typeof rdRefreshStatus === 'function') rdRefreshStatus();
+  if (typeof dcRefreshStatus === 'function') dcRefreshStatus();
   if (typeof renderDetail === 'function') renderDetail(); // refresh outreach email box's connected state
 }
 
@@ -1752,27 +1987,33 @@ function watchedSourcesLoad(){
     );
   });
 }
+// Reusable: POST one URL into watched_sources. Used by the Settings form
+// below and by the "Also watch this website" checkbox on a saved
+// Research Desk / Discover-a-company result.
+function addWatchedSource(rawUrl, label){
+  var base = supabaseBaseUrl();
+  if (!base) return Promise.reject(new Error('not-connected'));
+  var url = /^https?:\/\//i.test(rawUrl) ? rawUrl : ('https://' + rawUrl);
+  return fetch(base + '/rest/v1/watched_sources', {
+    method: 'POST',
+    headers: supabaseRestHeaders({ 'Prefer': 'return=representation' }),
+    body: JSON.stringify([{ url: url, label: label || null }])
+  }).then(function(r){
+    if (!r.ok) return r.text().then(function(t){ throw new Error(t || ('http-' + r.status)); });
+    return r.json();
+  });
+}
 function watchedSourcesAdd(){
   var labelEl = document.getElementById('setWatchLabel');
   var urlEl = document.getElementById('setWatchUrl');
   var statusEl = document.getElementById('setWatchStatus');
   var btn = document.getElementById('setWatchAddBtn');
-  var base = supabaseBaseUrl();
   var rawUrl = (urlEl.value || '').trim();
   var label = (labelEl.value || '').trim();
   if (!rawUrl){ urlEl.focus(); return; }
-  if (!base){ statusEl.textContent = 'Connect the backend above first.'; statusEl.style.color = 'var(--critical)'; return; }
-  var url = /^https?:\/\//i.test(rawUrl) ? rawUrl : ('https://' + rawUrl);
+  if (!supabaseBaseUrl()){ statusEl.textContent = 'Connect the backend above first.'; statusEl.style.color = 'var(--critical)'; return; }
   btn.disabled = true; btn.textContent = 'Adding…';
-  fetch(base + '/rest/v1/watched_sources', {
-    method: 'POST',
-    headers: supabaseRestHeaders({ 'Prefer': 'return=representation' }),
-    body: JSON.stringify([{ url: url, label: label || null }])
-  })
-  .then(function(r){
-    if (!r.ok) return r.text().then(function(t){ throw new Error(t || ('http-' + r.status)); });
-    return r.json();
-  })
+  addWatchedSource(rawUrl, label)
   .then(function(){
     urlEl.value = ''; labelEl.value = '';
     statusEl.textContent = 'Added — it’ll be checked from the next daily run onward.';
@@ -1844,6 +2085,7 @@ function settingsSetAiPaused(paused){
   var toggle = document.getElementById('setAiPauseToggle');
   if (toggle) toggle.setAttribute('aria-checked', String(paused));
   rdRefreshStatus();
+  if (typeof dcRefreshStatus === 'function') dcRefreshStatus();
   if (typeof renderDetail === 'function') renderDetail(); // refresh outreach email box's Draft/Regenerate buttons
 }
 
@@ -2448,6 +2690,7 @@ loadData().then(function(){
 loadSignals().then(buildSignals);
 loadProjects().then(buildProjects);
 rdInit();
+dcInit();
 settingsInit();
 themeInit();
 
