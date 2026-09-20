@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generated": "2026-09-19",
+  "generated": "2026-09-20",
   "note": "Real company directory. Name/website/segment/region verified via each company's own official website plus an independent source (Wikipedia, stock-exchange filing, or trade press) during initial research. Contacts use a publicly published procurement/supplier contact where one exists; otherwise a general-inquiries contact, labeled as such — no name, email or phone was invented. Formal government company-registry lookups (registration numbers) have not yet been performed — see local.registryNote per country. All companies start at the 'found' stage since none have been contacted yet. Structure: country -> region -> company.",
   "countries": [
     {
@@ -306,6 +306,44 @@
                 "hull",
                 "safety"
               ]
+            },
+            {
+              "id": "ae-al-seer-marine",
+              "name": "Al Seer Marine (ASM)",
+              "address": "Mussafah Industrial City, Abu Dhabi, United Arab Emirates",
+              "website": "alseermarine.com",
+              "segment": "Maritime group — commercial shipping, yachting, aluminum/composite boat building (incl. large-scale 3D-printed builds), and unmanned/autonomous surface vessel platforms. Listed on ADX (ASM), part of International Holding Company (IHC).",
+              "source": "Official site (alseermarine.com) + Abu Dhabi Securities Exchange listing (ADX: ASM) + IHC portfolio page",
+              "contacts": [
+                {
+                  "name": "General Inquiries",
+                  "email": "info@alseermarine.com",
+                  "phone": "+971 2 551 1336",
+                  "source": "https://alseermarine.com/contact/"
+                }
+              ],
+              "stage": "found",
+              "lastContact": "2026-09-20",
+              "nextAction": "AI drafting first email",
+              "history": [
+                {
+                  "type": "found",
+                  "date": "2026-09-20",
+                  "text": "Added from web research — verified via official site + independent source."
+                }
+              ],
+              "local": {
+                "currency": "AED",
+                "timezone": "Asia/Dubai",
+                "language": "Arabic (ar) / English",
+                "registrationNumber": null,
+                "registryNote": "Not yet compliantly sourced from UAE Ministry of Economy / Emirate-level DED — see architecture doc's OpenCorporates guidance."
+              },
+              "instructions": [],
+              "categories": [
+                "hull",
+                "automation"
+              ]
             }
           ]
         },
@@ -388,6 +426,199 @@
               "categories": [
                 "hull",
                 "services"
+              ]
+            },
+            {
+              "id": "ae-kdu-world",
+              "name": "KDU World (KDU Marine Equipment Trading & Maintenance LLC)",
+              "address": "Dubai Maritime City, Dubai, United Arab Emirates",
+              "website": "kduworld.com",
+              "segment": "Marine & industrial equipment and services — thruster control retrofits, dynamic-positioning (DP) upgrades, and its own CMAC 3000 vessel management system. Middle East strategic partner for DEIF A/S (generator/engine control) and an authorized Sperry Marine service station (navigation).",
+              "source": "Official site (kduworld.com) + DEIF partner listing (deif.com) + Sperry Marine partner-station listing (sperrymarine.com)",
+              "contacts": [
+                {
+                  "name": "General Inquiries",
+                  "email": "info@kduworld.com",
+                  "phone": "+971 4 431 0836",
+                  "source": "https://kduworld.com/en-ae/contact-us/"
+                }
+              ],
+              "stage": "found",
+              "lastContact": "2026-09-20",
+              "nextAction": "AI drafting first email",
+              "history": [
+                {
+                  "type": "found",
+                  "date": "2026-09-20",
+                  "text": "Added from web research — verified via official site + independent source."
+                }
+              ],
+              "local": {
+                "currency": "AED",
+                "timezone": "Asia/Dubai",
+                "language": "Arabic (ar) / English",
+                "registrationNumber": null,
+                "registryNote": "Not yet compliantly sourced from UAE Ministry of Economy / Emirate-level DED — see architecture doc's OpenCorporates guidance."
+              },
+              "instructions": [],
+              "categories": [
+                "automation",
+                "navigation",
+                "services"
+              ]
+            },
+            {
+              "id": "ae-shore-power-services-me",
+              "name": "Shore Power Services (Middle East)",
+              "address": "Abu Hail, Dubai, United Arab Emirates",
+              "website": "shorepowerservices.me",
+              "segment": "Marine & yacht electrical systems specialist — shore power frequency converters (500W–2.4MW), electrical system design/repair, and HVAC supply and service. Authorized distributor for ASEA Power Systems, Xantrex, Alpha Power Solutions and NEWMAR.",
+              "source": "Official site (shorepowerservices.me) + ACREW partner directory listing",
+              "contacts": [
+                {
+                  "name": "Blake Holloway",
+                  "role": "General Inquiries",
+                  "phone": "+971 50 714 6561",
+                  "source": "https://www.shorepowerservices.me"
+                }
+              ],
+              "stage": "found",
+              "lastContact": "2026-09-20",
+              "nextAction": "AI drafting first email",
+              "history": [
+                {
+                  "type": "found",
+                  "date": "2026-09-20",
+                  "text": "Added from web research — verified via official site + independent source."
+                }
+              ],
+              "local": {
+                "currency": "AED",
+                "timezone": "Asia/Dubai",
+                "language": "Arabic (ar) / English",
+                "registrationNumber": null,
+                "registryNote": "Not yet compliantly sourced from UAE Ministry of Economy / Emirate-level DED — see architecture doc's OpenCorporates guidance."
+              },
+              "instructions": [],
+              "categories": [
+                "electrical",
+                "hvac"
+              ]
+            },
+            {
+              "id": "ae-maritronics",
+              "name": "Maritronics",
+              "address": "Ras Al Khor Industrial Area 2, Dubai, United Arab Emirates",
+              "website": "maritronics.com",
+              "segment": "Marine electronics integrator, 40+ years in the region — navigation (radar, ECDIS, GPS, compasses), communication (GMDSS, VSAT, satellite) and automation (alarm & monitoring systems, fire detection, tank gauging). Represents 33 brands including JRC, Honeywell, Tokyo Keiki and KVH; ISO 9001/14001/45001 certified.",
+              "source": "Official site (maritronics.com)",
+              "contacts": [
+                {
+                  "name": "General Inquiries",
+                  "email": "enquiry.maritronicsuae@centena.com",
+                  "phone": "+971 50 456 1474",
+                  "source": "https://maritronics.com/contact-us/"
+                }
+              ],
+              "stage": "found",
+              "lastContact": "2026-09-20",
+              "nextAction": "AI drafting first email",
+              "history": [
+                {
+                  "type": "found",
+                  "date": "2026-09-20",
+                  "text": "Added from web research — verified via official site + independent source."
+                }
+              ],
+              "local": {
+                "currency": "AED",
+                "timezone": "Asia/Dubai",
+                "language": "Arabic (ar) / English",
+                "registrationNumber": null,
+                "registryNote": "Not yet compliantly sourced from UAE Ministry of Economy / Emirate-level DED — see architecture doc's OpenCorporates guidance."
+              },
+              "instructions": [],
+              "categories": [
+                "navigation",
+                "automation",
+                "cloud"
+              ]
+            },
+            {
+              "id": "ae-amit-marine-services",
+              "name": "AMIT Marine Services",
+              "address": "Dubai Maritime City, Dubai, United Arab Emirates",
+              "website": "amitmarine.com",
+              "segment": "Marine services group, operating since 1981 — automation & control (vessel monitoring/alarm systems, propulsion automation, control panels), navigation & communication (GPS, radar, ECDIS, AIS, bridge system integration), marine safety (LSA/FFA, SOLAS certification) and SATCOM/connectivity.",
+              "source": "Official site (amitmarine.com)",
+              "contacts": [
+                {
+                  "name": "General Inquiries / Sales",
+                  "email": "sales@amitmarine.com",
+                  "phone": "+971 4 401 1099",
+                  "source": "https://amitmarine.com/contact-us/"
+                }
+              ],
+              "stage": "found",
+              "lastContact": "2026-09-20",
+              "nextAction": "AI drafting first email",
+              "history": [
+                {
+                  "type": "found",
+                  "date": "2026-09-20",
+                  "text": "Added from web research — verified via official site + independent source."
+                }
+              ],
+              "local": {
+                "currency": "AED",
+                "timezone": "Asia/Dubai",
+                "language": "Arabic (ar) / English",
+                "registrationNumber": null,
+                "registryNote": "Not yet compliantly sourced from UAE Ministry of Economy / Emirate-level DED — see architecture doc's OpenCorporates guidance."
+              },
+              "instructions": [],
+              "categories": [
+                "automation",
+                "navigation",
+                "safety",
+                "cloud"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Sharjah",
+          "country": "ae",
+          "companies": [
+            {
+              "id": "ae-marakeb-technologies",
+              "name": "Marakeb Technologies",
+              "address": "Sharjah, United Arab Emirates",
+              "website": "marakeb.tech",
+              "segment": "Autonomous systems developer, founded 2007 (originally a boat manufacturer) — unmanned surface vessels (USVs) and marine/outdoor navigation electronics, from handheld GPS to commercial autopilots and ground control stations, for military and industrial applications.",
+              "source": "Official site (marakeb.tech) + Dun & Bradstreet company profile",
+              "contacts": [],
+              "stage": "found",
+              "lastContact": "2026-09-20",
+              "nextAction": "AI drafting first email",
+              "history": [
+                {
+                  "type": "found",
+                  "date": "2026-09-20",
+                  "text": "Added from web research — verified via official site + independent source."
+                }
+              ],
+              "local": {
+                "currency": "AED",
+                "timezone": "Asia/Dubai",
+                "language": "Arabic (ar) / English",
+                "registrationNumber": null,
+                "registryNote": "Not yet compliantly sourced from UAE Ministry of Economy / Emirate-level DED — see architecture doc's OpenCorporates guidance."
+              },
+              "instructions": [],
+              "categories": [
+                "automation",
+                "navigation"
               ]
             }
           ]
