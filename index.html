@@ -505,6 +505,20 @@
   .settings-btn-secondary{background:var(--tint-cool); color:var(--text-muted); border:1px solid var(--glass-border)}
   .settings-note{font-size:11.5px; color:var(--text-muted); line-height:1.5; margin:12px 0 0}
   .settings-note:empty{display:none; margin:0}
+  .settings-toggle-row{
+    display:flex; align-items:center; justify-content:space-between; gap:12px; margin:14px 0 0;
+    font-size:13px; font-weight:600; cursor:pointer; user-select:none;
+  }
+  .settings-toggle{
+    position:relative; width:40px; height:24px; border-radius:999px; flex:none;
+    background:var(--tint-cool); border:1px solid var(--glass-border); transition:background .15s ease;
+  }
+  .settings-toggle::after{
+    content:''; position:absolute; top:2px; left:2px; width:18px; height:18px; border-radius:50%;
+    background:#fff; box-shadow:0 1px 3px rgba(0,0,0,.3); transition:transform .15s ease;
+  }
+  .settings-toggle[aria-checked="true"]{background:var(--critical)}
+  .settings-toggle[aria-checked="true"]::after{transform:translateX(16px)}
 
   /* ---------- analytics ---------- */
   .analytics{flex:1; overflow-y:auto; padding:22px clamp(16px,3vw,32px)}
@@ -625,6 +639,16 @@
         </div>
 
         <div class="settings-card">
+          <h3 class="settings-title">AI usage</h3>
+          <p class="settings-sub">A hard local stop for anything that spends Anthropic API credit — flip this on to guarantee zero AI cost from this browser.</p>
+          <label class="settings-toggle-row" id="setAiPauseRow">
+            <span>Pause AI search &amp; drafting</span>
+            <span class="settings-toggle" id="setAiPauseToggle" role="switch" aria-checked="false" tabindex="0"></span>
+          </label>
+          <p class="settings-note">While paused, "Search live" on the Research desk and "Draft with AI" / "Regenerate" in Outreach email are disabled everywhere in this app. Already-drafted emails can still be edited, approved and sent — those don't call the AI. This only stops actions triggered from inside this app; the separate daily automated research job runs on a fixed schedule on GitHub's own servers and keeps running regardless — pause or disable that from the repo's GitHub Actions tab ("AI research (daily, automatic)" → ⋯ → Disable workflow), or just ask.</p>
+        </div>
+
+        <div class="settings-card">
           <h3 class="settings-title">Email sending (Gmail)</h3>
           <p class="settings-sub" id="setEmailStatus">Uses the same backend connection above.</p>
           <p class="settings-note">The Gmail address and app password that actually send email are configured only as Supabase secrets on the server — never inside this app — so they can't be viewed, added or removed from here. That keeps them safe even though this page's source is public. See SETUP.md Step 6 to add, change or remove the sending account from the Supabase dashboard (Edge Functions → Secrets).</p>
@@ -726,6 +750,18 @@ var COMPANY_PROFILE = { website: '', about: '' };
     if (saved && typeof saved.website === 'string') COMPANY_PROFILE.website = saved.website;
     if (saved && typeof saved.about === 'string') COMPANY_PROFILE.about = saved.about;
   } catch(e){ /* private mode / bad JSON — keep defaults */ }
+})();
+
+// A hard local kill-switch for anything that spends Anthropic API credit —
+// Search live, Draft with AI, Regenerate. Toggled on the Settings tab and
+// persisted in this browser. This only stops actions triggered FROM this
+// app; the separate scheduled daily research job runs on GitHub's own
+// servers on a timer and isn't affected by anything in the browser — see
+// the note next to the toggle in the Settings markup below.
+var SETTINGS_AI_PAUSE_KEY = 'ctorq-settings-ai-paused';
+var AI_PAUSED = false;
+(function loadAiPause(){
+  try { AI_PAUSED = localStorage.getItem(SETTINGS_AI_PAUSE_KEY) === '1'; } catch(e){ /* private mode — default to not paused */ }
 })();
 
 /* =================== data (country -> region -> company) =================== */
@@ -923,6 +959,13 @@ function rdRefreshStatus(){
   var btn = document.getElementById('rdSearchBtn');
   if (!statusEl || !btn) return;
 
+  if (AI_PAUSED){
+    statusEl.textContent = 'AI search is paused — turn it back on in the Settings tab.';
+    statusEl.className = 'rd-sub';
+    btn.disabled = true;
+    return;
+  }
+
   if (CONFIG.RESEARCH_URL && CONFIG.RESEARCH_ANON_KEY){
     statusEl.textContent = 'Connected — type a company, shipyard, vessel or project name and search live.';
     statusEl.className = 'rd-sub rd-ready';
@@ -958,6 +1001,11 @@ function rdRunSearch(){
   var query = (queryEl.value || '').trim();
   var notes = (notesEl.value || '').trim();
   if (!query) { queryEl.focus(); return; }
+  if (AI_PAUSED){
+    statusEl.textContent = 'AI search is paused — turn it back on in the Settings tab.';
+    statusEl.className = 'rd-sub';
+    return;
+  }
 
   btn.disabled = true;
   btn.textContent = 'Searching…';
@@ -1171,6 +1219,9 @@ function emailBoxHTML(co){
     : '<p class="email-recipient" style="color:var(--critical)">No published email address for this company — can\'t send automatically, but you can still draft and copy it manually.</p>';
 
   if (!draft){
+    if (AI_PAUSED){
+      return '<div class="email-box"><p class="email-status">AI drafting is paused — turn it back on in the Settings tab to draft this email.</p></div>';
+    }
     return '<div class="email-box">' +
       '<p class="email-status">No draft yet. AI will write a short, personalized first-touch email based on this company\'s segment and categories.</p>' +
       '<textarea class="email-body-input" id="'+idp+'-notes" style="min-height:50px" maxlength="500" placeholder="Optional — anything specific to mention (e.g. a project they\'re bidding on)"></textarea>' +
@@ -1206,7 +1257,9 @@ function emailBoxHTML(co){
       '<div class="email-field-label">Body</div><textarea class="email-body-input" id="'+idp+'-body">'+escapeHtml(draft.body)+'</textarea>';
     actionsHtml = '<div class="email-actions">' +
       '<button type="button" class="email-btn email-btn-primary" id="'+idp+'-approve-btn">Approve</button>' +
-      '<button type="button" class="email-btn email-btn-secondary" id="'+idp+'-regenerate-btn">Regenerate</button>' +
+      (AI_PAUSED
+        ? '<button type="button" class="email-btn email-btn-secondary" disabled title="AI is paused — see Settings">Regenerate</button>'
+        : '<button type="button" class="email-btn email-btn-secondary" id="'+idp+'-regenerate-btn">Regenerate</button>') +
       '</div>';
   }
 
@@ -1214,6 +1267,10 @@ function emailBoxHTML(co){
 }
 
 function runDraftEmail(co, notes, onSaved, onError){
+  if (AI_PAUSED){
+    if (onError) onError('AI is paused — turn it back on in the Settings tab first.');
+    return;
+  }
   if (!CONFIG.RESEARCH_URL){
     if (onError) onError('Backend not connected — set it up on the Settings tab first.');
     return;
@@ -1504,22 +1561,39 @@ function settingsSaveProfile(){
   }
 }
 
+function settingsSetAiPaused(paused){
+  AI_PAUSED = paused;
+  try { localStorage.setItem(SETTINGS_AI_PAUSE_KEY, paused ? '1' : '0'); } catch(e){ /* private mode — still applies for this session */ }
+  var toggle = document.getElementById('setAiPauseToggle');
+  if (toggle) toggle.setAttribute('aria-checked', String(paused));
+  rdRefreshStatus();
+  if (typeof renderDetail === 'function') renderDetail(); // refresh outreach email box's Draft/Regenerate buttons
+}
+
 function settingsInit(){
   var urlEl = document.getElementById('setResearchUrl');
   var keyEl = document.getElementById('setResearchKey');
   var websiteEl = document.getElementById('setProfileWebsite');
   var aboutEl = document.getElementById('setProfileAbout');
-  if (!urlEl || !keyEl || !websiteEl || !aboutEl) return;
+  var aiToggle = document.getElementById('setAiPauseToggle');
+  var aiRow = document.getElementById('setAiPauseRow');
+  if (!urlEl || !keyEl || !websiteEl || !aboutEl || !aiToggle) return;
 
   urlEl.value = CONFIG.RESEARCH_URL || '';
   keyEl.value = CONFIG.RESEARCH_ANON_KEY || '';
   websiteEl.value = COMPANY_PROFILE.website || '';
   aboutEl.value = COMPANY_PROFILE.about || '';
   settingsRefreshBackendStatus();
+  aiToggle.setAttribute('aria-checked', String(AI_PAUSED));
 
   document.getElementById('setSaveBackendBtn').addEventListener('click', settingsSaveBackend);
   document.getElementById('setClearBackendBtn').addEventListener('click', settingsClearBackend);
   document.getElementById('setSaveProfileBtn').addEventListener('click', settingsSaveProfile);
+
+  aiRow.addEventListener('click', function(){ settingsSetAiPaused(aiToggle.getAttribute('aria-checked') !== 'true'); });
+  aiToggle.addEventListener('keydown', function(e){
+    if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); settingsSetAiPaused(aiToggle.getAttribute('aria-checked') !== 'true'); }
+  });
 }
 
 /* =================== helpers =================== */
