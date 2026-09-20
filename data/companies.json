@@ -1276,6 +1276,50 @@
               ]
             }
           ]
+        },
+        {
+          "name": "Bavaria",
+          "country": "de",
+          "companies": [
+            {
+              "id": "de-torqeedo",
+              "name": "Torqeedo GmbH",
+              "address": "Weßling, Bavaria, Germany",
+              "website": "torqeedo.com",
+              "segment": "Electric propulsion manufacturer — outboard, inboard, pod-drive, hybrid and sail-drive electric motors plus battery systems for boats, from 0.5–100 kW, for both recreational and commercial vessels. Founded 2005; a Yamaha Motor subsidiary since 2024.",
+              "source": "Official site (torqeedo.com) + trade press (Ocean News & Technology, Boat Industry) on its Yamaha acquisition and new HQ",
+              "contacts": [
+                {
+                  "name": "General Inquiries",
+                  "email": "info@torqeedo.com",
+                  "phone": "+49 8153 9215-100",
+                  "source": "https://www.torqeedo.com/us/customer-service/contactus.html"
+                }
+              ],
+              "stage": "found",
+              "lastContact": "2026-09-20",
+              "nextAction": "AI drafting first email",
+              "history": [
+                {
+                  "type": "found",
+                  "date": "2026-09-20",
+                  "text": "Added from web research — verified via official site + independent source."
+                }
+              ],
+              "local": {
+                "currency": "EUR",
+                "timezone": "Europe/Berlin",
+                "language": "German (de)",
+                "registrationNumber": null,
+                "registryNote": "Not yet compliantly sourced from Germany's Handelsregister — see architecture doc's OpenCorporates guidance."
+              },
+              "instructions": [],
+              "categories": [
+                "propulsion",
+                "electrical"
+              ]
+            }
+          ]
         }
       ]
     },
@@ -1399,6 +1443,85 @@
               "categories": [
                 "electrical",
                 "hvac"
+              ]
+            },
+            {
+              "id": "nl-praxis-automation",
+              "name": "Praxis Automation Technology B.V.",
+              "address": "Leiderdorp, Zuid-Holland, Netherlands",
+              "website": "praxis-automation.nl",
+              "segment": "Marine automation manufacturer, founded 1965 — ship automation, navigation and electric propulsion equipment; alarm & monitoring systems (its original 1965 product); Dynamic Positioning (DP3) and Vessel Management Systems under its Mega-Guard integrated platform.",
+              "source": "Official site (praxis-automation.nl, praxis-automation.eu) + referenced in C-TORQ's own daily research watchlist for new contract awards",
+              "contacts": [
+                {
+                  "name": "General Inquiries",
+                  "email": "info@praxis-automation.com",
+                  "phone": "+31 71 5255 353",
+                  "source": "https://www.praxis-automation.eu/contact/head-office/"
+                }
+              ],
+              "stage": "found",
+              "lastContact": "2026-09-20",
+              "nextAction": "AI drafting first email",
+              "history": [
+                {
+                  "type": "found",
+                  "date": "2026-09-20",
+                  "text": "Added from web research — verified via official site + independent source."
+                }
+              ],
+              "local": {
+                "currency": "EUR",
+                "timezone": "Europe/Amsterdam",
+                "language": "Dutch (nl)",
+                "registrationNumber": null,
+                "registryNote": "Not yet compliantly sourced from the Dutch Chamber of Commerce (KVK) — see architecture doc's OpenCorporates guidance."
+              },
+              "instructions": [],
+              "categories": [
+                "automation",
+                "navigation",
+                "propulsion"
+              ]
+            },
+            {
+              "id": "nl-rh-marine",
+              "name": "RH Marine",
+              "address": "Schiedam, Zuid-Holland, Netherlands",
+              "website": "rhmarine.com",
+              "segment": "Independent systems integrator, established 1860 — electrical and automation systems for navigation, ship automation, power generation and cyber security (Rhodium Suite platform), serving defence/security and superyacht (50–120m+) markets. Part of VINCI Energies.",
+              "source": "Official site (rhmarine.com) + Ship Technology coverage of the VINCI Energies acquisition",
+              "contacts": [
+                {
+                  "name": "Head Office",
+                  "email": "info@rhmarine.com",
+                  "phone": "+31 10 487 1911",
+                  "source": "https://rhmarine.com/en/contact"
+                }
+              ],
+              "stage": "found",
+              "lastContact": "2026-09-20",
+              "nextAction": "AI drafting first email",
+              "history": [
+                {
+                  "type": "found",
+                  "date": "2026-09-20",
+                  "text": "Added from web research — verified via official site + independent source."
+                }
+              ],
+              "local": {
+                "currency": "EUR",
+                "timezone": "Europe/Amsterdam",
+                "language": "Dutch (nl)",
+                "registrationNumber": null,
+                "registryNote": "Not yet compliantly sourced from the Dutch Chamber of Commerce (KVK) — see architecture doc's OpenCorporates guidance."
+              },
+              "instructions": [],
+              "categories": [
+                "automation",
+                "navigation",
+                "electrical",
+                "safety"
               ]
             }
           ]
