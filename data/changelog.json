@@ -1,0 +1,50 @@
+[
+    {
+          "id": "2026-09-20-01",
+          "date": "20 Sept 2026",
+          "title": "Job-category tags now save permanently",
+          "description": "Tagging a company or signal to a job category in Services used to only last for the current tab session. Tags now save to the backend as soon as you tap them, load back in every time you open the app, and get folded into the permanent company directory overnight."
+    },
+    {
+          "id": "2026-09-20-02",
+          "date": "20 Sept 2026",
+          "title": "This \"What's new\" panel",
+          "description": "A running log of fixes and features, right from the top bar — no more guessing what changed between visits."
+    },
+    {
+          "id": "2026-09-19-01",
+          "date": "19 Sept 2026",
+          "title": "Saved companies fill in their own website, city and country",
+          "description": "When a Research Desk search doesn't return a company's website or location, the app now automatically runs a second, targeted lookup before saving — so saved companies land in the right country's list without needing any manual backend update."
+    },
+    {
+          "id": "2026-09-19-02",
+          "date": "19 Sept 2026",
+          "title": "Fixed: company Website links went nowhere",
+          "description": "Every company's \"Website\" link on its detail page was pointing at a placeholder instead of the real address. It now opens the actual site in a new tab, or shows \"Not on file\" when no website is known."
+    },
+    {
+          "id": "2026-09-19-03",
+          "date": "19 Sept 2026",
+          "title": "Fixed: Watched websites list appearing empty",
+          "description": "Adding a site to \"Also watch this website\" worked, but the list kept showing empty afterward. The root cause was the app caching an old, empty response from before the feature was fully set up. That stale cache is now bypassed for all live backend data, so the list reflects what's actually saved."
+    },
+    {
+          "id": "2026-09-19-04",
+          "date": "19 Sept 2026",
+          "title": "Save to directory",
+          "description": "Research Desk and Discover-a-company results can now be saved straight into the company directory, with an optional \"also watch this website\" toggle so future news about it gets picked up automatically."
+    },
+    {
+          "id": "2026-09-19-05",
+          "date": "19 Sept 2026",
+          "title": "Security fix: AI-sourced text is now escaped everywhere",
+          "description": "Contact emails, sources and other text pulled in from research results are now properly escaped before display, closing a gap where malformed or malicious HTML in a result could render incorrectly."
+    },
+    {
+          "id": "2026-09-18-01",
+          "date": "18 Sept 2026",
+          "title": "Fixed: Services tile grid off-center on narrow screens",
+          "description": "The 12 job-category tiles could overflow or sit left-aligned on narrower phone widths. They now stay centered at every screen size."
+    }
+]
