@@ -356,6 +356,48 @@ confirm a real company either, the save still goes through but says so
 plainly, since it likely won't be placeable in the directory without a
 website/country to go on.
 
+### Job-category tags (Services tab)
+
+Tapping a job-category tile on the Services tab shows every company (and
+new signal) that matches, with a "+ Add" button next to each one so you can
+tag a company to that category yourself. Tagging now saves permanently: as
+soon as you tap it, the app writes the company's full category list into a
+small holding table (the same pattern as `watched_sources` and
+`pending_companies` above) so it's there the next time anyone opens the
+app, and the daily company-discovery job (Step 5's "Company discovery"
+section) folds it into the real `data/companies.json` within a day.
+
+This needs one more one-time table, alongside `watched_sources` and
+`pending_companies`:
+
+```sql
+create table public.category_overrides (
+  company_id text primary key,
+  categories jsonb not null default '[]'::jsonb,
+  updated_at timestamptz not null default now()
+);
+
+alter table public.category_overrides enable row level security;
+
+create policy "public read"   on public.category_overrides for select using (true);
+create policy "public insert" on public.category_overrides for insert with check (true);
+create policy "public update" on public.category_overrides for update using (true) with check (true);
+create policy "public delete" on public.category_overrides for delete using (true);
+```
+
+If this table doesn't exist yet, tagging still works for the rest of your
+current session (same as before) — it just won't be remembered after a
+refresh until you run the SQL above once. Once the daily job has applied a
+tag to `data/companies.json`, it removes that row from the table, so
+`category_overrides` should normally only ever hold whatever's been tagged
+since the last run — check it in the Supabase dashboard if a tag doesn't
+seem to be sticking.
+
+New signals (the raw, unreviewed items from the RSS feed) can also be
+tagged from this same panel, but that tag is session-only and isn't saved
+anywhere, since signals themselves get replaced wholesale by tomorrow's
+automated run — there's no stable record for a saved tag to attach to.
+
 ## Notes on safety
 
 - The **anon key** is meant to be public — Supabase issues it specifically
