@@ -3,7 +3,7 @@
 // with no signal. Bump CACHE_NAME whenever app files change so old
 // installs pick up the new version instead of serving a stale copy.
 
-const CACHE_NAME = 'ctorq-shell-v21';
+const CACHE_NAME = 'ctorq-shell-v22';
 const APP_SHELL = [
   './',
   './index.html',

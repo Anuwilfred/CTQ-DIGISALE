@@ -177,6 +177,42 @@ time from the repo's **Actions** tab → "AI research (daily, automatic)" →
 **Run workflow**, to see it work immediately rather than waiting for the
 next scheduled run.
 
+### Company discovery (grows the directory itself, not just projects)
+
+Until now, the company directory (the list you browse in Pipeline) only
+grew when someone researched and added a company by hand — unlike Active
+Projects above, it never discovered new prospects on its own. A second
+daily job (`.github/workflows/company-discovery-daily.yml`, running
+`scripts/discover_companies_daily.py`) closes that gap: it asks the same
+backend about a fixed, bounded watchlist of company **types** and regions
+(e.g. "marine automation integrator in Dubai, UAE," "vessel owner in
+Singapore") and adds any real, genuinely-new company it confirms straight
+into `data/companies.json`.
+
+Every company this adds is tagged `needsReview: true` and shows a "Needs
+review" badge in the app (both in the company list and its detail page),
+because a single AI web-search pass isn't the same bar as the
+two-independent-source check the rest of this directory was manually built
+with — worth a quick glance (its own website is usually enough to confirm
+it's real) before relying on it for outreach. It also refuses to invent a
+brand-new country's currency/timezone/language — if a result lands in a
+country not already in the directory, it's logged and skipped rather than
+guessed, and you can add that country manually the same way every existing
+one started.
+
+This needs one thing beyond Steps 1–4: the `research` function was updated
+to also handle `mode: "company"` alongside its existing project-research
+mode, so it needs redeploying (same secrets, no new ones):
+
+```bash
+supabase functions deploy research --no-verify-jwt
+```
+
+Then add the same two repo secrets as the project-research job above if
+you haven't already (`RESEARCH_URL`, `RESEARCH_ANON_KEY`) — this job reuses
+them. Cost is the same shape as the project-research job: a fixed ~12
+queries/day, roughly $0.15–0.30/day on top of the existing automation.
+
 ## Step 6 — turn on AI email drafting + sending (Gmail)
 
 Once Steps 1–4 are working, every company in the Pipeline tab gets an
