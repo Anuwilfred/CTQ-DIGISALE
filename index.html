@@ -119,27 +119,50 @@
     display:flex; align-items:center; gap:14px; padding:11px clamp(14px,3vw,22px);
     border-bottom:1px solid var(--hairline); flex:none;
   }
-  .traffic{display:flex; gap:8px; margin-right:8px; flex:none}
-  .traffic span{width:12px; height:12px; border-radius:50%; display:inline-block; box-shadow:inset 0 0 0 .5px rgba(0,0,0,.15)}
-  .traffic .t-red{background:#FF5F57} .traffic .t-yellow{background:#FEBC2E} .traffic .t-green{background:#28C840}
   .brand{display:flex; align-items:baseline; gap:8px}
   .brand-mark{font-weight:700; font-size:15px; letter-spacing:.01em}
   .brand-role{font-size:12.5px; color:var(--text-muted)}
-  .tabs{display:flex; gap:2px; margin-left:auto; background:var(--tint-cool); padding:3px; border-radius:10px; border:1px solid var(--hairline)}
-  .tab-btn{
-    border:none; background:transparent; color:var(--text-muted); padding:6px 14px; border-radius:8px;
-    font-size:13px; font-weight:590; cursor:pointer; transition:background .15s ease, color .15s ease;
-  }
-  .tab-btn[aria-selected="true"]{background:var(--glass-strong); color:var(--text); box-shadow:0 1px 4px rgba(0,0,0,.12), inset 0 0 0 1px var(--glass-border)}
   .signal-badge{
-    display:inline-flex; align-items:center; justify-content:center; min-width:16px; height:16px; padding:0 5px;
-    margin-left:6px; border-radius:999px; background:var(--critical); color:#fff; font-size:10px; font-weight:700;
+    display:inline-flex; align-items:center; justify-content:center; min-width:15px; height:15px; padding:0 4px;
+    border-radius:999px; background:var(--critical); color:#fff; font-size:9.5px; font-weight:700;
+    position:absolute; top:-2px; right:2px; box-shadow:0 0 0 2px var(--glass-strong);
   }
   .export-btn{
     border:1px solid var(--glass-border); background:var(--tint-cool); color:var(--text-muted);
     padding:6px 12px; border-radius:8px; font-size:12.5px; font-weight:590; cursor:pointer; flex:none;
+    margin-left:auto;
   }
   .export-btn:hover{background:var(--glass-strong); color:var(--text)}
+
+  /* ---------- bottom-center floating dock (macOS-style nav) ---------- */
+  /* Sits in normal layout flow (not an overlay) so .main always shrinks to
+     leave room for it — a real floating dock reserves its own screen strip
+     rather than covering app content, and this avoids the dock ever
+     overlapping buttons at the bottom of a scroll view. */
+  .dock{
+    align-self:center; flex:none; margin:10px 0 calc(12px + env(safe-area-inset-bottom));
+    display:flex; align-items:flex-end; gap:4px; padding:8px 10px;
+    background:var(--glass-strong); border:1px solid var(--glass-border); border-radius:22px;
+    box-shadow:0 14px 34px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.12);
+    -webkit-backdrop-filter:blur(28px) saturate(180%); backdrop-filter:blur(28px) saturate(180%);
+    z-index:40;
+  }
+  .dock-btn{
+    position:relative; display:flex; flex-direction:column; align-items:center; gap:3px;
+    border:none; background:transparent; color:var(--text-muted); cursor:pointer;
+    padding:7px 12px 6px; border-radius:15px; transition:transform .16s cubic-bezier(.2,.9,.3,1.2), background .15s ease, color .15s ease;
+  }
+  .dock-btn:hover{transform:translateY(-6px); background:var(--tint-cool); color:var(--text)}
+  .dock-btn svg{width:21px; height:21px; flex:none}
+  .dock-label{font-size:9.5px; font-weight:650; letter-spacing:.01em; white-space:nowrap}
+  .dock-dot{width:4px; height:4px; border-radius:50%; background:transparent; margin-top:1px}
+  .dock-btn[aria-selected="true"]{color:var(--text); background:var(--glass-soft); box-shadow:inset 0 0 0 1px var(--glass-border)}
+  .dock-btn[aria-selected="true"] .dock-dot{background:var(--accent)}
+  @media (max-width:680px){
+    .dock{gap:1px; padding:6px 6px; max-width:calc(100vw - 24px); overflow-x:auto}
+    .dock-btn{padding:6px 8px 5px}
+    .dock-label{font-size:8.5px}
+  }
   .note-form{display:flex; gap:8px; margin:10px 0 24px}
   .note-input{
     flex:1; border:1px solid var(--glass-border); background:var(--glass-soft); color:var(--text);
@@ -518,24 +541,16 @@
     .col{border-right:none; border-bottom:1px solid var(--hairline); width:100%!important; max-height:220px}
     .col-detail{max-height:none}
   }
+
 </style>
 </head>
 <body>
 
 <div class="shell">
   <header class="topbar">
-    <span class="traffic"><span class="t-red"></span><span class="t-yellow"></span><span class="t-green"></span></span>
     <div class="brand">
       <span class="brand-mark">C·TORQ</span>
       <span class="brand-role">Sales Command</span>
-    </div>
-    <div class="tabs" role="tablist" aria-label="View">
-      <button class="tab-btn" id="tabPipeline" role="tab" aria-selected="true">Pipeline</button>
-      <button class="tab-btn" id="tabProjects" role="tab" aria-selected="false">Active projects</button>
-      <button class="tab-btn" id="tabSignals" role="tab" aria-selected="false">New signals<span class="signal-badge" id="signalBadge" hidden></span></button>
-      <button class="tab-btn" id="tabServices" role="tab" aria-selected="false">Services</button>
-      <button class="tab-btn" id="tabAnalytics" role="tab" aria-selected="false">Analytics</button>
-      <button class="tab-btn" id="tabSettings" role="tab" aria-selected="false">Settings</button>
     </div>
     <button class="export-btn" id="exportBtn" type="button" title="Download the current data, including any notes added this session, as data/companies.json">Export data</button>
   </header>
@@ -615,6 +630,34 @@
       </div>
     </section>
   </div>
+
+  <nav class="dock" role="tablist" aria-label="View">
+    <button class="dock-btn" id="tabPipeline" role="tab" aria-selected="true" title="Pipeline">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16l-6 8v6l-4 2v-8L4 4z"/></svg>
+      <span class="dock-label">Pipeline</span><span class="dock-dot"></span>
+    </button>
+    <button class="dock-btn" id="tabProjects" role="tab" aria-selected="false" title="Active projects">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/></svg>
+      <span class="dock-label">Projects</span><span class="dock-dot"></span>
+    </button>
+    <button class="dock-btn" id="tabSignals" role="tab" aria-selected="false" title="New signals" style="position:relative">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg>
+      <span class="signal-badge" id="signalBadge" hidden></span>
+      <span class="dock-label">Signals</span><span class="dock-dot"></span>
+    </button>
+    <button class="dock-btn" id="tabServices" role="tab" aria-selected="false" title="Services">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg>
+      <span class="dock-label">Services</span><span class="dock-dot"></span>
+    </button>
+    <button class="dock-btn" id="tabAnalytics" role="tab" aria-selected="false" title="Analytics">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M12 20V4M20 20v-7"/></svg>
+      <span class="dock-label">Analytics</span><span class="dock-dot"></span>
+    </button>
+    <button class="dock-btn" id="tabSettings" role="tab" aria-selected="false" title="Settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M12 3v2.5M12 18.5V21M4.2 7.5l2.2 1.3M17.6 15.2l2.2 1.3M4.2 16.5l2.2-1.3M17.6 8.8l2.2-1.3M3 12h2.5M18.5 12H21"/></svg>
+      <span class="dock-label">Settings</span><span class="dock-dot"></span>
+    </button>
+  </nav>
 </div>
 
 <script>
