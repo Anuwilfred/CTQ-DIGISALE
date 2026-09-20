@@ -29,10 +29,14 @@ const CORS_HEADERS: Record<string, string> = {
 
 const SYSTEM_PROMPT = `You write short, professional first-touch cold outreach emails on behalf of C-TORQ, a company that supplies vessel automation, navigation, alarm monitoring (AMS), LNG cargo/fuel systems, and fire & gas safety systems to shipyards and ship operators worldwide.
 
-You will be given facts about one specific company/contact: their name, segment, which of C-TORQ's system categories are relevant to them, and optionally a sales note. Write ONE email that:
+IMPORTANT — who is who: C-TORQ is always the SOLUTION PROVIDER sending this email — never the shipyard, operator, or recipient. The recipient is a prospective customer who may currently be using (or about to award the job to) a different, competing systems supplier. Never blur the two: do not describe the recipient's own business as if it were C-TORQ's, and do not credit a competitor's work to C-TORQ.
+
+You will be given facts about one specific company/contact (their name, segment, which of C-TORQ's system categories are relevant to them, and optionally a sales note), and may also be given a "C-TORQ profile" block with C-TORQ's own real website and self-described differentiators, written by C-TORQ's own sales team. When that profile block is present, ground the email in those real specifics (what's actually offered, real proof points, what sets C-TORQ apart from the incumbent/preferred supplier) instead of generic category language — this is real information, use it directly rather than paraphrasing vaguely. When it is absent, fall back to describing C-TORQ's relevant capability in general technical terms as before.
+
+Write ONE email that:
 - Has a short, specific, non-spammy subject line (never "Introduction" or "Partnership Opportunity" — reference something concrete about the recipient's business instead).
 - Opens with one sentence that shows you know who they are and what they build/operate — no generic flattery.
-- States, in 1-2 sentences, the ONE most relevant capability C-TORQ offers them based on their categories (e.g. automation -> integrated vessel automation/control systems; navigation -> navigation & bridge systems; safety -> fire & gas detection systems; cargo with LNG relevance -> LNG cargo/fuel handling systems). Do not list every category — pick what's most relevant and be specific and technical, not generic marketing language.
+- States, in 1-2 sentences, the ONE most relevant capability C-TORQ offers them based on their categories (e.g. automation -> integrated vessel automation/control systems; navigation -> navigation & bridge systems; safety -> fire & gas detection systems; cargo with LNG relevance -> LNG cargo/fuel handling systems), using the C-TORQ profile's real details when provided. Do not list every category — pick what's most relevant and be specific and technical, not generic marketing language.
 - Ends with a low-friction call to action (e.g. asking for a short call, or offering to send technical specs) — never pushy.
 - Signs off with "[Your name]" as a literal placeholder — never invent a sender name.
 - Is under 150 words total, plain text (no markdown, no bullet points, no emoji), and sounds like a real engineer/salesperson wrote it, not an AI.
@@ -71,6 +75,8 @@ Deno.serve(async (req: Request) => {
   const segment = String(body?.segment || "").trim().slice(0, 400);
   const categories = Array.isArray(body?.categories) ? body.categories.slice(0, 10) : [];
   const notes = String(body?.notes || "").trim().slice(0, 500);
+  const profileWebsite = String(body?.companyProfile?.website || "").trim().slice(0, 200);
+  const profileAbout = String(body?.companyProfile?.about || "").trim().slice(0, 1200);
 
   if (!companyName) {
     return jsonResponse({ error: 'Missing "companyName"' }, 400);
@@ -82,6 +88,11 @@ Deno.serve(async (req: Request) => {
     segment ? `What they do: ${segment}` : "",
     categories.length ? `Relevant C-TORQ categories: ${categories.join(", ")}` : "",
     notes ? `Sales note: ${notes}` : "",
+    (profileWebsite || profileAbout)
+      ? "C-TORQ profile (this is C-TORQ's own real information, written by C-TORQ — use it directly, do not attribute it to the recipient):\n" +
+        (profileWebsite ? `  Website: ${profileWebsite}\n` : "") +
+        (profileAbout ? `  About us / differentiators: ${profileAbout}` : "")
+      : "",
   ].filter(Boolean).join("\n");
 
   try {
