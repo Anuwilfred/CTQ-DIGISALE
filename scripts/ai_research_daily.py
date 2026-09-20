@@ -67,6 +67,20 @@ WATCHLIST = [
     "new LNG carrier contract signed this year automation navigation system not yet awarded",
     "new offshore support vessel contract dynamic positioning system supplier not yet named",
     "new naval frigate or corvette contract fire and gas safety system supplier",
+
+    # Classification-agreement signals — DNV, ABS, Lloyd's Register, Bureau
+    # Veritas, ClassNK and RINA get engaged right at project kickoff, often
+    # before a shipyard's own contract-signing press release, so this is
+    # frequently the EARLIEST public sign a project exists at all. Global —
+    # not restricted to any one country/region.
+    "new vessel classification agreement signed this month DNV or ABS or Lloyd's Register systems not yet awarded",
+    "shipyard newbuilding series assigned class this year automation navigation system supplier not yet named",
+    "DNV approval in principle new vessel design this year systems supplier",
+    "classification society new offshore support vessel class agreement automation navigation system",
+    "new LNG carrier classed by class society this year systems integrator not yet awarded",
+    "UAE shipyard new vessel classification agreement this year automation navigation systems",
+    "new naval vessel classification agreement fire and gas safety system supplier not yet named",
+    "new hybrid or battery electric vessel classification agreement battery notation systems supplier",
 ]
 
 REQUEST_DELAY_SECONDS = 3  # be polite / stay well under any rate limit
