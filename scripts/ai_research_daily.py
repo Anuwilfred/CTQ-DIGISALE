@@ -148,6 +148,69 @@ def next_id(existing):
     return (max(nums) + 1) if nums else 1
 
 
+def build_entry(n, query, data, source_name):
+    """Turn one confirmed research-backend result into an active_projects.json
+    entry, or return None if it's not actionable (nothing found, or a
+    competitor's systems are already publicly awarded there)."""
+    if not data or not data.get("found"):
+        return None
+    if data.get("systemsStatus") == "already_awarded":
+        print(f"  - real, but systems already awarded to {data.get('systemsAwardedTo')} — skipping (not actionable)")
+        return None
+
+    title = data.get("name") or query
+    companies = data.get("companies") or []
+    cats = data.get("categories") or []
+    d = TODAY  # AI research doesn't give us a precise contract date; date it as of discovery
+    return {
+        "id": "ai-proj-%03d" % n,
+        "title": title,
+        "companies": companies,
+        "vesselType": data.get("vesselType") or "",
+        "summary": data.get("summary") or "",
+        "date": d.isoformat(),
+        "categories": cats,
+        "sourceUrl": (data.get("sources") or [None])[0] or "",
+        "sourceName": source_name,
+        "priority": priority(cats, d),
+        "systemsStatus": data.get("systemsStatus") or "unknown",
+        "systemsAwardedTo": data.get("systemsAwardedTo"),
+    }
+
+
+def supabase_base_url(research_url):
+    """research_url looks like https://xxxx.supabase.co/functions/v1/research
+    — this derives the project's own base URL for hitting its REST API
+    (PostgREST) directly, the same way index.html's supabaseBaseUrl() does."""
+    m = re.match(r"^(https://[^/]+\.supabase\.co)/", research_url)
+    return m.group(1) if m else ""
+
+
+def fetch_watched_sources(research_url, anon_key):
+    """Reads the 'Watched websites' a person added from the app's Settings
+    tab (stored in the watched_sources Supabase table — see SETUP.md). Added
+    with zero code push; if the table doesn't exist yet (not set up), this
+    just returns an empty list so the rest of the run proceeds normally."""
+    base = supabase_base_url(research_url)
+    if not base:
+        return []
+    url = base + "/rest/v1/watched_sources?select=url,label"
+    req = urllib.request.Request(url, headers={"apikey": anon_key, "Authorization": "Bearer " + anon_key})
+    try:
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            return json.loads(resp.read().decode("utf-8"))
+    except urllib.error.HTTPError as e:
+        if e.code == 404:
+            print("(No 'watched_sources' table yet — skipping watched-website checks. "
+                  "See SETUP.md's \"Watched websites\" section if you want this.)")
+        else:
+            print(f"  ! could not fetch watched sources: HTTP {e.code}")
+        return []
+    except Exception as e:
+        print(f"  ! could not fetch watched sources: {e}")
+        return []
+
+
 def main():
     research_url = os.environ.get("RESEARCH_URL", "").strip()
     anon_key = os.environ.get("RESEARCH_ANON_KEY", "").strip()
@@ -161,45 +224,55 @@ def main():
 
     added = []
     n = next_id(existing)
+
     for i, query in enumerate(WATCHLIST):
         print(f"[{i+1}/{len(WATCHLIST)}] {query}")
         data = call_research_backend(query, research_url, anon_key)
         time.sleep(REQUEST_DELAY_SECONDS)
 
-        if not data or not data.get("found"):
+        entry = build_entry(n, query, data, "AI research (web search)")
+        if not entry:
             print("  - nothing confirmed")
             continue
-        if data.get("systemsStatus") == "already_awarded":
-            print(f"  - real, but systems already awarded to {data.get('systemsAwardedTo')} — skipping (not actionable)")
-            continue
-
-        title = data.get("name") or query
-        companies = data.get("companies") or []
-        key = normalize_key(title, companies)
+        key = normalize_key(entry["title"], entry["companies"])
         if key in existing_keys:
             print("  - already have this one")
             continue
-
-        cats = data.get("categories") or []
-        d = TODAY  # AI research doesn't give us a precise contract date; date it as of discovery
-        entry = {
-            "id": "ai-proj-%03d" % n,
-            "title": title,
-            "companies": companies,
-            "vesselType": data.get("vesselType") or "",
-            "summary": data.get("summary") or "",
-            "date": d.isoformat(),
-            "categories": cats,
-            "sourceUrl": (data.get("sources") or [None])[0] or "",
-            "sourceName": "AI research (web search)",
-            "priority": priority(cats, d),
-            "systemsStatus": data.get("systemsStatus") or "unknown",
-            "systemsAwardedTo": data.get("systemsAwardedTo"),
-        }
         n += 1
         existing_keys.add(key)
         added.append(entry)
-        print(f"  + added: {title}")
+        print(f"  + added: {entry['title']}")
+
+    # Watched websites — a person can add any company's site from the app's
+    # Settings tab (no code push needed); this checks each one for real news
+    # the same way the fixed watchlist above does, so nobody has to notice a
+    # press release themselves and type it in.
+    watched = fetch_watched_sources(research_url, anon_key)
+    if watched:
+        print(f"\nChecking {len(watched)} watched website(s)...")
+    for i, src in enumerate(watched):
+        label = src.get("label") or src.get("url")
+        query = (
+            f"Recent news, press release, or new vessel/contract announcement from {label} "
+            f"({src.get('url')}) — a shipyard, marine systems supplier, or maritime technology company — "
+            f"in the past few weeks"
+        )
+        print(f"[watched {i+1}/{len(watched)}] {label}")
+        data = call_research_backend(query, research_url, anon_key)
+        time.sleep(REQUEST_DELAY_SECONDS)
+
+        entry = build_entry(n, query, data, f"Watched website: {label}")
+        if not entry:
+            print("  - nothing confirmed")
+            continue
+        key = normalize_key(entry["title"], entry["companies"])
+        if key in existing_keys:
+            print("  - already have this one")
+            continue
+        n += 1
+        existing_keys.add(key)
+        added.append(entry)
+        print(f"  + added: {entry['title']}")
 
     if not added:
         print("\nNo new actionable projects found today — data/active_projects.json unchanged.")
