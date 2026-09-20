@@ -45,6 +45,7 @@ Given the name of a company, shipyard, vessel, or project, use web search to fin
 5. Whether a supplier for automation, navigation, AMS, LNG, or fire & gas safety systems has ALREADY been publicly named for this project (name them and cite it) or whether that is still open/unannounced — this determines if it's still worth contacting them now.
 6. Any publicly published procurement, supply chain, or technical purchasing contact (name, role, email, phone, or supplier portal URL) for the relevant company. Never invent a name, email or phone — omit the field entirely if you can't find a real published one.
 7. Which of these categories apply: automation, navigation, integration, electrical, software, cloud, safety, propulsion, cargo, hull, hvac, services.
+8. For the single main company this query is really about (the owner/operator if the query names a project, or the company itself if the query names a company directly): its official website domain, headquarters city, and headquarters country. Omit any of these you can't find — never guess.
 
 Only use information you actually found via web search and be ready to cite a source URL for each factual claim. If you cannot find real information confirming this is a genuine current project or company, say so plainly rather than guessing or inventing details.
 
@@ -60,7 +61,10 @@ After researching, respond with ONLY one JSON object — no markdown code fences
   "systemsAwardedTo": "string or null — who already won the automation/navigation/safety systems contract, if systemsStatus is already_awarded",
   "categories": ["subset of: automation, navigation, integration, electrical, software, cloud, safety, propulsion, cargo, hull, hvac, services"],
   "contact": {"name": "string or null", "role": "string or null", "email": "string or null", "phone": "string or null", "portalUrl": "string or null"},
-  "sources": ["source URLs actually used"]
+  "sources": ["source URLs actually used"],
+  "website": "string or null (bare domain of the main company, no https://)",
+  "city": "string or null (headquarters city of the main company)",
+  "country": "string or null (headquarters country of the main company, full name e.g. \\"United Arab Emirates\\")"
 }`;
 
 // mode: "company" — used to grow the company DIRECTORY itself (real
