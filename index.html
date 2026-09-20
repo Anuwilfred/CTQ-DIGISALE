@@ -116,6 +116,7 @@
     border:1px solid var(--glass-border); box-shadow:var(--glass-shadow);
   }
   .topbar{
+    position:relative;
     display:flex; align-items:center; gap:14px; padding:11px clamp(14px,3vw,22px);
     border-bottom:1px solid var(--hairline); flex:none;
   }
@@ -138,6 +139,33 @@
     padding:6px 12px; border-radius:8px; font-size:12.5px; font-weight:590; cursor:pointer; flex:none;
   }
   .theme-toggle-btn:hover{background:var(--glass-strong); color:var(--text)}
+
+  /* ---------- Windows-Update-style "What's new" icon + panel ---------- */
+  .update-btn{
+    position:relative; border:1px solid var(--glass-border); background:var(--tint-cool); color:var(--text-muted);
+    width:30px; height:30px; border-radius:8px; cursor:pointer; flex:none;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .update-btn:hover{background:var(--glass-strong); color:var(--text)}
+  .update-btn svg{width:16px; height:16px}
+  .update-dot{
+    position:absolute; top:-2px; right:-2px; width:9px; height:9px; border-radius:999px;
+    background:var(--critical); box-shadow:0 0 0 2px var(--glass-strong); display:none;
+  }
+  .update-dot.show{display:block}
+  .update-panel{
+    position:absolute; top:calc(100% + 8px); right:14px; width:min(360px, calc(100vw - 28px));
+    max-height:70vh; overflow:auto; border-radius:14px; z-index:40;
+    box-shadow:var(--glass-shadow); padding:6px 0;
+  }
+  .update-panel-head{
+    padding:12px 16px 8px; font-weight:650; font-size:13.5px; border-bottom:1px solid var(--hairline);
+  }
+  .update-item{padding:11px 16px; border-bottom:1px solid var(--hairline)}
+  .update-item:last-child{border-bottom:none}
+  .update-item-date{font-size:11px; color:var(--text-muted); margin-bottom:2px}
+  .update-item-title{font-size:13px; font-weight:600; margin-bottom:3px}
+  .update-item-desc{font-size:12.5px; color:var(--text-muted); line-height:1.45}
 
   /* ---------- bottom-center floating dock (macOS-style nav) ---------- */
   /* Sits in normal layout flow (not an overlay) so .main always shrinks to
@@ -622,6 +650,14 @@
     </div>
     <button class="export-btn" id="exportBtn" type="button" title="Download the current data, including any notes added this session, as data/companies.json">Export data</button>
     <button class="theme-toggle-btn" id="themeToggleBtn" type="button">Theme: Auto</button>
+    <button class="update-btn" id="updatesBtn" type="button" title="What's new">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 12a9 9 0 10-3.2 6.9"/>
+        <polyline points="21 4 21 10 15 10"/>
+      </svg>
+      <span class="update-dot" id="updatesDot"></span>
+    </button>
+    <div class="update-panel glass" id="updatesPanel" style="display:none"></div>
   </header>
 
   <div class="main">
@@ -889,6 +925,38 @@ function toggleCategoryOn(item, id){
   item.categories = item.categories || [];
   var i = item.categories.indexOf(id);
   if (i === -1) item.categories.push(id); else item.categories.splice(i, 1);
+}
+
+/* ---- Category-tag persistence: tapping a tile tag in the Services tab used
+   to only mutate the in-memory company object, so it looked "saved" for the
+   rest of the session but vanished on refresh. Saved the same way as
+   Watched websites / Save-to-directory — a small Supabase table keyed by
+   company id, upserted on every toggle, loaded back in on startup and
+   folded into the real companies.json overnight by
+   scripts/apply_category_overrides.py. ---- */
+function saveCompanyCategoryOverride(companyId, categories){
+  var base = supabaseBaseUrl();
+  if (!base) return Promise.resolve(); // not connected — tag still applies locally for this session
+  return fetch(base + '/rest/v1/category_overrides?on_conflict=company_id', {
+    method: 'POST',
+    headers: supabaseRestHeaders({ 'Prefer': 'resolution=merge-duplicates' }),
+    body: JSON.stringify([{ company_id: companyId, categories: categories || [], updated_at: new Date().toISOString() }])
+  }).catch(function(){ /* best-effort — the tag still shows locally even if this save fails */ });
+}
+function loadCategoryOverrides(){
+  var base = supabaseBaseUrl();
+  if (!base) return Promise.resolve([]);
+  return fetch(base + '/rest/v1/category_overrides?select=company_id,categories', {
+    headers: supabaseRestHeaders(), cache: 'no-store'
+  }).then(function(r){ if (!r.ok) throw new Error('http-' + r.status); return r.json(); })
+    .catch(function(){ return []; });
+}
+function applyCategoryOverrides(rows){
+  if (!rows || !rows.length) return;
+  rows.forEach(function(row){
+    var co = findCompanyRaw(row.company_id);
+    if (co && Array.isArray(row.categories)) co.categories = row.categories;
+  });
 }
 
 // Embedded fallback so the app still renders something if data/companies.json
@@ -1820,6 +1888,7 @@ function buildServices(){
     btn.addEventListener('click', function(){
       var co = findCompanyRaw(btn.getAttribute('data-id'));
       toggleCategoryOn(co, activeCategory);
+      saveCompanyCategoryOverride(co.id, co.categories);
       buildServices();
     });
   });
@@ -2115,6 +2184,76 @@ function themeInit(){
   themeApply(themeGetPref());
   var btn = document.getElementById('themeToggleBtn');
   if (btn) btn.addEventListener('click', themeCycle);
+}
+
+/* ---- "What's new" changelog panel (Windows-Update style). Reads a static
+   data/changelog.json (newest entry first) — no backend needed, just edit
+   that file and bump service-worker.js's CACHE_NAME whenever a new entry
+   is added, same as any other data file. A small red dot shows on the icon
+   until the newest entry's id has been seen, tracked in localStorage so it
+   clears itself once someone opens the panel and doesn't come back after
+   a refresh. ---- */
+var UPDATES_SEEN_KEY = 'ctorq-updates-seen';
+var UPDATES_LOG = [];
+function updatesGetSeen(){
+  try { return localStorage.getItem(UPDATES_SEEN_KEY) || ''; } catch(e){ return ''; }
+}
+function updatesSetSeen(id){
+  try { localStorage.setItem(UPDATES_SEEN_KEY, String(id)); } catch(e){ /* private mode — badge just won't remember past this session */ }
+}
+function updatesRefreshBadge(){
+  var dot = document.getElementById('updatesDot');
+  if (!dot) return;
+  var newest = UPDATES_LOG[0];
+  var unseen = newest && String(newest.id) !== updatesGetSeen();
+  dot.className = 'update-dot' + (unseen ? ' show' : '');
+}
+function updatesRenderList(){
+  var panel = document.getElementById('updatesPanel');
+  if (!panel) return;
+  if (!UPDATES_LOG.length){
+    panel.innerHTML = '<div class="update-panel-head">What\'s new</div><div class="update-item"><span class="update-item-desc">No updates logged yet.</span></div>';
+    return;
+  }
+  panel.innerHTML = '<div class="update-panel-head">What\'s new</div>' + UPDATES_LOG.map(function(u){
+    return '<div class="update-item">' +
+      '<div class="update-item-date">'+escapeHtml(u.date || '')+'</div>' +
+      '<div class="update-item-title">'+escapeHtml(u.title || '')+'</div>' +
+      '<div class="update-item-desc">'+escapeHtml(u.description || '')+'</div>' +
+    '</div>';
+  }).join('');
+}
+function updatesToggle(){
+  var panel = document.getElementById('updatesPanel');
+  if (!panel) return;
+  var opening = panel.style.display === 'none';
+  panel.style.display = opening ? 'block' : 'none';
+  if (opening && UPDATES_LOG.length){
+    updatesSetSeen(UPDATES_LOG[0].id);
+    updatesRefreshBadge();
+  }
+}
+function updatesLoad(){
+  return fetch('./data/changelog.json', {cache:'no-store'})
+    .then(function(r){ if (!r.ok) throw new Error('bad status ' + r.status); return r.json(); })
+    .catch(function(){ return []; })
+    .then(function(payload){
+      UPDATES_LOG = Array.isArray(payload) ? payload : [];
+      updatesRenderList();
+      updatesRefreshBadge();
+    });
+}
+function updatesInit(){
+  var btn = document.getElementById('updatesBtn');
+  var panel = document.getElementById('updatesPanel');
+  if (!btn) return;
+  btn.addEventListener('click', function(e){ e.stopPropagation(); updatesToggle(); });
+  document.addEventListener('click', function(e){
+    if (panel && panel.style.display !== 'none' && !panel.contains(e.target) && e.target !== btn) {
+      panel.style.display = 'none';
+    }
+  });
+  updatesLoad();
 }
 
 function settingsSetAiPaused(paused){
@@ -2720,9 +2859,13 @@ function buildAnalytics(){
 }
 
 loadData().then(function(){
+  return loadCategoryOverrides();
+}).then(function(overrides){
+  applyCategoryOverrides(overrides); // restore any category tags saved in earlier sessions
   renderCountries(); renderList(); renderDetail();
   buildAnalytics();
   buildProjects(); // rebuild so project cards can link to companies once DATA is loaded
+  buildServices(); // reflect restored tags if the Services tab is already open
 });
 
 loadSignals().then(buildSignals);
@@ -2731,6 +2874,7 @@ rdInit();
 dcInit();
 settingsInit();
 themeInit();
+updatesInit();
 
 })();
 </script>
