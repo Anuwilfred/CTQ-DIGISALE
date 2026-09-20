@@ -1020,12 +1020,14 @@ function emailBoxHTML(co){
       '<div class="email-field-label">Body</div><div class="email-status" style="white-space:pre-wrap">'+escapeHtml(draft.body)+'</div>';
     actionsHtml = '<div class="email-actions"><button type="button" class="email-btn email-btn-secondary" id="'+idp+'-followup-btn">Draft a follow-up</button></div>';
   } else if (isApproved){
-    statusHtml = '<p class="email-status email-sent">Approved — ready to send.</p>' + recipientLine;
+    statusHtml = '<p class="email-status email-sent">Approved — ready to send.</p>' +
+      '<p class="email-status">Tip: the first time you use this, send a test to your own address before sending to a real contact — just edit "To" below.</p>';
     fieldsHtml =
+      '<div class="email-field-label">To</div><input class="email-subject-input" id="'+idp+'-to" value="'+escapeHtml(recipient || '')+'" placeholder="recipient@company.com">' +
       '<div class="email-field-label">Subject</div><input class="email-subject-input" id="'+idp+'-subject" value="'+escapeHtml(draft.subject)+'">' +
       '<div class="email-field-label">Body</div><textarea class="email-body-input" id="'+idp+'-body">'+escapeHtml(draft.body)+'</textarea>';
     actionsHtml = '<div class="email-actions">' +
-      '<button type="button" class="email-btn email-btn-primary" id="'+idp+'-send-btn"'+(recipient ? '' : ' disabled')+'>Send email</button>' +
+      '<button type="button" class="email-btn email-btn-primary" id="'+idp+'-send-btn">Send email</button>' +
       '<button type="button" class="email-btn email-btn-secondary" id="'+idp+'-unapprove-btn">Back to draft</button>' +
       '</div>';
   } else {
@@ -1118,8 +1120,12 @@ function wireEmailBox(co, onSaved){
   var sendBtn = document.getElementById(idp+'-send-btn');
   if (sendBtn){
     sendBtn.addEventListener('click', function(){
-      var recipient = primaryContactEmail(co);
-      if (!recipient) return;
+      var toEl = document.getElementById(idp+'-to');
+      var recipient = toEl ? toEl.value.trim() : primaryContactEmail(co);
+      if (!recipient || recipient.indexOf('@') === -1){
+        alert('Enter a valid "To" email address before sending.');
+        return;
+      }
       var subjectEl = document.getElementById(idp+'-subject');
       var bodyEl = document.getElementById(idp+'-body');
       var subject = subjectEl.value, body = bodyEl.value;
