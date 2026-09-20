@@ -117,20 +117,31 @@ connection above) and sent along with each drafting request.
 Once Steps 1–4 are done, the app can also research on its own, every day,
 without anyone opening the app or clicking anything. A GitHub Actions job
 (`.github/workflows/ai-research-daily.yml`, already in this repo) runs
-once a day, asks the same backend from Step 3 about a **fixed list of ~20
-real shipyards, systems suppliers and discovery queries**
-(`scripts/ai_research_daily.py`), and automatically adds any genuinely new,
-still-open opportunity it finds straight into the Active Projects tab —
-skipping anything where a competitor's systems have already been publicly
-awarded.
+once a day, asks the same backend from Step 3 about a **fixed list of ~28
+real shipyards, systems suppliers, classification-agreement, and discovery
+queries** (`scripts/ai_research_daily.py`), and automatically adds any
+genuinely new, still-open opportunity it finds straight into the Active
+Projects tab — skipping anything where a competitor's systems have
+already been publicly awarded.
+
+The list includes queries specifically hunting for classification-society
+agreements (DNV, ABS, Lloyd's Register, Bureau Veritas, ClassNK, RINA) —
+class gets assigned right at project kickoff, often before a shipyard's
+own contract-signing press release, so it's frequently the earliest
+public sign a project exists at all. These run globally, across any
+region — not restricted to one country.
 
 That fixed list is the important part: it means the automatic side of the
 app makes the same small, known number of Anthropic calls every day —
-about 20 — no matter how many people are using the app or clicking
+about 28 — no matter how many people are using the app or clicking
 "Search live" that day. The two don't add up to some unpredictable
 runaway number; automatic research has its own fixed daily budget
-(roughly $0.30–$0.60/day, so well under $20/month on its own), completely
-separate from whatever ad-hoc searching your team does by hand.
+(roughly $0.45–$0.85/day, so still well under $30/month on its own),
+completely separate from whatever ad-hoc searching your team does by
+hand. The RSS lead-sourcing job (`.github/workflows/lead-sourcing.yml`)
+also now watches for classification-agreement language in the maritime
+trade press feeds it already monitors, at no extra API cost since that
+job is pure keyword-matching, not an AI call.
 
 To turn it on, add two **repository secrets** (Settings → Secrets and
 variables → Actions → New repository secret) using the same two values

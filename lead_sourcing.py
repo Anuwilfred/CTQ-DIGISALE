@@ -38,10 +38,21 @@ SOURCES, AND WHAT EACH ONE ACTUALLY NEEDS TODAY (checked Sept 2026)
 
 3. RSS/Atom feeds from maritime trade press
    - No signup needed. `monitor_rss_feeds()` pulls entries and keyword-
-     filters for newbuild/contract/order language. Add feed URLs for the
-     outlets you follow (Splash247, Seatrade Maritime News, MarineLink,
-     TradeWinds's free RSS, gCaptain, etc. -- confirm each outlet's
-     current feed URL and terms before relying on it).
+     filters for newbuild/contract/order/classification language. Add
+     feed URLs for the outlets you follow (Splash247, Marine Log,
+     gCaptain, Offshore Energy, TradeWinds's free RSS, Seatrade Maritime
+     News, etc. -- confirm each outlet's current feed URL and terms
+     before relying on it).
+   - Classification societies (DNV, ABS, Lloyd's Register, Bureau
+     Veritas, ClassNK, RINA) generally don't publish their own public
+     RSS feeds -- they push news via email subscriptions instead. So
+     rather than watching a class society's own site, NEWBUILD_KEYWORDS
+     below includes classification-agreement language (e.g. "to class",
+     "classification agreement", "class notation") so a class-order
+     announcement covered by the maritime trade press outlets already
+     being monitored still gets caught. This is deliberately an early
+     signal: class gets assigned right at project kickoff, often before
+     a shipyard's own contract-signing press release.
 
 4. Equasis (vessel/owner data) and IMO GISIS (company/vessel registry)
    - Both require you to hold a free registered account and use their
@@ -51,6 +62,15 @@ SOURCES, AND WHAT EACH ONE ACTUALLY NEEDS TODAY (checked Sept 2026)
      or export what their UI allows, then feed the results through
      `normalize_lead()` below to get them into the same shape as
      everything else.
+
+A NOTE ON LINKEDIN
+-------------------
+LinkedIn's terms of service prohibit automated scraping / bulk data
+collection, so nothing in this pipeline touches it. If you want LinkedIn
+company or contact data specifically, do that lookup yourself in the
+LinkedIn UI (or Sales Navigator) and paste the results in -- they'll
+still flow through `normalize_lead()` into the same shape as everything
+else here.
 
 OUTPUT SHAPE
 ------------
@@ -287,10 +307,24 @@ def scrape_newbuild_contracts(url: str) -> list[dict]:
 # 3. RSS/Atom monitoring
 # --------------------------------------------------------------------------
 
+# Keep this list in two rough groups: (a) general newbuild/contract language,
+# and (b) classification-agreement language. Class societies (DNV, ABS,
+# Lloyd's Register, Bureau Veritas, ClassNK, RINA) get engaged right at
+# project kickoff -- often before a shipyard's own contract-signing press
+# release -- so a "to class" / "classification agreement" mention is
+# sometimes the EARLIEST public signal a project exists at all, across any
+# region (not just one country). Applies globally: whatever country the
+# monitored feeds happen to cover.
 NEWBUILD_KEYWORDS = (
+    # general newbuild / contract signals
     "newbuild", "new build", "keel laying", "keel-laying", "steel cutting",
     "steel-cutting", "shipbuilding contract", "vessel order", "orders vessel",
     "signs contract", "signed a contract", "orderbook",
+    # classification-agreement signals (often the earliest public signal,
+    # since class gets assigned at project kickoff)
+    "to class", "classification agreement", "class notation", "classed by",
+    "assigned class", "class society", "newbuilding series", "approval in principle",
+    "dnv", "lloyd's register", "bureau veritas", "classnk", "class nk", "rina class",
 )
 
 
