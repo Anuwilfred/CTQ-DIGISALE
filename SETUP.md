@@ -69,6 +69,13 @@ under **Project Settings → Edge Functions → Secrets**.)
 
 ## Step 4 — Point the app at it
 
+**Easiest way:** open the app itself, go to the **Settings** tab, paste the
+Project URL and anon public key from Step 2 into "Backend connection", and
+click **Save connection**. That's it — no code edit or push needed, and it
+takes effect immediately in that browser.
+
+**Or, to set it as the default for everyone** (so a fresh visitor is
+connected without touching Settings), edit the code directly:
 Open `index.html` in this repo and find this block near the top of the
 `<script>` section:
 
@@ -91,6 +98,19 @@ var CONFIG = {
 Save, commit, and push (or upload through the GitHub web UI as usual). The
 Research desk box will detect the config and switch from "Live search
 isn't connected yet" to "Connected."
+
+### C-TORQ company profile (for better email drafts)
+
+Also on the **Settings** tab is a "C-TORQ company profile" card — a place
+to paste C-TORQ's real website and a short paragraph of real
+differentiators (what C-TORQ actually delivers, real references, what
+sets it apart from a yard's current/preferred supplier, certifications,
+turnaround times, etc.). Once saved, every AI-drafted outreach email uses
+these real facts to talk specifically about C-TORQ's own capabilities,
+instead of a generic category description — and the AI is explicitly told
+that C-TORQ is the solution provider sending the email, never the
+recipient. This is stored only in this browser (like the backend
+connection above) and sent along with each drafting request.
 
 ## Step 5 — turn on automatic daily AI research (no clicking required)
 
