@@ -3,7 +3,7 @@
 // with no signal. Bump CACHE_NAME whenever app files change so old
 // installs pick up the new version instead of serving a stale copy.
 
-const CACHE_NAME = 'ctorq-shell-v24';
+const CACHE_NAME = 'ctorq-shell-v25';
 const APP_SHELL = [
   './',
   './index.html',
@@ -42,6 +42,16 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(
       fetch(req).catch(() => caches.match('./index.html'))
     );
+    return;
+  }
+
+  // Cross-origin requests (the Supabase backend: research/draft-email/
+  // send-email functions, watched_sources, pending_companies, etc.) are
+  // live, mutable data — never cache these. Caching them once meant an
+  // early empty/error response could get served forever afterward, which
+  // is exactly what happened to the Watched websites list. Let the browser
+  // handle these with its normal (uncached) network fetch.
+  if (!req.url.startsWith(self.location.origin)) {
     return;
   }
 
