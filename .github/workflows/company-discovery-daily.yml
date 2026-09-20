@@ -1,0 +1,63 @@
+name: Company discovery (daily, automatic)
+
+# Grows the company DIRECTORY itself (data/companies.json) on its own, the
+# same way ai-research-daily.yml already grows Active Projects — instead
+# of every new company only being added when someone researches it during
+# a chat. Uses a fixed, bounded watchlist (see
+# scripts/discover_companies_daily.py) so this is a small, predictable,
+# separate number of Anthropic calls per day.
+#
+# Every company this adds is tagged needsReview: true and shows a "Needs
+# review" badge in the app, since a single AI web-search pass isn't held
+# to the same two-independent-source bar the rest of the directory was
+# manually built with — a quick human glance (its own website is usually
+# enough) is worth doing before relying on it for outreach.
+#
+# Requires the same two repo secrets as ai-research-daily.yml, set once
+# Supabase is wired up (see SETUP.md):
+#   RESEARCH_URL       — e.g. https://xxxxxxxx.supabase.co/functions/v1/research
+#   RESEARCH_ANON_KEY  — the Supabase project's anon public key
+# Until those secrets exist, this job runs and exits quietly without
+# calling anything.
+#
+# Also requires the research Edge Function to be redeployed after this was
+# added (it now understands mode: "company" as well as the existing
+# mode: "project") — see SETUP.md.
+
+on:
+  schedule:
+    - cron: '0 7 * * *'   # after both the RSS lead-sourcing and AI project-research runs
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  company-discovery:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run daily company-discovery watchlist
+        env:
+          RESEARCH_URL: ${{ secrets.RESEARCH_URL }}
+          RESEARCH_ANON_KEY: ${{ secrets.RESEARCH_ANON_KEY }}
+        run: python scripts/discover_companies_daily.py
+
+      - name: Commit updated directory if changed
+        run: |
+          git config user.name "ctorq-bot"
+          git config user.email "actions@github.com"
+          git add data/companies.json
+          if git diff --cached --quiet; then
+            echo "No new companies discovered — nothing to commit."
+          else
+            git commit -m "Add AI-discovered companies, needs review [automated daily run]"
+            git push
+          fi
