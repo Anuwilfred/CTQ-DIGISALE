@@ -151,6 +151,31 @@
     font-size:12.5px; font-weight:600; cursor:pointer; flex:none;
   }
 
+  /* ---------- outreach email (draft / approve / send) ---------- */
+  .email-box{
+    background:var(--glass-soft); border:1px solid var(--glass-border); border-radius:12px; padding:14px 16px; margin:10px 0 20px;
+  }
+  .email-status{font-size:12px; color:var(--text-muted); margin:0 0 10px; line-height:1.5}
+  .email-status.email-error{color:var(--critical)}
+  .email-status.email-sent{color:var(--accent-2)}
+  .email-field-label{font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--text-muted); font-weight:600; margin:10px 0 4px}
+  .email-subject-input{
+    width:100%; border:1px solid var(--glass-border); background:var(--tint-cool); color:var(--text);
+    border-radius:8px; padding:8px 10px; font-size:13px; font-weight:600;
+  }
+  .email-body-input{
+    width:100%; min-height:140px; border:1px solid var(--glass-border); background:var(--tint-cool); color:var(--text);
+    border-radius:8px; padding:10px; font-size:12.5px; line-height:1.5; font-family:inherit; resize:vertical;
+  }
+  .email-actions{display:flex; gap:8px; margin-top:10px; flex-wrap:wrap}
+  .email-btn{
+    border:none; padding:8px 14px; border-radius:10px; font-size:12.5px; font-weight:600; cursor:pointer;
+  }
+  .email-btn-primary{background:var(--accent); color:var(--accent-ink)}
+  .email-btn-secondary{background:var(--glass-strong); color:var(--text); border:1px solid var(--glass-border)}
+  .email-btn:disabled{opacity:.5; cursor:not-allowed}
+  .email-recipient{font-size:11.5px; color:var(--text-muted); margin-top:8px}
+
   .main{flex:1; min-height:0; display:flex; overflow:hidden;}
   [hidden]{display:none!important}
 
@@ -534,6 +559,13 @@ var CONFIG = {
   RESEARCH_URL: 'https://vwupalbfqwswwndvlcmq.supabase.co/functions/v1/research',
   RESEARCH_ANON_KEY: 'sb_publishable_FbFL_CtruN_lCAANGPgwlg_TuQhGYZ0'
 };
+// The draft-email and send-email functions live in the same Supabase
+// project as research, so their URLs are derived automatically — no extra
+// config needed once RESEARCH_URL is set.
+function backendUrl(fnName){
+  if (!CONFIG.RESEARCH_URL) return '';
+  return CONFIG.RESEARCH_URL.replace(/\/research$/, '/' + fnName);
+}
 
 /* =================== data (country -> region -> company) =================== */
 var STAGES = ['found','drafted','approved','sent','replied','meeting','won'];
@@ -945,6 +977,192 @@ function wireCatPicker(item, idPrefix, onSaved){
   });
 }
 
+/* =================== outreach email: draft (AI) -> approve -> send =================== */
+function escapeHtml(s){
+  return String(s == null ? '' : s).replace(/[&<>"]/g, function(c){
+    return {'&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;'}[c];
+  });
+}
+function primaryContactEmail(co){
+  var c = (co.contacts||[]).find(function(p){ return p.email; });
+  return c ? c.email : null;
+}
+
+function emailBoxHTML(co){
+  var idp = 'email-'+co.id;
+  if (!CONFIG.RESEARCH_URL){
+    return '<div class="email-box"><p class="email-status">Live drafting isn\'t connected yet — see SETUP.md in the repo.</p>' +
+      '<button type="button" class="email-btn email-btn-primary" disabled>Draft with AI</button></div>';
+  }
+
+  var draft = co.draftEmail;
+  var recipient = primaryContactEmail(co);
+  var recipientLine = recipient
+    ? '<p class="email-recipient">To: '+recipient+'</p>'
+    : '<p class="email-recipient" style="color:var(--critical)">No published email address for this company — can\'t send automatically, but you can still draft and copy it manually.</p>';
+
+  if (!draft){
+    return '<div class="email-box">' +
+      '<p class="email-status">No draft yet. AI will write a short, personalized first-touch email based on this company\'s segment and categories.</p>' +
+      '<textarea class="email-body-input" id="'+idp+'-notes" style="min-height:50px" maxlength="500" placeholder="Optional — anything specific to mention (e.g. a project they\'re bidding on)"></textarea>' +
+      '<div class="email-actions"><button type="button" class="email-btn email-btn-primary" id="'+idp+'-draft-btn">Draft with AI</button></div>' +
+      '</div>';
+  }
+
+  var isApproved = !!draft.approvedAt;
+  var isSent = !!draft.sentAt;
+  var statusHtml, fieldsHtml, actionsHtml;
+
+  if (isSent){
+    statusHtml = '<p class="email-status email-sent">Sent to '+draft.sentTo+' on '+fmtDateTime(draft.sentAt)+'.</p>';
+    fieldsHtml =
+      '<div class="email-field-label">Subject</div><div class="email-status">'+escapeHtml(draft.subject)+'</div>' +
+      '<div class="email-field-label">Body</div><div class="email-status" style="white-space:pre-wrap">'+escapeHtml(draft.body)+'</div>';
+    actionsHtml = '<div class="email-actions"><button type="button" class="email-btn email-btn-secondary" id="'+idp+'-followup-btn">Draft a follow-up</button></div>';
+  } else if (isApproved){
+    statusHtml = '<p class="email-status email-sent">Approved — ready to send.</p>' + recipientLine;
+    fieldsHtml =
+      '<div class="email-field-label">Subject</div><input class="email-subject-input" id="'+idp+'-subject" value="'+escapeHtml(draft.subject)+'">' +
+      '<div class="email-field-label">Body</div><textarea class="email-body-input" id="'+idp+'-body">'+escapeHtml(draft.body)+'</textarea>';
+    actionsHtml = '<div class="email-actions">' +
+      '<button type="button" class="email-btn email-btn-primary" id="'+idp+'-send-btn"'+(recipient ? '' : ' disabled')+'>Send email</button>' +
+      '<button type="button" class="email-btn email-btn-secondary" id="'+idp+'-unapprove-btn">Back to draft</button>' +
+      '</div>';
+  } else {
+    statusHtml = '<p class="email-status">Draft ready — review and edit below, then Approve.</p>' + recipientLine;
+    fieldsHtml =
+      '<div class="email-field-label">Subject</div><input class="email-subject-input" id="'+idp+'-subject" value="'+escapeHtml(draft.subject)+'">' +
+      '<div class="email-field-label">Body</div><textarea class="email-body-input" id="'+idp+'-body">'+escapeHtml(draft.body)+'</textarea>';
+    actionsHtml = '<div class="email-actions">' +
+      '<button type="button" class="email-btn email-btn-primary" id="'+idp+'-approve-btn">Approve</button>' +
+      '<button type="button" class="email-btn email-btn-secondary" id="'+idp+'-regenerate-btn">Regenerate</button>' +
+      '</div>';
+  }
+
+  return '<div class="email-box">' + statusHtml + fieldsHtml + actionsHtml + '</div>';
+}
+
+function runDraftEmail(co, notes, onSaved){
+  var url = backendUrl('draft-email');
+  fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'apikey': CONFIG.RESEARCH_ANON_KEY, 'Authorization': 'Bearer ' + CONFIG.RESEARCH_ANON_KEY },
+    body: JSON.stringify({
+      companyName: co.name,
+      contactName: (co.contacts && co.contacts[0]) ? co.contacts[0].name : '',
+      contactRole: (co.contacts && co.contacts[0]) ? co.contacts[0].role : '',
+      segment: co.segment,
+      categories: co.categories || [],
+      notes: notes || ''
+    })
+  })
+  .then(function(r){ return r.json().then(function(data){ return {ok:r.ok, data:data}; }); })
+  .then(function(res){
+    if (!res.ok || res.data.error){
+      alert('Draft failed: ' + (res.data.error || 'unknown error'));
+      return;
+    }
+    co.draftEmail = { subject: res.data.subject, body: res.data.body };
+    co.history = co.history || [];
+    co.history.push({type:'drafted', date: new Date().toISOString().slice(0,10), text: 'AI drafted an outreach email.'});
+    if (co.stage === 'found') co.stage = 'drafted';
+    if (onSaved) onSaved();
+  })
+  .catch(function(err){ alert('Draft failed: could not reach the backend (' + err.message + ').'); });
+}
+
+function wireEmailBox(co, onSaved){
+  var idp = 'email-'+co.id;
+
+  var draftBtn = document.getElementById(idp+'-draft-btn');
+  if (draftBtn){
+    draftBtn.addEventListener('click', function(){
+      var notesEl = document.getElementById(idp+'-notes');
+      draftBtn.disabled = true; draftBtn.textContent = 'Drafting…';
+      runDraftEmail(co, notesEl ? notesEl.value.trim() : '', onSaved);
+    });
+  }
+
+  var regenBtn = document.getElementById(idp+'-regenerate-btn');
+  if (regenBtn){
+    regenBtn.addEventListener('click', function(){
+      regenBtn.disabled = true; regenBtn.textContent = 'Drafting…';
+      runDraftEmail(co, '', onSaved);
+    });
+  }
+
+  var approveBtn = document.getElementById(idp+'-approve-btn');
+  if (approveBtn){
+    approveBtn.addEventListener('click', function(){
+      var subjectEl = document.getElementById(idp+'-subject');
+      var bodyEl = document.getElementById(idp+'-body');
+      co.draftEmail.subject = subjectEl.value;
+      co.draftEmail.body = bodyEl.value;
+      co.draftEmail.approvedAt = new Date().toISOString().slice(0,10);
+      co.stage = 'approved';
+      co.history = co.history || [];
+      co.history.push({type:'approved', date: co.draftEmail.approvedAt, text: 'Draft approved for sending.'});
+      if (onSaved) onSaved();
+    });
+  }
+
+  var unapproveBtn = document.getElementById(idp+'-unapprove-btn');
+  if (unapproveBtn){
+    unapproveBtn.addEventListener('click', function(){
+      co.draftEmail.approvedAt = null;
+      co.stage = 'drafted';
+      if (onSaved) onSaved();
+    });
+  }
+
+  var sendBtn = document.getElementById(idp+'-send-btn');
+  if (sendBtn){
+    sendBtn.addEventListener('click', function(){
+      var recipient = primaryContactEmail(co);
+      if (!recipient) return;
+      var subjectEl = document.getElementById(idp+'-subject');
+      var bodyEl = document.getElementById(idp+'-body');
+      var subject = subjectEl.value, body = bodyEl.value;
+      sendBtn.disabled = true; sendBtn.textContent = 'Sending…';
+      fetch(backendUrl('send-email'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'apikey': CONFIG.RESEARCH_ANON_KEY, 'Authorization': 'Bearer ' + CONFIG.RESEARCH_ANON_KEY },
+        body: JSON.stringify({ to: recipient, subject: subject, body: body })
+      })
+      .then(function(r){ return r.json().then(function(data){ return {ok:r.ok, data:data}; }); })
+      .then(function(res){
+        if (!res.ok || !res.data.sent){
+          alert('Send failed: ' + (res.data.error || 'unknown error'));
+          sendBtn.disabled = false; sendBtn.textContent = 'Send email';
+          return;
+        }
+        co.draftEmail.subject = subject;
+        co.draftEmail.body = body;
+        co.draftEmail.sentAt = new Date().toISOString().slice(0,10);
+        co.draftEmail.sentTo = recipient;
+        co.stage = 'sent';
+        co.lastContact = co.draftEmail.sentAt;
+        co.nextAction = 'Await reply';
+        co.history = co.history || [];
+        co.history.push({type:'sent', date: co.draftEmail.sentAt, text: 'Email sent to ' + recipient + '.'});
+        if (onSaved) onSaved();
+      })
+      .catch(function(err){
+        alert('Send failed: could not reach the backend (' + err.message + ').');
+        sendBtn.disabled = false; sendBtn.textContent = 'Send email';
+      });
+    });
+  }
+
+  var followupBtn = document.getElementById(idp+'-followup-btn');
+  if (followupBtn){
+    followupBtn.addEventListener('click', function(){
+      co.draftEmail = null;
+      if (onSaved) onSaved();
+    });
+  }
+}
+
 function buildServices(){
   var root = document.getElementById('viewServices');
   root.innerHTML =
@@ -1152,6 +1370,8 @@ function renderDetail(){
       '<div class="fact"><div class="fact-label">Local data</div><div class="fact-value">'+localValue+'<span class="source-tag">'+localSub+'</span></div></div>' +
     '</div>' +
     catPickerHTML(co, 'co-'+co.id) +
+    '<h3 class="section-title" style="margin-top:20px">Outreach email</h3>' +
+    emailBoxHTML(co) +
     '<h3 class="section-title" style="margin-top:20px">Client journey</h3>' +
     brainMapHTML(co) +
     '<h3 class="section-title">Activity</h3>' +
@@ -1162,6 +1382,7 @@ function renderDetail(){
     '</form>';
 
   wireCatPicker(findCompanyRaw(co.id), 'co-'+co.id, renderDetail);
+  wireEmailBox(findCompanyRaw(co.id), renderDetail);
 
   var noteForm = document.getElementById('noteForm');
   if (noteForm){
