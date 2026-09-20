@@ -133,6 +133,11 @@
     margin-left:auto;
   }
   .export-btn:hover{background:var(--glass-strong); color:var(--text)}
+  .theme-toggle-btn{
+    border:1px solid var(--glass-border); background:var(--tint-cool); color:var(--text-muted);
+    padding:6px 12px; border-radius:8px; font-size:12.5px; font-weight:590; cursor:pointer; flex:none;
+  }
+  .theme-toggle-btn:hover{background:var(--glass-strong); color:var(--text)}
 
   /* ---------- bottom-center floating dock (macOS-style nav) ---------- */
   /* Sits in normal layout flow (not an overlay) so .main always shrinks to
@@ -577,6 +582,17 @@
   }
 
 </style>
+<script>
+// Applies a saved manual theme override (light/dark) before the page paints,
+// so there's no flash of the wrong theme. No saved override = follow the
+// device/browser's own light/dark setting, same as before this existed.
+(function(){
+  try {
+    var t = localStorage.getItem('ctorq-settings-theme');
+    if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+  } catch(e){ /* private mode — falls back to following the system theme, harmless */ }
+})();
+</script>
 </head>
 <body>
 
@@ -587,6 +603,7 @@
       <span class="brand-role">Sales Command</span>
     </div>
     <button class="export-btn" id="exportBtn" type="button" title="Download the current data, including any notes added this session, as data/companies.json">Export data</button>
+    <button class="theme-toggle-btn" id="themeToggleBtn" type="button">Theme: Auto</button>
   </header>
 
   <div class="main">
@@ -1639,6 +1656,41 @@ function runStudyWebsite(){
   });
 }
 
+var THEME_KEY = 'ctorq-settings-theme';
+function themeGetPref(){
+  try {
+    var t = localStorage.getItem(THEME_KEY);
+    if (t === 'light' || t === 'dark') return t;
+  } catch(e){ /* private mode — treat as no override */ }
+  return 'system';
+}
+function themeApply(pref){
+  if (pref === 'light' || pref === 'dark') document.documentElement.setAttribute('data-theme', pref);
+  else document.documentElement.removeAttribute('data-theme');
+  var btn = document.getElementById('themeToggleBtn');
+  if (btn){
+    var label = pref === 'light' ? 'Light' : (pref === 'dark' ? 'Dark' : 'Auto');
+    btn.textContent = 'Theme: ' + label;
+    btn.title = pref === 'system'
+      ? 'Following your device’s light/dark setting — tap to force Light'
+      : 'Forced ' + label.toLowerCase() + ' — tap to switch (' + (pref === 'light' ? 'Dark next, then Auto' : 'Auto next') + ')';
+  }
+}
+function themeCycle(){
+  var cur = themeGetPref();
+  var next = cur === 'system' ? 'light' : (cur === 'light' ? 'dark' : 'system');
+  try {
+    if (next === 'system') localStorage.removeItem(THEME_KEY);
+    else localStorage.setItem(THEME_KEY, next);
+  } catch(e){ /* private mode — still applies for the rest of this session */ }
+  themeApply(next);
+}
+function themeInit(){
+  themeApply(themeGetPref());
+  var btn = document.getElementById('themeToggleBtn');
+  if (btn) btn.addEventListener('click', themeCycle);
+}
+
 function settingsSetAiPaused(paused){
   AI_PAUSED = paused;
   try { localStorage.setItem(SETTINGS_AI_PAUSE_KEY, paused ? '1' : '0'); } catch(e){ /* private mode — still applies for this session */ }
@@ -2244,6 +2296,7 @@ loadSignals().then(buildSignals);
 loadProjects().then(buildProjects);
 rdInit();
 settingsInit();
+themeInit();
 
 })();
 </script>
