@@ -494,6 +494,9 @@
     border-radius:8px; padding:9px 11px; font-size:13px;
   }
   .settings-input::placeholder{color:var(--text-muted)}
+  .settings-row-inline{display:flex; gap:8px; align-items:stretch}
+  .settings-row-inline .settings-input{flex:1}
+  .settings-btn:disabled{opacity:.5; cursor:not-allowed}
   .settings-textarea{
     width:100%; min-height:110px; border:1px solid var(--glass-border); background:var(--tint-cool); color:var(--text);
     border-radius:8px; padding:10px 11px; font-size:12.5px; line-height:1.5; font-family:inherit; resize:vertical;
@@ -659,7 +662,18 @@
           <h3 class="settings-title">C-TORQ company profile</h3>
           <p class="settings-sub">Feeds the AI real facts about C-TORQ so drafted emails talk about <em>our</em> actual capabilities — not a generic or competitor-flavored description. C-TORQ is the systems provider here, not the shipyard or operator being contacted.</p>
           <div class="settings-field-label">C-TORQ website</div>
-          <input type="text" id="setProfileWebsite" class="settings-input" placeholder="https://www.c-torq.com">
+          <div class="settings-row-inline">
+            <input type="text" id="setProfileWebsite" class="settings-input" placeholder="https://www.c-torq.com">
+            <button type="button" class="settings-btn settings-btn-secondary" id="setStudyWebsiteBtn" style="flex:none">Study our website</button>
+          </div>
+          <p class="settings-note" id="setStudyStatus">This actually visits your site (homepage plus the most relevant pages it finds — about, products, services, etc.), reads the real text, and drafts the paragraph below for you — it never saves or sends anything on its own.</p>
+          <div id="setStudyPreviewWrap" hidden>
+            <div class="settings-field-label">Draft from your website — review before using</div>
+            <textarea id="setStudyPreview" class="settings-textarea" readonly></textarea>
+            <div class="settings-actions">
+              <button type="button" class="settings-btn settings-btn-primary" id="setUseStudyBtn">Use this text</button>
+            </div>
+          </div>
           <div class="settings-field-label">About us / real differentiators</div>
           <textarea id="setProfileAbout" class="settings-textarea" maxlength="1200" placeholder="e.g. What C-TORQ actually delivers, recent references, what sets us apart from the yards' preferred/incumbent suppliers, certifications, turnaround times…"></textarea>
           <div class="settings-actions">
@@ -1561,6 +1575,70 @@ function settingsSaveProfile(){
   }
 }
 
+function runStudyWebsite(){
+  var websiteEl = document.getElementById('setProfileWebsite');
+  var btn = document.getElementById('setStudyWebsiteBtn');
+  var statusEl = document.getElementById('setStudyStatus');
+  var previewWrap = document.getElementById('setStudyPreviewWrap');
+  var previewEl = document.getElementById('setStudyPreview');
+  var url = (websiteEl.value || '').trim();
+
+  var DEFAULT_STATUS = 'This actually visits your site (homepage plus the most relevant pages it finds — about, products, services, etc.), reads the real text, and drafts the paragraph below for you — it never saves or sends anything on its own.';
+
+  if (!url){ websiteEl.focus(); return; }
+  if (AI_PAUSED){
+    statusEl.textContent = 'AI is paused — turn it back on in the "AI usage" card above first.';
+    statusEl.style.color = 'var(--critical)';
+    return;
+  }
+  if (!CONFIG.RESEARCH_URL){
+    statusEl.textContent = 'Backend not connected — set up the connection above first.';
+    statusEl.style.color = 'var(--critical)';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Studying…';
+  statusEl.textContent = 'Reading your website — this can take 20–40 seconds for several pages.';
+  statusEl.style.color = '';
+  previewWrap.hidden = true;
+
+  var controller = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+  var timeoutId = controller ? setTimeout(function(){ controller.abort(); }, 45000) : null;
+
+  fetch(backendUrl('study-website'), {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'apikey': CONFIG.RESEARCH_ANON_KEY, 'Authorization': 'Bearer ' + CONFIG.RESEARCH_ANON_KEY },
+    signal: controller ? controller.signal : undefined,
+    body: JSON.stringify({ url: url })
+  })
+  .then(function(r){ return r.json().then(function(data){ return {ok:r.ok, data:data}; }); })
+  .then(function(res){
+    if (timeoutId) clearTimeout(timeoutId);
+    btn.disabled = false;
+    btn.textContent = 'Study our website';
+    if (!res.ok || res.data.error){
+      statusEl.textContent = res.data.error || 'Could not study the website — try again or fill in "About us" by hand.';
+      statusEl.style.color = 'var(--critical)';
+      return;
+    }
+    previewEl.value = res.data.summary || '';
+    previewWrap.hidden = false;
+    var n = (res.data.pagesStudied || []).length;
+    statusEl.textContent = 'Read ' + n + ' page' + (n === 1 ? '' : 's') + ' from ' + (res.data.website || url) + '. Review the draft below, then click "Use this text" to bring it into the box you\'ll actually save.';
+    statusEl.style.color = 'var(--accent-2)';
+  })
+  .catch(function(err){
+    if (timeoutId) clearTimeout(timeoutId);
+    btn.disabled = false;
+    btn.textContent = 'Study our website';
+    statusEl.textContent = (err && err.name === 'AbortError')
+      ? 'Timed out after 45s — the site may be slow or the study-website function may not be deployed yet.'
+      : ('Could not reach the backend (' + err.message + ').');
+    statusEl.style.color = 'var(--critical)';
+  });
+}
+
 function settingsSetAiPaused(paused){
   AI_PAUSED = paused;
   try { localStorage.setItem(SETTINGS_AI_PAUSE_KEY, paused ? '1' : '0'); } catch(e){ /* private mode — still applies for this session */ }
@@ -1589,6 +1667,20 @@ function settingsInit(){
   document.getElementById('setSaveBackendBtn').addEventListener('click', settingsSaveBackend);
   document.getElementById('setClearBackendBtn').addEventListener('click', settingsClearBackend);
   document.getElementById('setSaveProfileBtn').addEventListener('click', settingsSaveProfile);
+  document.getElementById('setStudyWebsiteBtn').addEventListener('click', runStudyWebsite);
+  document.getElementById('setUseStudyBtn').addEventListener('click', function(){
+    var previewEl = document.getElementById('setStudyPreview');
+    var aboutBox = document.getElementById('setProfileAbout');
+    var previewWrap = document.getElementById('setStudyPreviewWrap');
+    var statusEl = document.getElementById('setStudyStatus');
+    aboutBox.value = previewEl.value || '';
+    previewWrap.hidden = true;
+    aboutBox.focus();
+    if (statusEl){
+      statusEl.textContent = 'Brought into "About us" below — click "Save profile" to make it real. Nothing is saved yet.';
+      statusEl.style.color = 'var(--accent-2)';
+    }
+  });
 
   aiRow.addEventListener('click', function(){ settingsSetAiPaused(aiToggle.getAttribute('aria-checked') !== 'true'); });
   aiToggle.addEventListener('keydown', function(e){
