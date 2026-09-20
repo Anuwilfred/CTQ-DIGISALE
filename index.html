@@ -248,12 +248,29 @@
   .detail-header{display:flex; justify-content:space-between; align-items:flex-start; gap:16px; flex-wrap:wrap; margin-bottom:18px}
   .detail-title{font-size:20px; font-weight:700; margin:0 0 4px}
   .detail-sub{font-size:13px; color:var(--text-muted); margin:0}
-  .fact-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:14px; margin-bottom:22px}
-  .fact{background:var(--glass-soft); border:1px solid var(--glass-border); border-radius:14px; padding:12px 14px; -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px)}
+  .fact-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px; margin-bottom:22px; align-items:stretch}
+  .fact{
+    background:var(--glass-strong); border:1px solid var(--glass-border); border-radius:16px; padding:14px 16px;
+    -webkit-backdrop-filter:blur(16px) saturate(160%); backdrop-filter:blur(16px) saturate(160%);
+    box-shadow:0 4px 16px rgba(0,0,0,.07); display:flex; gap:12px; align-items:flex-start;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .fact:hover{transform:translateY(-2px); box-shadow:0 8px 22px rgba(0,0,0,.11)}
+  .fact.fact-wide{grid-column:span 2}
+  @media (max-width:900px){ .fact.fact-wide{grid-column:span 1} }
+  .fact-icon{
+    flex:none; width:34px; height:34px; border-radius:10px; display:flex; align-items:center; justify-content:center;
+    color:#fff; box-shadow:0 2px 8px rgba(0,0,0,.18);
+  }
+  .fact-icon svg{width:17px; height:17px}
+  .fact-body{min-width:0; flex:1}
   .fact-label{font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--text-muted); margin-bottom:4px; font-weight:600}
-  .fact-value{font-size:13.5px}
+  .fact-value{font-size:13.5px; line-height:1.5}
   .fact-value a{color:var(--accent)}
-  .source-tag{font-size:10.5px; color:var(--text-muted); margin-top:3px; display:block}
+  .source-tag{
+    font-size:10px; color:var(--text-muted); margin-top:6px; display:inline-block;
+    background:var(--tint-cool); padding:2px 8px; border-radius:999px;
+  }
 
   .section-title{font-size:13px; font-weight:700; margin:0 0 10px; display:flex; align-items:center; gap:8px}
 
@@ -1613,11 +1630,26 @@ function renderDetail(){
       '<div><h2 class="detail-title">'+co.name+'</h2><p class="detail-sub">'+co.segment+' · '+co.region+', '+co.country+'</p></div>' +
     '</div>' +
     '<div class="fact-grid">' +
-      '<div class="fact"><div class="fact-label">Address</div><div class="fact-value">'+co.address+'<span class="source-tag">source: '+co.source+'</span></div></div>' +
-      '<div class="fact"><div class="fact-label">Website</div><div class="fact-value"><a href="#" style="color:var(--accent)">'+co.website+'</a></div></div>' +
-      '<div class="fact"><div class="fact-label">Contacts</div><div class="fact-value">'+contactsHtml+'</div></div>' +
-      '<div class="fact"><div class="fact-label">Next action</div><div class="fact-value">'+co.nextAction+'<span class="source-tag">last contact '+fmtDate(co.lastContact)+'</span></div></div>' +
-      '<div class="fact"><div class="fact-label">Local data</div><div class="fact-value">'+localValue+'<span class="source-tag">'+localSub+'</span></div></div>' +
+      '<div class="fact">' +
+        '<div class="fact-icon" style="background:linear-gradient(135deg, var(--slot-blue), color-mix(in srgb, var(--slot-blue) 70%, black))"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.5 7-11.5A7 7 0 105 9.5C5 14.5 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.4"/></svg></div>' +
+        '<div class="fact-body"><div class="fact-label">Address</div><div class="fact-value">'+co.address+'<span class="source-tag">source: '+co.source+'</span></div></div>' +
+      '</div>' +
+      '<div class="fact">' +
+        '<div class="fact-icon" style="background:linear-gradient(135deg, var(--accent-2), color-mix(in srgb, var(--accent-2) 70%, black))"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.3"/><path d="M4 12h16M12 3.7c2.2 2.2 3.4 5.2 3.4 8.3s-1.2 6.1-3.4 8.3c-2.2-2.2-3.4-5.2-3.4-8.3S9.8 5.9 12 3.7z"/></svg></div>' +
+        '<div class="fact-body"><div class="fact-label">Website</div><div class="fact-value"><a href="#" style="color:var(--accent)">'+co.website+'</a></div></div>' +
+      '</div>' +
+      '<div class="fact fact-wide">' +
+        '<div class="fact-icon" style="background:linear-gradient(135deg, var(--slot-aqua), color-mix(in srgb, var(--slot-aqua) 70%, black))"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.3"/><path d="M3.5 20c.6-3.4 3-5.4 5.5-5.4s4.9 2 5.5 5.4"/><circle cx="17.5" cy="8.5" r="2.6" opacity=".7"/><path d="M15.8 14.8c2 .3 3.6 2 4.1 4.6" opacity=".7"/></svg></div>' +
+        '<div class="fact-body"><div class="fact-label">Contacts</div><div class="fact-value">'+contactsHtml+'</div></div>' +
+      '</div>' +
+      '<div class="fact">' +
+        '<div class="fact-icon" style="background:linear-gradient(135deg, var(--warning), color-mix(in srgb, var(--warning) 70%, black))"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4"/><path d="M5 4h13l-3 4.5L18 13H5"/></svg></div>' +
+        '<div class="fact-body"><div class="fact-label">Next action</div><div class="fact-value">'+co.nextAction+'<span class="source-tag">last contact '+fmtDate(co.lastContact)+'</span></div></div>' +
+      '</div>' +
+      '<div class="fact">' +
+        '<div class="fact-icon" style="background:linear-gradient(135deg, var(--slot-orange), color-mix(in srgb, var(--slot-orange) 70%, black))"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1.5"/><path d="M8 7.5h1.2M8 11h1.2M8 14.5h1.2M14.8 7.5H16M14.8 11H16M14.8 14.5H16"/><path d="M9.5 21v-4h5v4"/></svg></div>' +
+        '<div class="fact-body"><div class="fact-label">Local data</div><div class="fact-value">'+localValue+'<span class="source-tag">'+localSub+'</span></div></div>' +
+      '</div>' +
     '</div>' +
     catPickerHTML(co, 'co-'+co.id) +
     '<h3 class="section-title" style="margin-top:20px">Outreach email</h3>' +
