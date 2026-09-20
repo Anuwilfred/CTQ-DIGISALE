@@ -6,10 +6,14 @@
 // app calls this function instead, and this function calls Anthropic with
 // the key from a server-side secret that the browser never sees.
 //
-// It accepts exactly one shape of request — { query, notes } — runs one
-// fixed research prompt with Claude's web-search tool turned on, and
-// returns strict JSON. It does not forward arbitrary prompts from the
-// client, which keeps cost and abuse surface small.
+// It accepts { query, notes, mode } — mode is "project" (default, unchanged
+// behavior: is this a real current contract/newbuild, who has the systems)
+// or "company" (used by scripts/discover_companies_daily.py to grow the
+// company directory itself, the same way this function already grows
+// Active Projects) — runs one fixed research prompt with Claude's
+// web-search tool turned on, and returns strict JSON. It does not forward
+// arbitrary prompts from the client, which keeps cost and abuse surface
+// small.
 //
 // ---- Deploy ----
 //   supabase functions deploy research --no-verify-jwt
@@ -59,6 +63,40 @@ After researching, respond with ONLY one JSON object — no markdown code fences
   "sources": ["source URLs actually used"]
 }`;
 
+// mode: "company" — used to grow the company DIRECTORY itself (real
+// shipyards, systems integrators, vessel owners, etc. not yet tracked),
+// as distinct from mode: "project" above which grows Active Projects.
+// Entries this produces are clearly marked as AI-discovered, single-pass
+// web search — NOT held to the same two-independent-source bar the rest
+// of the manually-researched directory uses, so the app/script surfaces
+// them for a quick human glance before they're relied on for outreach.
+const SYSTEM_PROMPT_COMPANY = `You are a research analyst for C-TORQ, a company that supplies vessel automation, navigation, alarm monitoring (AMS), LNG cargo/fuel systems, and fire & gas safety systems to shipyards and ship operators worldwide.
+
+Given a description of a TYPE of company and a region (e.g. "marine automation integrator in Dubai, UAE" or "vessel owner / tanker operator headquartered in Singapore"), use web search to find ONE real, currently-operating company that matches — ideally one that is not extremely well-known/already obvious, so this surfaces genuinely new prospects rather than the same handful of famous names every time. Prefer a company you can verify is real via at least one independent source beyond its own website (a business registry, trade press, stock exchange listing, or industry directory).
+
+Find:
+1. The company's real legal/trading name.
+2. Its official website domain.
+3. The city and country it's headquartered in.
+4. A factual 1-2 sentence description of what it actually does — concrete, not generic marketing language, similar in style to: "Shipyard — naval and commercial vessel construction, repair, maintenance, refit and conversion." or "Vessel owner/operator — owns/operates tankers and bulk carriers."
+5. Which of these categories apply to what C-TORQ could sell them: automation, navigation, integration, electrical, software, cloud, safety, propulsion, cargo, hull, hvac, services.
+6. Any publicly published general-inquiries or procurement contact (name/role, email, phone). Never invent one — omit the field if you can't find a real published one.
+
+Only use information you actually found via web search. If you cannot find a real, verifiable company matching the description, say so plainly (found: false) rather than inventing one — a false negative is fine, a fabricated company is not.
+
+After researching, respond with ONLY one JSON object — no markdown code fences, no extra prose before or after — matching exactly this shape:
+{
+  "found": true or false,
+  "name": "string",
+  "website": "string or null (bare domain, no https://)",
+  "city": "string or null",
+  "country": "string or null (full country name, e.g. \\"United Arab Emirates\\")",
+  "segment": "1-2 sentence factual description",
+  "categories": ["subset of: automation, navigation, integration, electrical, software, cloud, safety, propulsion, cargo, hull, hvac, services"],
+  "contact": {"name": "string or null", "role": "string or null", "email": "string or null", "phone": "string or null"},
+  "sources": ["source URLs actually used"]
+}`;
+
 function jsonResponse(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
@@ -89,10 +127,12 @@ Deno.serve(async (req: Request) => {
 
   const query = String(body?.query || "").trim().slice(0, 300);
   const notes = String(body?.notes || "").trim().slice(0, 1000);
+  const mode = body?.mode === "company" ? "company" : "project";
   if (!query) {
     return jsonResponse({ error: 'Missing "query"' }, 400);
   }
 
+  const systemPrompt = mode === "company" ? SYSTEM_PROMPT_COMPANY : SYSTEM_PROMPT;
   const userMessage = notes
     ? `Research this for C-TORQ: "${query}"\n\nAdditional context from the sales team: ${notes}`
     : `Research this for C-TORQ: "${query}"`;
@@ -108,7 +148,7 @@ Deno.serve(async (req: Request) => {
       body: JSON.stringify({
         model: MODEL,
         max_tokens: 2000,
-        system: SYSTEM_PROMPT,
+        system: systemPrompt,
         messages: [{ role: "user", content: userMessage }],
         tools: [{ type: "web_search_20250305", name: "web_search", max_uses: 6 }],
       }),
