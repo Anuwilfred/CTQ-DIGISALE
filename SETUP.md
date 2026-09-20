@@ -220,6 +220,47 @@ your own Gmail account, the same as sending from Gmail normally, so
 Gmail's own daily sending limits apply (roughly 500/day for a personal
 account).
 
+### Watched websites (auto-check a company's site for news)
+
+On the Settings tab, under "C-TORQ company profile," there's a "Watched
+websites" card. Paste in any company's website (a shipyard, an integrator,
+a systems supplier — anyone) and, from the next daily automatic run
+onward, the same job from Step 5 will also ask the AI to check that
+company for recent news, press releases or new contract/vessel
+announcements — exactly like the fixed watchlist, just for sites your team
+adds as you find them. No one has to notice the news themselves and type
+it in; any real finding shows up in Active Projects like everything else
+the daily job discovers, tagged "Watched website: &lt;name&gt;" so you can tell
+where it came from.
+
+This needs one small one-time addition to your Supabase project — a table
+to hold the list of sites (so adding/removing one from Settings never
+needs a code push). In the Supabase dashboard, go to **SQL Editor** and
+run:
+
+```sql
+create table public.watched_sources (
+  id bigint generated always as identity primary key,
+  url text not null,
+  label text,
+  added_at timestamptz not null default now()
+);
+
+alter table public.watched_sources enable row level security;
+
+create policy "public read"   on public.watched_sources for select using (true);
+create policy "public insert" on public.watched_sources for insert with check (true);
+create policy "public delete" on public.watched_sources for delete using (true);
+```
+
+That's it — no new secrets, no new Edge Function, no new deploy. The
+Settings tab talks to this table directly using the same anon public key
+already saved in Backend connection. As with the anon key generally
+(see Notes on safety below), these policies mean anyone with the app's
+public key could technically add or remove rows here too; if that becomes
+a concern, tighten the insert/delete policies in Supabase later — ask and
+this can be adjusted.
+
 ## Notes on safety
 
 - The **anon key** is meant to be public — Supabase issues it specifically
