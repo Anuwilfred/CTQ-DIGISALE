@@ -583,6 +583,119 @@
                 "safety",
                 "cloud"
               ]
+            },
+            {
+              "id": "ae-tristar-transport",
+              "name": "Tristar (Tristar Transport LLC)",
+              "address": "Downtown Jebel Ali, Dubai, United Arab Emirates",
+              "website": "tristar-group.co",
+              "segment": "Vessel owner/operator — integrated energy logistics group; owns/operates ~30 chemical, oil and gas tankers and bulk carriers including an LNG carrier and six new 25,000 MT DWT IMO Type 2 tankers. Recently ordered a hybrid/electric bunkering vessel for the UAE (battery + diesel-generator propulsion) — the kind of newbuild that needs exactly this automation/electrical scope.",
+              "source": "Official site (tristar-group.co) + Splash247 / Ship.Energy trade press coverage of the hybrid bunkering vessel order",
+              "contacts": [
+                {
+                  "name": "Main Office",
+                  "phone": "+971 4 291 1222",
+                  "source": "https://www.tristar-group.co/contact"
+                }
+              ],
+              "stage": "found",
+              "lastContact": "2026-09-20",
+              "nextAction": "AI drafting first email",
+              "history": [
+                {
+                  "type": "found",
+                  "date": "2026-09-20",
+                  "text": "Added from web research — verified via official site + independent source."
+                }
+              ],
+              "local": {
+                "currency": "AED",
+                "timezone": "Asia/Dubai",
+                "language": "Arabic (ar) / English",
+                "registrationNumber": null,
+                "registryNote": "Not yet compliantly sourced from UAE Ministry of Economy / Emirate-level DED — see architecture doc's OpenCorporates guidance."
+              },
+              "instructions": [],
+              "categories": [
+                "propulsion",
+                "electrical",
+                "automation"
+              ]
+            },
+            {
+              "id": "ae-spm-shipping",
+              "name": "SPM Shipping (SPM Energy Shipping)",
+              "address": "Jumeirah Lakes Towers, Dubai, United Arab Emirates",
+              "website": "spmshipping.ae",
+              "segment": "Vessel owner/operator, founded 2023 — oil and chemical tankers, Capesize bulk carriers, and Anchor Handling Tug Supply (AHTS) vessels for offshore projects, serving global energy and commodities markets.",
+              "source": "Official site (spmshipping.ae) + Dun & Bradstreet company profile",
+              "contacts": [
+                {
+                  "name": "Operations",
+                  "email": "operations@spmshipping.ae",
+                  "phone": "+971 4 575 4667",
+                  "source": "https://www.spmshipping.ae/contact-us"
+                }
+              ],
+              "stage": "found",
+              "lastContact": "2026-09-20",
+              "nextAction": "AI drafting first email",
+              "history": [
+                {
+                  "type": "found",
+                  "date": "2026-09-20",
+                  "text": "Added from web research — verified via official site + independent source."
+                }
+              ],
+              "local": {
+                "currency": "AED",
+                "timezone": "Asia/Dubai",
+                "language": "Arabic (ar) / English",
+                "registrationNumber": null,
+                "registryNote": "Not yet compliantly sourced from UAE Ministry of Economy / Emirate-level DED — see architecture doc's OpenCorporates guidance."
+              },
+              "instructions": [],
+              "categories": [
+                "propulsion",
+                "electrical"
+              ]
+            },
+            {
+              "id": "ae-massi-shipping",
+              "name": "Massi Shipping",
+              "address": "Al Khabaisi, Deira, Dubai, United Arab Emirates",
+              "website": "massi-shipping.com",
+              "segment": "Ship management company — technical management, crewing and commercial management (chartering, sale/purchase, insurance) for tanker, LNG and general cargo vessels; ISM Code compliant.",
+              "source": "Official site (massi-shipping.com)",
+              "contacts": [
+                {
+                  "name": "General Inquiries",
+                  "phone": "+971 4 297 8840",
+                  "source": "https://massi-shipping.com/"
+                }
+              ],
+              "stage": "found",
+              "lastContact": "2026-09-20",
+              "nextAction": "AI drafting first email",
+              "history": [
+                {
+                  "type": "found",
+                  "date": "2026-09-20",
+                  "text": "Added from web research — verified via official site + independent source."
+                }
+              ],
+              "local": {
+                "currency": "AED",
+                "timezone": "Asia/Dubai",
+                "language": "Arabic (ar) / English",
+                "registrationNumber": null,
+                "registryNote": "Not yet compliantly sourced from UAE Ministry of Economy / Emirate-level DED — see architecture doc's OpenCorporates guidance."
+              },
+              "instructions": [],
+              "categories": [
+                "services",
+                "safety"
+              ]
             }
           ]
         },
